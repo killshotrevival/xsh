@@ -21,7 +21,8 @@ var (
 
 	insertIdentityStmt = "INSERT INTO identities (id, name, path) VALUES (?, ?, ?)"
 
-	getIdentityStmt = "select id, name, path from identities where path = ?"
+	getIdentityStmt     = "select id, name, path from identities where path = ?"
+	getIdentityByIdStmt = "select id, name, path from identities where id = ?"
 
 	sshKeyMarkers = []string{
 		"-----BEGIN OPENSSH PRIVATE KEY-----",

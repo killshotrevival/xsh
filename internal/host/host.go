@@ -18,6 +18,9 @@ var (
 	jumphost_id UUID
 	)`
 
+	getHostStmt     = "select id, name, address, user, region_id, identity_id, jumphost_id from hosts where name = ?"
+	getHostByIdStmt = "select id, name, address, user, region_id, identity_id, jumphost_id from hosts where id = ?"
+
 	insertHostStmt = "INSERT INTO hosts (id, name, address, user, region_id, identity_id, jumphost_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
 )
 
