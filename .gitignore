@@ -31,5 +31,5 @@ go.work.sum
 # .idea/
 # .vscode/
 
-test.json
-output.json
+# Temp output files
+*.json

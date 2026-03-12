@@ -32,7 +32,7 @@ var (
 )
 
 type Identity struct {
-	ID   uuid.UUID `json:"id"`
+	Id   uuid.UUID `json:"id"`
 	Name string    `josn:"name"`
 	Path string    `json:"path"`
 }
@@ -43,7 +43,7 @@ func NewIdentity(name, path string) (*Identity, error) {
 		return nil, err
 	}
 	return &Identity{
-		ID:   id,
+		Id:   id,
 		Name: name,
 		Path: path,
 	}, nil
@@ -59,7 +59,7 @@ func (i *Identity) Store(db *sql.DB) error {
 		log.Info("Identity with path already exists in the table")
 		return nil
 	}
-	_, err = db.Exec(insertIdentityStmt, i.ID, i.Name, i.Path)
+	_, err = db.Exec(insertIdentityStmt, i.Id, i.Name, i.Path)
 	return err
 }
 
@@ -75,16 +75,6 @@ func (i *Identity) ExistsInDb(db *sql.DB) (bool, error) {
 		return true, nil
 	}
 	return false, nil
-}
-
-func GetIdentity(db *sql.DB, id uuid.UUID) (*Identity, error) {
-	row := db.QueryRow("SELECT id, name, path FROM identities WHERE id = ?", id)
-	var identity Identity
-	err := row.Scan(&identity.ID, &identity.Name, &identity.Path)
-	if err != nil {
-		return nil, err
-	}
-	return &identity, nil
 }
 
 func containsSSHKey(path string) bool {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	db "xsh/internal/db"
 	"xsh/internal/identity"
+	"xsh/internal/region"
 
 	"github.com/spf13/cobra"
 )
@@ -25,12 +26,18 @@ func putData(cmd *cobra.Command, args []string) error {
 	}
 	defer dbConnection.Close()
 
-	dataType, name, path := args[0], args[1], args[2]
+	dataType := args[0]
 	switch dataType {
 	case "i":
 		fallthrough
 	case "identity":
+		name, path := args[1], args[2]
 		return identity.PutIdentity(dbConnection, name, path)
+	case "r":
+		fallthrough
+	case "region":
+		name, slug := args[1], args[2]
+		return region.PutRegion(dbConnection, name, slug)
 	default:
 		return fmt.Errorf("invalid data type selected for inserting")
 	}

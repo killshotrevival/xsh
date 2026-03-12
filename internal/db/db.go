@@ -6,17 +6,12 @@ import (
 	"path/filepath"
 	config "xsh/internal/config"
 	"xsh/internal/identity"
+	"xsh/internal/region"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
-	createRegionTableStmt = `CREATE TABLE IF NOT EXISTS regions (
-	id UUID PRIMARY KEY,
-	name TEXT NOT NULL,
-	slug TEXT NOT NULL
-	)`
-
 	createHostTableStmt = `CREATE TABLE IF NOT EXISTS hosts (
 	id UUID PRIMARY KEY,
 	name TEXT NOT NULL,
@@ -81,7 +76,7 @@ func InitDB() error {
 		return err
 	}
 
-	_, err = db.Exec(createRegionTableStmt)
+	_, err = db.Exec(region.CreateRegionTableStmt)
 	if err != nil {
 		return err
 	}
