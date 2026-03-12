@@ -2,8 +2,8 @@ package region
 
 import "database/sql"
 
-func PutRegion(db *sql.DB, name, slug string) error {
-	region, err := NewRegion(name, slug)
+func PutRegion(db *sql.DB, name string) error {
+	region, err := NewRegion(name)
 	if err != nil {
 		return err
 	}

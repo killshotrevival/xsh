@@ -9,20 +9,18 @@ import (
 type Region struct {
 	Id   uuid.UUID `json:"id"`
 	Name string    `json:"name"`
-	Slug string    `josn:"name"`
 }
 
 var (
 	CreateRegionTableStmt = `CREATE TABLE IF NOT EXISTS regions (
 	id UUID PRIMARY KEY,
 	name TEXT NOT NULL,
-	slug TEXT NOT NULL
 	)`
 
-	insertRegionStmt = "INSERT INTO regions (id, name, slug) VALUES (?, ?, ?)"
+	insertRegionStmt = "INSERT INTO regions (id, name) VALUES (?, ?)"
 )
 
-func NewRegion(name, slug string) (*Region, error) {
+func NewRegion(name string) (*Region, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {
 		return nil, err
@@ -31,11 +29,10 @@ func NewRegion(name, slug string) (*Region, error) {
 	return &Region{
 		Id:   id,
 		Name: name,
-		Slug: slug,
 	}, nil
 }
 
 func (r *Region) Store(db *sql.DB) error {
-	_, err := db.Exec(insertRegionStmt, r.Id, r.Name, r.Slug)
+	_, err := db.Exec(insertRegionStmt, r.Id, r.Name)
 	return err
 }

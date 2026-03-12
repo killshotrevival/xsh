@@ -4,6 +4,7 @@ package cmd
 import (
 	"fmt"
 	db "xsh/internal/db"
+	"xsh/internal/host"
 	"xsh/internal/identity"
 	"xsh/internal/region"
 
@@ -36,8 +37,13 @@ func putData(cmd *cobra.Command, args []string) error {
 	case "r":
 		fallthrough
 	case "region":
-		name, slug := args[1], args[2]
-		return region.PutRegion(dbConnection, name, slug)
+		name := args[1]
+		return region.PutRegion(dbConnection, name)
+	case "h":
+		fallthrough
+	case "host":
+		filepath := args[1]
+		return host.PutHost(dbConnection, filepath)
 	default:
 		return fmt.Errorf("invalid data type selected for inserting")
 	}

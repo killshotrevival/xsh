@@ -5,22 +5,11 @@ import (
 	"os"
 	"path/filepath"
 	config "xsh/internal/config"
+	"xsh/internal/host"
 	"xsh/internal/identity"
 	"xsh/internal/region"
 
 	_ "github.com/mattn/go-sqlite3"
-)
-
-var (
-	createHostTableStmt = `CREATE TABLE IF NOT EXISTS hosts (
-	id UUID PRIMARY KEY,
-	name TEXT NOT NULL,
-	address TEXT NOT NULL,
-	user TEXT NOT NULL,
-	region_id UUID NOT NULL,
-	identity_id UUID NOT NULL,
-	jumphost_id UUID
-	)`
 )
 
 func GetDBPath() (string, error) {
@@ -81,7 +70,7 @@ func InitDB() error {
 		return err
 	}
 
-	_, err = db.Exec(createHostTableStmt)
+	_, err = db.Exec(host.CreateHostTableStmt)
 	if err != nil {
 		return err
 	}

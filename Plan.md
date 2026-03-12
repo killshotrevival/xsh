@@ -46,6 +46,7 @@ Stores SSH host connection details.
 | `name` | TEXT | User-friendly identifier for the host |
 | `address` | TEXT | IP address or domain name |
 | `user` | TEXT | SSH username |
+| `region_id` | UUID | Foreign key → `regions.id` |
 | `identity_id` | UUID | Foreign key → `identities.id` |
 | `jumphost_id` | UUID | Foreign key → `hosts.id` (self-referencing) |
 
@@ -69,7 +70,6 @@ Organizes hosts by geographic or logical regions.
 |--------|------|-------------|
 | `id` | UUID | Primary key |
 | `name` | TEXT | Full region name (e.g., "US East") |
-| `slug` | TEXT | Short identifier (e.g., "use1") |
 
 ---
 
