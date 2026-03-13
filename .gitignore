@@ -33,3 +33,6 @@ go.work.sum
 
 # Temp output files
 *.json
+
+# XSH binary
+xsh

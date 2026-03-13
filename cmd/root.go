@@ -9,10 +9,15 @@ import (
 
 var debug bool
 
+// This variable is replaced in runtime while building the application
+// for example: go build -ldflags "-X 'xsh/cmd.Version=1.2.3'"
+var Version = "dev"
+
 var rootCmd = &cobra.Command{
-	Use:   "xsh",
-	Short: "Extended SSH",
-	Long:  "A tool to extend the functionality of SSH with additional features and capabilities.",
+	Version: Version,
+	Use:     "xsh",
+	Short:   "Extended SSH",
+	Long:    "A tool to extend the functionality of SSH with additional features and capabilities.",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if debug {
 			log.SetLevel(log.DebugLevel)
