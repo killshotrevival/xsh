@@ -2,6 +2,9 @@
 package cmd
 
 import (
+	"fmt"
+	"xsh/internal/db"
+
 	"github.com/spf13/cobra"
 
 	"github.com/charmbracelet/log"
@@ -18,12 +21,28 @@ var rootCmd = &cobra.Command{
 	Use:     "xsh",
 	Short:   "Extended SSH",
 	Long:    "A tool to extend the functionality of SSH with additional features and capabilities.",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if debug {
 			log.SetLevel(log.DebugLevel)
 			log.SetReportCaller(true)
 			log.SetReportTimestamp(true)
 		}
+
+		present, err := db.CheckDB()
+		if err != nil {
+			log.Debugf("error occurred while checking if DB file is present: %v", err)
+			return nil
+		}
+
+		if present {
+			log.Debug("DB found, checking for migrations to apply")
+			if err := db.CheckAndApplyMigrations(); err != nil {
+				return fmt.Errorf("error occurred while checking and applying database migration: %v", err)
+			}
+		} else {
+			log.Debug("Datbase file not found, seems like the user is yet to init the environment.")
+		}
+		return nil
 	},
 }
 
