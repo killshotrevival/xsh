@@ -36,6 +36,7 @@ func getHost(db *sql.DB, queryString, identifier string) (*Host, error) {
 		&host.Id,
 		&host.Name,
 		&host.Address,
+		&host.Port,
 		&host.User,
 		&host.RegionId,
 		&host.IdentityId,

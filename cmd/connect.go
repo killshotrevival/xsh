@@ -83,10 +83,11 @@ func buildSshString(identifier string) (string, error) {
 			return "", err
 		}
 		// TODO: Add support for custom port here
-		return fmt.Sprintf(`ssh -i %s -o ProxyCommand="ssh -i %s -W %s:22 %s@%s" %s@%s`,
+		return fmt.Sprintf(`ssh -i %s -o ProxyCommand="ssh -i %s -W %s:%d %s@%s" %s@%s`,
 			cIdentity.Path,
 			cJumhostIdentity.Path,
 			cHost.Address,
+			cHost.Port,
 			cjumpHost.User,
 			cjumpHost.Address,
 			cHost.User,
@@ -94,9 +95,10 @@ func buildSshString(identifier string) (string, error) {
 		), nil
 	}
 
-	return fmt.Sprintf("ssh -i %s %s@%s",
+	return fmt.Sprintf("ssh -i %s %s@%s:%d",
 		cIdentity.Path,
 		cHost.User,
 		cHost.Address,
+		cHost.Port,
 	), nil
 }

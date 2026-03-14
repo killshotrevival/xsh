@@ -115,7 +115,7 @@ func CheckAndApplyMigrations() error {
 	}
 	fileNames := []string{}
 
-	log.Debug("checking which all migration files to pply based on version number")
+	log.Debug("checking which all migration files to apply based on version number")
 	for _, file := range files {
 		versionStr := strings.Split(file.Name(), "_")[0]
 
@@ -152,7 +152,7 @@ func CheckAndApplyMigrations() error {
 
 func applyMigrations(db *sql.DB, fileNames []string) error {
 	for _, file := range fileNames {
-		content, err := migrationFiles.ReadFile(file)
+		content, err := migrationFiles.ReadFile("migrations/" + file)
 		if err != nil {
 			log.Debugf("error occurred while reading migration file (%s): %v", file, err)
 			return err

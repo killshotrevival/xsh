@@ -13,7 +13,6 @@ func GetConfigDir() (string, error) {
 		log.Errorf("error occurred while fetching user home directory: %v", err)
 		return "", err
 	}
-	log.Debugf("User home directory found is: %s", homeDir)
 	return filepath.Join(homeDir, "xsh"), nil
 }
 

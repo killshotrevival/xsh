@@ -45,6 +45,7 @@ Stores SSH host connection details.
 | `id` | UUID | Primary key |
 | `name` | TEXT | User-friendly identifier for the host |
 | `address` | TEXT | IP address or domain name |
+| `port` | TEXT | SSH port to use for connection |
 | `user` | TEXT | SSH username |
 | `region_id` | UUID | Foreign key → `regions.id` |
 | `identity_id` | UUID | Foreign key → `identities.id` |

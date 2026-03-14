@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS hosts (
 	id UUID PRIMARY KEY,
 	name TEXT NOT NULL,
 	address TEXT NOT NULL,
+	port INTEGER DEFAULT 22 NOT NULL,
 	user TEXT NOT NULL,
 	region_id UUID NOT NULL,
 	identity_id UUID NOT NULL,
@@ -28,4 +29,4 @@ CREATE TABLE IF NOT EXISTS schema_version (
 );
 
 -- Initialize the schema_version table with version 0
-INSERT INTO schema_version(version) VALUES(0)
+INSERT INTO schema_version(version) VALUES(0);
