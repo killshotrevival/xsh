@@ -24,9 +24,10 @@ var (
 	deleteTagStmt        = "delete from tags where id = ?"
 	deleteTagMappingStmt = "delete from tagmappings where id = ?"
 
-	getTagIdStmt      = "select id from tags where tag = ?"
-	getTagStmt        = "select id, tag from tags where tag = ?"
-	getTagMappingStmt = "select id, tag_id, data_type_id from tagmappings where tag_Id = ? and data_type_id = ?"
+	getTagIdStmt            = "select id from tags where tag = ?"
+	getTagStmt              = "select id, tag from tags where tag = ?"
+	getTagsByDatatypeIdStmt = "select t.tag from tags as t join tagmappings as tm on t.id = tm.tag_id where tm.data_type_id = ?"
+	getTagMappingStmt       = "select id, tag_id, data_type_id from tagmappings where tag_Id = ? and data_type_id = ?"
 )
 
 func NewTag(tag string) (*Tag, error) {

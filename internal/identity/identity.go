@@ -34,6 +34,7 @@ type Identity struct {
 	Id   uuid.UUID `json:"id"`
 	Name string    `josn:"name"`
 	Path string    `json:"path"`
+	Tags []string  `json:"tags"`
 }
 
 func NewIdentity(name, path string) (*Identity, error) {

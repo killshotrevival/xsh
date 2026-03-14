@@ -25,6 +25,7 @@ type Host struct {
 	RegionId   uuid.UUID     `json:"region_id"`
 	IdentityId uuid.UUID     `json:"identity_id"`
 	JumphostId uuid.NullUUID `json:"jumphost_id"`
+	Tags       []string      `json:"tags"`
 }
 
 func NewHost(name, address, user string, port int, region_id, identityId uuid.UUID, jumphostId uuid.NullUUID) (*Host, error) {

@@ -22,6 +22,28 @@ func GetTag(db *sql.DB, identifier string) (*Tag, error) {
 	return &tag, nil
 }
 
+func GetTagsByDatatypeId(db *sql.DB, dataTypeId uuid.UUID) ([]string, error) {
+	tags := []string{}
+
+	rows, err := db.Query(getTagsByDatatypeIdStmt, dataTypeId)
+	if err != nil {
+		log.Debugf("error occurred while fetching tags for given datatype id(%s): %v", dataTypeId, err)
+		return nil, err
+	}
+
+	for rows.Next() {
+		var tag string
+		err := rows.Scan(&tag)
+		if err != nil {
+			log.Debugf("error occurred while reading tag from database: %v", err)
+			continue
+		}
+		tags = append(tags, tag)
+	}
+
+	return tags, nil
+}
+
 func GetTagMapping(db *sql.DB, tagId, datatypeId uuid.UUID) (*TagMapping, error) {
 	tm := TagMapping{}
 	if err := db.QueryRow(getTagMappingStmt, tagId, datatypeId).Scan(&tm.Id, &tm.TagId, &tm.DataTypeId); err != nil {

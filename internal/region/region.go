@@ -9,6 +9,7 @@ import (
 type Region struct {
 	Id   uuid.UUID `json:"id"`
 	Name string    `json:"name"`
+	Tags []string  `json:"tags"`
 }
 
 var (

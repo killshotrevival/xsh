@@ -97,6 +97,10 @@ func Print(db *sql.DB, identifier string) error {
 			}
 
 			if !slices.Contains(idsAdded, host.Id) {
+				host.Tags, err = tag.GetTagsByDatatypeId(db, host.Id)
+				if err != nil {
+					host.Tags = []string{"error occurred while fetching"}
+				}
 				idsAdded = append(idsAdded, host.Id)
 				hosts = append(hosts, host)
 			}

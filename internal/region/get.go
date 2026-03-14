@@ -69,6 +69,10 @@ func PrintRegions(db *sql.DB, identifier string) error {
 			}
 
 			if !slices.Contains(idsAdded, r.Id) {
+				r.Tags, err = tag.GetTagsByDatatypeId(db, r.Id)
+				if err != nil {
+					r.Tags = []string{"error occurred while fetching"}
+				}
 				idsAdded = append(idsAdded, r.Id)
 				regions = append(regions, r)
 			}
