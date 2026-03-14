@@ -22,6 +22,17 @@ func GetTag(db *sql.DB, identifier string) (*Tag, error) {
 	return &tag, nil
 }
 
+func GetTagMapping(db *sql.DB, tagId, datatypeId uuid.UUID) (*TagMapping, error) {
+	tm := TagMapping{}
+	if err := db.QueryRow(getTagMappingStmt, tagId, datatypeId).Scan(&tm.Id, &tm.TagId, &tm.DataTypeId); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("no tag mapping found with given identifiers: (%s | %s)", tagId, datatypeId)
+		}
+		return nil, err
+	}
+	return &tm, nil
+}
+
 func GetTagWithCreate(db *sql.DB, identifier string) (*Tag, error) {
 	tag := &Tag{}
 	if err := db.QueryRow(getTagStmt, identifier).Scan(&tag.Id, &tag.Tag); err != nil {

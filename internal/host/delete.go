@@ -32,7 +32,7 @@ func DeleteTagMapping(db *sql.DB, hostName, tagName string) error {
 	if err != nil {
 		return err
 	}
-	tm, err := tag.NewTagMapping(nTag.Id, host.Id)
+	tm, err := tag.GetTagMapping(db, nTag.Id, host.Id)
 	if err != nil {
 		log.Debugf("error occurred while creating new tag mapping object; %v", err)
 		return err
