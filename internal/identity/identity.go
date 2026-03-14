@@ -13,12 +13,6 @@ import (
 )
 
 var (
-	CreateIdentityTableStmt = `CREATE TABLE IF NOT EXISTS identities (
-	id UUID PRIMARY KEY,
-	name TEXT NOT NULL,
-	path TEXT NOT NULL
-	)`
-
 	insertIdentityStmt = "INSERT INTO IDENTITIES (ID, NAME, PATH) VALUES (?, ?, ?)"
 
 	deleteIdentityStmt = "DELETE FROM identities WHERE ID = ?"

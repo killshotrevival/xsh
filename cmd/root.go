@@ -53,10 +53,12 @@ func Execute() {
 func init() {
 	// Global flag available to all subcommands
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug logging")
+	tagCmd.PersistentFlags().BoolVarP(&remove, "remove", "r", false, "Remove Tag mapping")
 
 	rootCmd.AddCommand(putCmd)
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(connectCmd)
 	rootCmd.AddCommand(deleteCmd)
+	rootCmd.AddCommand(tagCmd)
 }

@@ -12,15 +12,10 @@ type Region struct {
 }
 
 var (
-	CreateRegionTableStmt = `CREATE TABLE IF NOT EXISTS regions (
-	id UUID PRIMARY KEY,
-	name TEXT NOT NULL,
-	)`
-
 	insertRegionStmt = "INSERT INTO regions (id, name) VALUES (?, ?)"
 
 	deleteRegionStmt      = "DELETE REGIONS WHERE ID = ?"
-	getRegionIdByNameStmt = "GET ID FROM REGIONS WHERE NAME = ?"
+	getRegionIdByNameStmt = "SELECT ID FROM REGIONS WHERE NAME = ?"
 )
 
 func NewRegion(name string) (*Region, error) {

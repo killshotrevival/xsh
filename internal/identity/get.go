@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"xsh/internal/tag"
 
 	"github.com/google/uuid"
 
@@ -25,7 +26,36 @@ func GetIdentityById(db *sql.DB, identifier uuid.UUID) (*Identity, error) {
 	return &id, nil
 }
 
-func PrintIdentities(db *sql.DB, identifier string) error {
+func GetIdentityByName(db *sql.DB, identifier string) (*Identity, error) {
+	id := Identity{}
+
+	if err := db.QueryRow(getIdentityByNameStmt, identifier).Scan(&id.Id, &id.Name, &id.Path); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("no identity found with the given identifier (%s)", identifier)
+		}
+		return nil, err
+	}
+
+	return &id, nil
+}
+
+func getIdentityAndTag(db *sql.DB, identittyName, tagName string) (*Identity, *tag.Tag, error) {
+	host, err := GetIdentityByName(db, identittyName)
+	if err != nil {
+		log.Debugf("error occurred while fetching identity from given identifier(%s): %v", identittyName, err)
+		return nil, nil, err
+	}
+
+	nTag, err := tag.GetTagWithCreate(db, tagName)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return host, nTag, nil
+
+}
+
+func Print(db *sql.DB, identifier string) error {
 	var rows *sql.Rows
 	var err error
 

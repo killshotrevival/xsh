@@ -4,8 +4,10 @@ package cmd
 import (
 	"fmt"
 	db "xsh/internal/db"
+	"xsh/internal/host"
 	"xsh/internal/identity"
 	"xsh/internal/region"
+	"xsh/internal/tag"
 
 	"github.com/spf13/cobra"
 )
@@ -29,11 +31,19 @@ func getData(cmd *cobra.Command, args []string) error {
 	case "i":
 		fallthrough
 	case "identity":
-		return identity.PrintIdentities(dbConnection, args[1])
+		return identity.Print(dbConnection, args[1])
 	case "r":
 		fallthrough
 	case "region":
 		return region.PrintRegions(dbConnection, args[1])
+	case "h":
+		fallthrough
+	case "hosts":
+		return host.Print(dbConnection, args[1])
+	case "t":
+		fallthrough
+	case "tag":
+		return tag.Print(dbConnection, args[1])
 	default:
 		return fmt.Errorf("invalid data type selected for fetcing")
 	}

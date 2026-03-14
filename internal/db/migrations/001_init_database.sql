@@ -30,3 +30,16 @@ CREATE TABLE IF NOT EXISTS schema_version (
 
 -- Initialize the schema_version table with version 0
 INSERT INTO schema_version(version) VALUES(0);
+
+-- Create Tags table in the database
+CREATE TABLE IF NOT EXISTS tags (
+	id UUID PRIMARY KEY,
+	TAG TEXT NOT NULL
+);
+
+-- Create TagMappings table in the database to associate tags with hosts, regions, and identities
+CREATE TABLE IF NOT EXISTS tagmappings (
+	id UUID PRIMARY KEY,
+	data_type_id UUID NOT NULL,
+	tag_id UUID NOT NULL
+);
