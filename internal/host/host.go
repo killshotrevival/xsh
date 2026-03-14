@@ -8,10 +8,12 @@ import (
 )
 
 var (
-	getHostStmt     = "select id, name, address, port, user, region_id, identity_id, jumphost_id from hosts where name = ?"
-	getHostByIdStmt = "select id, name, address, port, user, region_id, identity_id, jumphost_id from hosts where id = ?"
+	getHostIdByNameStmt = "SELECT ID FROM HOSTS WHERE NAME = ?"
+	getHostByNameStmt   = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS WHERE NAME = ?"
+	getHostByIdStmt     = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS WHERE ID = ?"
 
-	insertHostStmt = "INSERT INTO hosts (id, name, address, port, user, region_id, identity_id, jumphost_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	deleteHostStmt = "DELETE FROM HOSTS where ID = ?"
+	insertHostStmt = "INSERT INTO HOSTS (ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 )
 
 type Host struct {

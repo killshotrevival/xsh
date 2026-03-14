@@ -2,13 +2,12 @@ package host
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 func GetHostByName(db *sql.DB, identifier string) (*Host, error) {
 	return getHost(
 		db,
-		getHostStmt,
+		getHostByNameStmt,
 		identifier,
 	)
 }
@@ -23,16 +22,7 @@ func GetHostById(db *sql.DB, identifier string) (*Host, error) {
 
 func getHost(db *sql.DB, queryString, identifier string) (*Host, error) {
 	host := Host{}
-	rows, err := db.Query(queryString, identifier)
-	if err != nil {
-		return nil, err
-	}
-
-	if !rows.Next() {
-		return nil, fmt.Errorf("no host present with the given identifier (%s)", identifier)
-	}
-
-	if err = rows.Scan(
+	if err := db.QueryRow(queryString, identifier).Scan(
 		&host.Id,
 		&host.Name,
 		&host.Address,

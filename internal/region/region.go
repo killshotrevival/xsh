@@ -18,6 +18,9 @@ var (
 	)`
 
 	insertRegionStmt = "INSERT INTO regions (id, name) VALUES (?, ?)"
+
+	deleteRegionStmt      = "DELETE REGIONS WHERE ID = ?"
+	getRegionIdByNameStmt = "GET ID FROM REGIONS WHERE NAME = ?"
 )
 
 func NewRegion(name string) (*Region, error) {

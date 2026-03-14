@@ -58,4 +58,5 @@ func init() {
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(connectCmd)
+	rootCmd.AddCommand(deleteCmd)
 }

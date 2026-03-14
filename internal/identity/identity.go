@@ -19,10 +19,14 @@ var (
 	path TEXT NOT NULL
 	)`
 
-	insertIdentityStmt = "INSERT INTO identities (id, name, path) VALUES (?, ?, ?)"
+	insertIdentityStmt = "INSERT INTO IDENTITIES (ID, NAME, PATH) VALUES (?, ?, ?)"
 
-	getIdentityStmt     = "select id, name, path from identities where path = ?"
-	getIdentityByIdStmt = "select id, name, path from identities where id = ?"
+	deleteIdentityStmt = "DELETE FROM identities WHERE ID = ?"
+
+	getIdentityIdByNameStmt = "SELECT ID FROM IDENTITIES WHERE NAME = ?"
+	getIdentityByNameStmt   = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE NAME = ?"
+	getIdentityByPathStmt   = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE PATH = ?"
+	getIdentityByIdStmt     = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE ID = ?"
 
 	sshKeyMarkers = []string{
 		"-----BEGIN OPENSSH PRIVATE KEY-----",
@@ -65,7 +69,7 @@ func (i *Identity) Store(db *sql.DB) error {
 }
 
 func (i *Identity) ExistsInDb(db *sql.DB) (bool, error) {
-	rows, err := db.Query(getIdentityStmt, i.Path)
+	rows, err := db.Query(getIdentityByPathStmt, i.Path)
 	if err != nil {
 		return false, fmt.Errorf("error occurred while checking identity execits in database: %w", err)
 	}

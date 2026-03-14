@@ -15,16 +15,10 @@ import (
 func GetIdentityById(db *sql.DB, identifier uuid.UUID) (*Identity, error) {
 	id := Identity{}
 
-	rows, err := db.Query(getIdentityByIdStmt, identifier)
-	if err != nil {
-		return nil, err
-	}
-
-	if !rows.Next() {
-		return nil, fmt.Errorf("no identity present with the given identifier (%s)", identifier)
-	}
-
-	if err = rows.Scan(&id.Id, &id.Name, &id.Path); err != nil {
+	if err := db.QueryRow(getIdentityByIdStmt, identifier).Scan(&id.Id, &id.Name, &id.Path); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("no identity found with the given identifier (%s)", identifier)
+		}
 		return nil, err
 	}
 
