@@ -3,8 +3,11 @@ package host
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"os"
 	"slices"
+	"strings"
+	"xsh/internal/table"
 	"xsh/internal/tag"
 
 	"github.com/charmbracelet/log"
@@ -61,20 +64,20 @@ func getHostAndTag(db *sql.DB, hostName, tagName string) (*Host, *tag.Tag, error
 
 }
 
-func Print(db *sql.DB, identifier string) error {
+func Print(db *sql.DB, identifier string, outputFormat string) error {
 	var rows *sql.Rows
 	var err error
 
-	hosts := []Host{}
 	idsAdded := []uuid.UUID{}
-	// Headers("NAME", "ADDRESS", "USER", "REGION", "IDENTITY FILE", "I", "TAGS")
+	data := [][]string{}
+	printHost := []PrintHost{}
 
-	for _, placeholder := range []string{"name", "id"} {
+	for _, placeholder := range []string{"h.name"} {
 		if identifier == "*" {
 			log.Info("Printing all the hosts present in database")
 			rows, err = db.Query(printHostStmt)
 		} else {
-			rows, err = db.Query("SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS WHERE "+placeholder+" LIKE ?;", "%"+identifier+"%")
+			rows, err = db.Query(printHostStmt+" WHERE "+placeholder+" LIKE ?;", "%"+identifier+"%")
 		}
 		if err != nil {
 			log.Debugf("error occurred while fetching hosts: %v", err)
@@ -93,6 +96,9 @@ func Print(db *sql.DB, identifier string) error {
 				&host.Address,
 				&host.Port,
 				&host.User,
+				&host.JumphostId,
+				&host.RegionId,
+				&host.IdentityId,
 				&region,
 				&identityFile,
 			); err != nil {
@@ -106,15 +112,23 @@ func Print(db *sql.DB, identifier string) error {
 					host.Tags = []string{"error occurred while fetching"}
 				}
 				idsAdded = append(idsAdded, host.Id)
-				hosts = append(hosts, host)
-				// 	host.Name,
-				// 	fmt.Sprintf("%s:%d", host.Address, host.Port),
-				// 	host.User,
-				// 	region,
-				// 	identityFile,
-				// 	identityFile,
-				// 	host.tagsString(),
-				// },
+				jumphostName := host.getJumphost(db)
+
+				printHost = append(printHost, PrintHost{
+					Host:         host,
+					Region:       region,
+					Jumphost:     jumphostName,
+					IdentityFile: identityFile,
+				})
+				data = append(data, []string{
+					host.Name,
+					fmt.Sprintf("%s:%d", host.Address, host.Port),
+					jumphostName,
+					host.User,
+					region,
+					identityFile,
+					host.tagsString(),
+				})
 
 			}
 		}
@@ -122,11 +136,20 @@ func Print(db *sql.DB, identifier string) error {
 			break
 		}
 	}
-	log.Debug("Writing data to file")
+	log.Debug("Printing data")
 
-	by, _ := json.Marshal(&hosts)
+	switch strings.ToLower(outputFormat) {
+	case "table":
+		t := table.NewTable(
+			[]string{"NAME", "ADDRESS", "JUMPHOST", "USER", "REGION", "IDENTITY FILE", "TAGS"},
+			data,
+		)
+		return t.Print()
 
-	os.WriteFile("hosts.json", by, 0644)
-
-	return nil
+	case "json":
+		by, _ := json.Marshal(&printHost)
+		return os.WriteFile("hosts.json", by, 0644)
+	default:
+		return fmt.Errorf("invalid output format provided")
+	}
 }

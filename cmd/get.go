@@ -12,6 +12,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	outputFormat string
+)
+
 var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get data from the database.",
@@ -39,7 +43,7 @@ func getData(cmd *cobra.Command, args []string) error {
 	case "h":
 		fallthrough
 	case "hosts":
-		return host.Print(dbConnection, args[1])
+		return host.Print(dbConnection, args[1], outputFormat)
 	case "t":
 		fallthrough
 	case "tag":

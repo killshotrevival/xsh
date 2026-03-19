@@ -12,8 +12,9 @@ var (
 	getHostIdByNameStmt = "SELECT ID FROM HOSTS WHERE NAME = ?"
 	getHostByNameStmt   = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS WHERE NAME = ?"
 	getHostByIdStmt     = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS WHERE ID = ?"
+	getJumphostName     = "SELECT NAME FROM HOSTS WHERE ID = ?"
 
-	printHostStmt  = "select h.id, h.name, h.address, h.port, h.user, r.name as region, i.path as identityFile from hosts as h join regions as r on r.id = h.region_id join identities as i on i.id = h.identity_id"
+	printHostStmt  = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID"
 	deleteHostStmt = "DELETE FROM HOSTS where ID = ?"
 	insertHostStmt = "INSERT INTO HOSTS (ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 )
@@ -28,6 +29,13 @@ type Host struct {
 	IdentityId uuid.UUID     `json:"identity_id"`
 	JumphostId uuid.NullUUID `json:"jumphost_id"`
 	Tags       []string      `json:"tags"`
+}
+
+type PrintHost struct {
+	Host         Host   `json:"host"`
+	Region       string `json:"region"`
+	Jumphost     string `json:"jumphost"`
+	IdentityFile string `json:"identitiy_file_name"`
 }
 
 func NewHost(name, address, user string, port int, region_id, identityId uuid.UUID, jumphostId uuid.NullUUID) (*Host, error) {
@@ -74,4 +82,17 @@ func (h *Host) tagsString() string {
 		finalStr = fmt.Sprintf("%s, %s", finalStr, item)
 	}
 	return finalStr
+}
+
+func (h *Host) getJumphost(db *sql.DB) string {
+	jumpHostName := "-"
+
+	if err := db.QueryRow(getJumphostName, h.JumphostId).Scan(&jumpHostName); err != nil {
+		if err == sql.ErrNoRows {
+			return "No host present with ID attached"
+		}
+		return "DB error while checking"
+	}
+
+	return jumpHostName
 }
