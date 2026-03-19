@@ -67,11 +67,12 @@ func Print(db *sql.DB, identifier string) error {
 
 	hosts := []Host{}
 	idsAdded := []uuid.UUID{}
+	// Headers("NAME", "ADDRESS", "USER", "REGION", "IDENTITY FILE", "I", "TAGS")
 
 	for _, placeholder := range []string{"name", "id"} {
 		if identifier == "*" {
 			log.Info("Printing all the hosts present in database")
-			rows, err = db.Query("SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS")
+			rows, err = db.Query(printHostStmt)
 		} else {
 			rows, err = db.Query("SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS WHERE "+placeholder+" LIKE ?;", "%"+identifier+"%")
 		}
@@ -81,16 +82,19 @@ func Print(db *sql.DB, identifier string) error {
 		}
 
 		for rows.Next() {
-			host := Host{}
+			var (
+				host         Host
+				region       string
+				identityFile string
+			)
 			if err := rows.Scan(
 				&host.Id,
 				&host.Name,
 				&host.Address,
 				&host.Port,
 				&host.User,
-				&host.RegionId,
-				&host.IdentityId,
-				&host.JumphostId,
+				&region,
+				&identityFile,
 			); err != nil {
 				log.Debugf("error occurred while reading host: %v", err)
 				continue
@@ -103,6 +107,15 @@ func Print(db *sql.DB, identifier string) error {
 				}
 				idsAdded = append(idsAdded, host.Id)
 				hosts = append(hosts, host)
+				// 	host.Name,
+				// 	fmt.Sprintf("%s:%d", host.Address, host.Port),
+				// 	host.User,
+				// 	region,
+				// 	identityFile,
+				// 	identityFile,
+				// 	host.tagsString(),
+				// },
+
 			}
 		}
 		if identifier == "*" {

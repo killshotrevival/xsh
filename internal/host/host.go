@@ -2,6 +2,7 @@ package host
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
@@ -12,6 +13,7 @@ var (
 	getHostByNameStmt   = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS WHERE NAME = ?"
 	getHostByIdStmt     = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS WHERE ID = ?"
 
+	printHostStmt  = "select h.id, h.name, h.address, h.port, h.user, r.name as region, i.path as identityFile from hosts as h join regions as r on r.id = h.region_id join identities as i on i.id = h.identity_id"
 	deleteHostStmt = "DELETE FROM HOSTS where ID = ?"
 	insertHostStmt = "INSERT INTO HOSTS (ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 )
@@ -60,4 +62,16 @@ func (h *Host) Store(db *sql.DB) error {
 
 	_, err = db.Exec(insertHostStmt, h.Id, h.Name, h.Address, h.Port, h.User, h.RegionId, h.IdentityId, h.JumphostId)
 	return err
+}
+
+func (h *Host) tagsString() string {
+	if len(h.Tags) == 0 {
+		return ""
+	}
+	finalStr := h.Tags[0]
+
+	for _, item := range h.Tags[1:] {
+		finalStr = fmt.Sprintf("%s, %s", finalStr, item)
+	}
+	return finalStr
 }
