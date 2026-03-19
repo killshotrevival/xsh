@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strings"
+	"xsh/internal/table"
 	"xsh/internal/tag"
 
 	"github.com/google/uuid"
@@ -55,12 +57,14 @@ func getIdentityAndTag(db *sql.DB, identittyName, tagName string) (*Identity, *t
 
 }
 
-func Print(db *sql.DB, identifier string) error {
+func Print(db *sql.DB, identifier string, outputFormat string) error {
 	var rows *sql.Rows
 	var err error
 
 	identities := []Identity{}
 	idsAdded := []uuid.UUID{}
+
+	data := [][]string{}
 
 	for _, placeholder := range []string{"name", "id", "path"} {
 		if identifier == "*" {
@@ -87,17 +91,32 @@ func Print(db *sql.DB, identifier string) error {
 				}
 				idsAdded = append(idsAdded, id.Id)
 				identities = append(identities, id)
+				data = append(data, []string{
+					id.Id.String(),
+					id.Name,
+					id.Path,
+					id.tagsString(),
+				})
 			}
 		}
 		if identifier == "*" {
 			break
 		}
 	}
-	log.Debug("Writing data to file")
+	switch strings.ToLower(outputFormat) {
+	case "table":
+		t := table.NewTable([]string{
+			"ID", "NAME", "PATH", "TAGS",
+		}, data)
 
-	by, _ := json.Marshal(&identities)
+		return t.Print()
+	case "json":
+		log.Debug("Writing data to file")
 
-	os.WriteFile("identity.json", by, 0644)
+		by, _ := json.Marshal(&identities)
 
-	return nil
+		return os.WriteFile("identity.json", by, 0644)
+	default:
+		return fmt.Errorf("invalid output format provided")
+	}
 }

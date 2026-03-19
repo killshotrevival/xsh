@@ -63,6 +63,18 @@ func (i *Identity) Store(db *sql.DB) error {
 	return err
 }
 
+func (i *Identity) tagsString() string {
+	if len(i.Tags) == 0 {
+		return ""
+	}
+	finalStr := i.Tags[0]
+
+	for _, item := range i.Tags[1:] {
+		finalStr = fmt.Sprintf("%s, %s", finalStr, item)
+	}
+	return finalStr
+}
+
 func (i *Identity) ExistsInDb(db *sql.DB) (bool, error) {
 	rows, err := db.Query(getIdentityByPathStmt, i.Path)
 	if err != nil {

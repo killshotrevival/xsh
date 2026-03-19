@@ -129,10 +129,10 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 			break
 		}
 	}
-	log.Debug("Printing data")
 
 	switch strings.ToLower(outputFormat) {
 	case "table":
+		log.Debug("Printing data in table")
 		t := table.NewTable(
 			[]string{"NAME", "ADDRESS", "JUMPHOST", "USER", "REGION", "IDENTITY FILE", "TAGS"},
 			data,
@@ -140,6 +140,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 		return t.Print()
 
 	case "json":
+		log.Debug("writing data in hosts.json file")
 		by, _ := json.Marshal(&printHost)
 		return os.WriteFile("hosts.json", by, 0644)
 	default:

@@ -35,7 +35,7 @@ func getData(cmd *cobra.Command, args []string) error {
 	case "i":
 		fallthrough
 	case "identity":
-		return identity.Print(dbConnection, args[1])
+		return identity.Print(dbConnection, args[1], outputFormat)
 	case "r":
 		fallthrough
 	case "region":
