@@ -20,22 +20,18 @@ var (
 )
 
 type Host struct {
-	Id         uuid.UUID     `json:"id"`
-	Name       string        `json:"name"`
-	Address    string        `json:"address"`
-	Port       int           `json:"port"`
-	User       string        `json:"user"`
-	RegionId   uuid.UUID     `json:"region_id"`
-	IdentityId uuid.UUID     `json:"identity_id"`
-	JumphostId uuid.NullUUID `json:"jumphost_id"`
-	Tags       []string      `json:"tags"`
-}
-
-type PrintHost struct {
-	Host         Host   `json:"host"`
-	Region       string `json:"region"`
-	Jumphost     string `json:"jumphost"`
-	IdentityFile string `json:"identitiy_file_name"`
+	Id           uuid.UUID     `json:"id"`
+	Name         string        `json:"name"`
+	Address      string        `json:"address"`
+	Port         int           `json:"port"`
+	User         string        `json:"user"`
+	RegionId     uuid.UUID     `json:"region_id"`
+	IdentityId   uuid.UUID     `json:"identity_id"`
+	JumphostId   uuid.NullUUID `json:"jumphost_id"`
+	Tags         []string      `json:"tags"`
+	Region       string        `json:"region_name"`
+	Jumphost     string        `json:"jumphost_name"`
+	IdentityFile string        `json:"identitiy_file_name"`
 }
 
 func NewHost(name, address, user string, port int, region_id, identityId uuid.UUID, jumphostId uuid.NullUUID) (*Host, error) {
@@ -84,15 +80,17 @@ func (h *Host) tagsString() string {
 	return finalStr
 }
 
-func (h *Host) getJumphost(db *sql.DB) string {
+func (h *Host) getJumphost(db *sql.DB) {
 	jumpHostName := "-"
 
-	if err := db.QueryRow(getJumphostName, h.JumphostId).Scan(&jumpHostName); err != nil {
-		if err == sql.ErrNoRows {
-			return "No host present with ID attached"
+	if h.JumphostId.Valid {
+		if err := db.QueryRow(getJumphostName, h.JumphostId).Scan(&jumpHostName); err != nil {
+			if err == sql.ErrNoRows {
+				jumpHostName = "No host present with ID attached"
+			}
+			jumpHostName = "DB error while checking"
 		}
-		return "DB error while checking"
 	}
 
-	return jumpHostName
+	h.Jumphost = jumpHostName
 }

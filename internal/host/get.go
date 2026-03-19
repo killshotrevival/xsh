@@ -70,7 +70,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 
 	idsAdded := []uuid.UUID{}
 	data := [][]string{}
-	printHost := []PrintHost{}
+	printHost := []Host{}
 
 	for _, placeholder := range []string{"h.name"} {
 		if identifier == "*" {
@@ -86,9 +86,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 
 		for rows.Next() {
 			var (
-				host         Host
-				region       string
-				identityFile string
+				host Host
 			)
 			if err := rows.Scan(
 				&host.Id,
@@ -99,8 +97,8 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 				&host.JumphostId,
 				&host.RegionId,
 				&host.IdentityId,
-				&region,
-				&identityFile,
+				&host.Region,
+				&host.IdentityFile,
 			); err != nil {
 				log.Debugf("error occurred while reading host: %v", err)
 				continue
@@ -112,21 +110,16 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 					host.Tags = []string{"error occurred while fetching"}
 				}
 				idsAdded = append(idsAdded, host.Id)
-				jumphostName := host.getJumphost(db)
+				host.getJumphost(db)
 
-				printHost = append(printHost, PrintHost{
-					Host:         host,
-					Region:       region,
-					Jumphost:     jumphostName,
-					IdentityFile: identityFile,
-				})
+				printHost = append(printHost, host)
 				data = append(data, []string{
 					host.Name,
 					fmt.Sprintf("%s:%d", host.Address, host.Port),
-					jumphostName,
+					host.Jumphost,
 					host.User,
-					region,
-					identityFile,
+					host.Region,
+					host.IdentityFile,
 					host.tagsString(),
 				})
 
