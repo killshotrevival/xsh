@@ -13,11 +13,17 @@ import (
 var remove bool
 
 var tagCmd = &cobra.Command{
-	Use:   "tag",
+	Use:   "tag [resource] [identifier] [tag]",
 	Short: "Tag resources",
-	Long:  "Tag resources so that filtering can be done easily",
-	Args:  cobra.ExactArgs(3),
-	RunE:  tagData,
+	Long: `Tag resources so that filtering can be done easily
+	
+Arguments:
+  resource: Type of the resource. Possible values are (i)dentity / (h)ost / (r)egion
+  identifier: Any identifier for the resource selection. Please use * for selecting all
+  tag: Tag value you want to place / remove on the resource
+	`,
+	Args: cobra.ExactArgs(3),
+	RunE: tagData,
 }
 
 func tagData(cmd *cobra.Command, args []string) error {

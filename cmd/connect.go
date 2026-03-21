@@ -20,7 +20,7 @@ TODO:
 */
 
 var connectCmd = &cobra.Command{
-	Use:   "connect",
+	Use:   "connect [host name]",
 	Short: "Connect SSH.",
 	Long:  "Create an SSH connection with the specified server.",
 	Args:  cobra.ExactArgs(1),

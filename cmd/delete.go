@@ -11,11 +11,16 @@ import (
 )
 
 var deleteCmd = &cobra.Command{
-	Use:   "delete",
+	Use:   "delete [resource] [identifier]",
 	Short: "Delete data from the database.",
-	Long:  "Delete data from the database based on specified criteria.",
-	Args:  cobra.ExactArgs(2),
-	RunE:  deleteData,
+	Long: `Delete data from the database based on specified criteria.
+
+Arguments:
+  resource: Type of the resource. Possible values are (i)dentity / (h)ost / (r)egion
+  identifier: Any identifier for the resource selection. Please use * for selecting all
+ `,
+	Args: cobra.ExactArgs(2),
+	RunE: deleteData,
 }
 
 func deleteData(cmd *cobra.Command, args []string) error {

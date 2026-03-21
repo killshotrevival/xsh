@@ -13,11 +13,15 @@ import (
 )
 
 var exampleCmd = &cobra.Command{
-	Use:   "example",
+	Use:   "example [resource]",
 	Short: "Generate example format for resource",
-	Long:  "Get JSON example of the datatype under example.json file. Can be used for JSON inserting data",
-	Args:  cobra.ExactArgs(1),
-	RunE:  exampleData,
+	Long: `Get JSON example of the datatype under example.json file. Can be used for JSON inserting data
+
+Arguments:
+  resource: Type of the resource. Possible values are (i)dentity / (h)ost / (r)egion
+`,
+	Args: cobra.ExactArgs(1),
+	RunE: exampleData,
 }
 
 func exampleData(cmd *cobra.Command, args []string) error {

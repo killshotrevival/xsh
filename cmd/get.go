@@ -16,11 +16,16 @@ var (
 )
 
 var getCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [resource] [identifier]",
 	Short: "Get data from the database.",
-	Long:  "Retrieve data from the database based on specified criteria.",
-	Args:  cobra.ExactArgs(2),
-	RunE:  getData,
+	Long: `Retrieve data from the database based on specified criteria.
+	
+Arguments:
+  resource: Type of the resource. Possible values are (i)dentity / (h)ost / (r)egion
+  identifier: Any identifier for the resource selection. Please use * for selecting all
+	`,
+	Args: cobra.ExactArgs(2),
+	RunE: getData,
 }
 
 func getData(cmd *cobra.Command, args []string) error {
