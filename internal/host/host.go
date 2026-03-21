@@ -2,7 +2,6 @@ package host
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
@@ -66,18 +65,6 @@ func (h *Host) Store(db *sql.DB) error {
 
 	_, err = db.Exec(insertHostStmt, h.Id, h.Name, h.Address, h.Port, h.User, h.RegionId, h.IdentityId, h.JumphostId)
 	return err
-}
-
-func (h *Host) tagsString() string {
-	if len(h.Tags) == 0 {
-		return ""
-	}
-	finalStr := h.Tags[0]
-
-	for _, item := range h.Tags[1:] {
-		finalStr = fmt.Sprintf("%s, %s", finalStr, item)
-	}
-	return finalStr
 }
 
 func (h *Host) getJumphost(db *sql.DB) {

@@ -120,7 +120,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 					host.User,
 					host.Region,
 					host.IdentityFile,
-					host.tagsString(),
+					tag.ToString(host.Tags),
 				})
 
 			}

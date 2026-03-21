@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strings"
+	"xsh/internal/table"
 
 	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
@@ -76,12 +78,13 @@ func GetTagWithCreate(db *sql.DB, identifier string) (*Tag, error) {
 	return tag, nil
 }
 
-func Print(db *sql.DB, identifier string) error {
+func Print(db *sql.DB, identifier string, outputFormat string) error {
 	var rows *sql.Rows
 	var err error
 
 	tags := []Tag{}
 	idsAdded := []uuid.UUID{}
+	data := [][]string{}
 
 	for _, placeholder := range []string{"name", "id"} {
 		if identifier == "*" {
@@ -107,6 +110,7 @@ func Print(db *sql.DB, identifier string) error {
 
 			if !slices.Contains(idsAdded, tag.Id) {
 				idsAdded = append(idsAdded, tag.Id)
+				data = append(data, []string{tag.Tag})
 				tags = append(tags, tag)
 			}
 		}
@@ -114,11 +118,17 @@ func Print(db *sql.DB, identifier string) error {
 			break
 		}
 	}
-	log.Debug("Writing data to file")
-
-	by, _ := json.Marshal(&tags)
-
-	os.WriteFile("tags.json", by, 0644)
-
-	return nil
+	switch strings.ToLower(outputFormat) {
+	case "table":
+		return table.NewTable(
+			[]string{"TAGS"},
+			data,
+		).Print()
+	case "json":
+		log.Debug("Writing data to file")
+		by, _ := json.Marshal(&tags)
+		return os.WriteFile("tags.json", by, 0644)
+	default:
+		return fmt.Errorf("invalid output format received")
+	}
 }

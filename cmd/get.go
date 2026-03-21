@@ -39,7 +39,7 @@ func getData(cmd *cobra.Command, args []string) error {
 	case "r":
 		fallthrough
 	case "region":
-		return region.PrintRegions(dbConnection, args[1])
+		return region.PrintRegions(dbConnection, args[1], outputFormat)
 	case "h":
 		fallthrough
 	case "hosts":
@@ -47,7 +47,7 @@ func getData(cmd *cobra.Command, args []string) error {
 	case "t":
 		fallthrough
 	case "tag":
-		return tag.Print(dbConnection, args[1])
+		return tag.Print(dbConnection, args[1], outputFormat)
 	default:
 		return fmt.Errorf("invalid data type selected for fetcing")
 	}

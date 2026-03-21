@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strings"
+	"xsh/internal/table"
 	"xsh/internal/tag"
 
 	"github.com/charmbracelet/log"
@@ -41,12 +43,13 @@ func getRegionAndTag(db *sql.DB, identittyName, tagName string) (*Region, *tag.T
 
 }
 
-func PrintRegions(db *sql.DB, identifier string) error {
+func PrintRegions(db *sql.DB, identifier, outputFormat string) error {
 	var rows *sql.Rows
 	var err error
 
 	regions := []Region{}
 	idsAdded := []uuid.UUID{}
+	data := [][]string{}
 
 	for _, placeholder := range []string{"name", "id"} {
 		if identifier == "*" {
@@ -75,17 +78,33 @@ func PrintRegions(db *sql.DB, identifier string) error {
 				}
 				idsAdded = append(idsAdded, r.Id)
 				regions = append(regions, r)
+				data = append(data, []string{
+					r.Id.String(),
+					r.Name,
+					tag.ToString(r.Tags),
+				})
 			}
 		}
 		if identifier == "*" {
 			break
 		}
 	}
-	log.Debug("Writing data to file")
-
-	by, _ := json.Marshal(&regions)
-
-	os.WriteFile("region.json", by, 0644)
-
-	return nil
+	switch strings.ToLower(outputFormat) {
+	case "table":
+		log.Debug("Printing data in table")
+		return table.NewTable(
+			[]string{
+				"ID",
+				"NAME",
+				"TAGS",
+			},
+			data,
+		).Print()
+	case "json":
+		log.Debug("Writing data to file")
+		by, _ := json.Marshal(&regions)
+		return os.WriteFile("region.json", by, 0644)
+	default:
+		return fmt.Errorf("invalid output format received")
+	}
 }

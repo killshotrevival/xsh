@@ -95,7 +95,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 					id.Id.String(),
 					id.Name,
 					id.Path,
-					id.tagsString(),
+					tag.ToString(id.Tags),
 				})
 			}
 		}

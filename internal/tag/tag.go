@@ -2,6 +2,7 @@ package tag
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -66,4 +67,16 @@ func (tm *TagMapping) Store(db *sql.DB) error {
 func (tm *TagMapping) Delete(db *sql.DB) error {
 	_, err := db.Exec(deleteTagMappingStmt, tm.Id)
 	return err
+}
+
+func ToString(tags []string) string {
+	if len(tags) == 0 {
+		return ""
+	}
+	finalStr := tags[0]
+
+	for _, item := range tags[1:] {
+		finalStr = fmt.Sprintf("%s, %s", finalStr, item)
+	}
+	return finalStr
 }
