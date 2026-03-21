@@ -1,4 +1,3 @@
-// This will hold code for cli to get data from database
 package cmd
 
 import (

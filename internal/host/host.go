@@ -20,13 +20,13 @@ var (
 
 type Host struct {
 	Id           uuid.UUID     `json:"id"`
-	Name         string        `json:"name"`
-	Address      string        `json:"address"`
-	Port         int           `json:"port"`
-	User         string        `json:"user"`
-	RegionId     uuid.UUID     `json:"region_id"`
-	IdentityId   uuid.UUID     `json:"identity_id"`
-	JumphostId   uuid.NullUUID `json:"jumphost_id"`
+	Name         string        `json:"name" comment:"Unique name of the host"`
+	Address      string        `json:"address" comment:"Domain / IP address of the host without port"`
+	Port         int           `json:"port" comment:"Port on which ssh connection will be created"`
+	User         string        `json:"user" comment:"Remote user for creating the ssh connection"`
+	RegionId     uuid.UUID     `json:"region_id" comment:"UUID of the region you want to connect this host to. You can find the id by printing the region table (xsg get 'r' '*')"`
+	IdentityId   uuid.UUID     `json:"identity_id" comment:"UUID of the Identity key you want to use for connecting with the host. You can find the id by printing the identity table (xsg get 'i' '*')"`
+	JumphostId   uuid.NullUUID `json:"jumphost_id" comment:"UUID of the host you want to use as jumphost. You can get the id by printing the host table (xsh get 'h' '*')"`
 	Tags         []string      `json:"tags"`
 	Region       string        `json:"region_name"`
 	Jumphost     string        `json:"jumphost_name"`

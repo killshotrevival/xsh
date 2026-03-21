@@ -32,8 +32,8 @@ var (
 
 type Identity struct {
 	Id   uuid.UUID `json:"id"`
-	Name string    `josn:"name"`
-	Path string    `json:"path"`
+	Name string    `json:"name" comment:"Name of the identity file"`
+	Path string    `json:"path" comment:"Absolute path of the identity file"`
 	Tags []string  `json:"tags"`
 }
 

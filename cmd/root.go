@@ -73,4 +73,7 @@ func init() {
 	// Tag Command
 	rootCmd.AddCommand(tagCmd)
 	tagCmd.PersistentFlags().BoolVarP(&remove, "remove", "r", false, "Remove Tag mapping")
+
+	// Example Command
+	rootCmd.AddCommand(exampleCmd)
 }
