@@ -58,7 +58,7 @@ var putIdentityCmd = &cobra.Command{
 		}
 		defer dbConnection.Close()
 
-		name, path := args[1], args[2]
+		name, path := args[0], args[1]
 		return identity.PutIdentity(dbConnection, name, path)
 	},
 	Example: "xsh put identity [name] [path to private key file]",
@@ -76,7 +76,7 @@ var puRegionCmd = &cobra.Command{
 		}
 		defer dbConnection.Close()
 
-		name := args[1]
+		name := args[0]
 		return region.PutRegion(dbConnection, name)
 	},
 	Example: "xsh region identity [name]",
