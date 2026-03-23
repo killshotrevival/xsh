@@ -1,34 +1,50 @@
----
-version: 2
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
-    - govet
-    - staticcheck
+    - errcheck
+    - goconst
     - gocritic
+    - gocyclo
     - gosec
+    - govet
+    - revive
+    - staticcheck
+    - unconvert
+    - unused
+  settings:
+    wrapcheck:
+      ignore-sigs:
+        - .JSON
+        - .NewHTTPError
+        - .Redirect
+        - .NoContent
+        - .Errorf(
+        - errors.New(
+        - errors.Unwrap(
+        - .Wrap(
+        - .Wrapf(
+        - .WithMessage(
+        - .WithMessagef(
+        - .WithStack(
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
     - gofmt
     - goimports
-    - errcheck
-    - gosimple
-    - unused
-    - unconvert
-    - goconst
-    - gocyclo
-    - revive
-
-linters-settings:
-  wrapcheck:
-    ignoreSigs:
-      - .JSON
-      - .NewHTTPError
-      - .Redirect
-      - .NoContent
-      - .Errorf(
-      - errors.New(
-      - errors.Unwrap(
-      - .Wrap(
-      - .Wrapf(
-      - .WithMessage(
-      - .WithMessagef(
-      - .WithStack( 
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
