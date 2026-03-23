@@ -70,7 +70,7 @@ func init() {
 	getCmd.PersistentFlags().StringVarP(&getIdentifier, "identifier", "i", "*", "Identifier for filtering the data")
 
 	// Delete Command
-	deleteCmd.AddCommand(deleteHostCmd, deleteIdentityCmd, deleteIdentityCmd)
+	deleteCmd.AddCommand(deleteHostCmd, deleteIdentityCmd, deleteRegionCmd)
 
 	// Example Command
 	exampleCmd.AddCommand(exampleHostCmd, exampleIdentityCmd)

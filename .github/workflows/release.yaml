@@ -1,0 +1,55 @@
+name: 🎉 Release
+
+run-name: 🚀 ${{ github.actor }} Building a release 🚀
+
+on:
+  push:
+    tags:
+    - 'v*'  
+
+jobs: 
+  Build: 
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - name: Setup Go
+          uses: actions/setup-go@v5
+          with:
+            go-version-file: "go.mod"
+            cache: true
+
+        - name: Build
+          run: make VERSION=$VERSION build-linux
+          env:
+            VERSION: ${{  github.ref_name }}
+
+        - name: Uploading artifacts
+          uses: softprops/action-gh-release@v2
+          with:
+            files: |
+              bin/xsh-linux
+
+  Mac-Build: 
+    runs-on: macos-latest
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - name: Setup Go
+          uses: actions/setup-go@v5
+          with:
+            go-version: "1.23.1"
+            cache: true
+
+        - name: Build
+          run: make VERSION=$VERSION build-mac
+          env:
+            VERSION: ${{ github.ref_name }}
+
+        - name: Uploading artifacts
+          uses: softprops/action-gh-release@v2
+          with:
+            files: |
+              bin/xsh-mac

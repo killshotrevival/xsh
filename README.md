@@ -21,7 +21,7 @@ XSH extends SSH functionality by providing a unified interface for storing, mana
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/xsh.git
+git clone https://github.com/killshotrevival/xsh.git
 cd xsh
 go build -o xsh .
 ```

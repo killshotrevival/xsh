@@ -1,0 +1,37 @@
+PROJECT = bin/xsh
+VERSION = 1.2.1
+build-mac:
+	@echo "Building the app for mac OS"
+	mkdir -p bin/
+	GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w -X 'xsh/cmd.Version=${VERSION}'" -o ${PROJECT}-mac
+
+build-linux:
+	@echo "Building the app for linux OS"
+	mkdir -p bin/	
+	GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -extldflags '-static' -X 'xsh/cmd.Version=${VERSION}'" -o ${PROJECT}-linux
+
+build: build-mac build-linux
+	@echo "Builing for mac and linux arch"
+
+clean:
+	# Remove the binaries directory
+	rm -rf ./bin/*
+
+run:
+	@echo "Running the app for linux OS"
+	go run ./... scan
+	
+lint:
+	@echo "Running Golang Lint..."
+	golangci-lint run
+
+test:
+	@echo "Running Unit tests"
+	go test ./... -run=.
+
+verify: lint test
+	@echo "Code verification passed"
+
+docs:
+	@echo "Generating documentation"
+	go run ./... gendocs          

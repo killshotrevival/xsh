@@ -1,0 +1,33 @@
+---
+linters:
+  disable-all: true
+  enable:
+    - govet
+    - staticcheck
+    - gocritic
+    - gosec
+    - gofmt
+    - goimports
+    - errcheck
+    - gosimple
+    - unused
+    - unconvert
+    - goconst
+    - gocyclo
+    - revive
+
+linters-settings:
+  wrapcheck:
+    ignoreSigs:
+      - .JSON
+      - .NewHTTPError
+      - .Redirect
+      - .NoContent
+      - .Errorf(
+      - errors.New(
+      - errors.Unwrap(
+      - .Wrap(
+      - .Wrapf(
+      - .WithMessage(
+      - .WithMessagef(
+      - .WithStack( 
