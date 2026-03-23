@@ -42,7 +42,7 @@ func InteractivePut(db *sql.DB) error {
 
 	if createOption == 1 {
 		// TODO
-		return fmt.Errorf("Cloning is not supported right now")
+		return fmt.Errorf("cloning is not supported right now")
 	}
 
 	return createInteractiveHost(db)
@@ -51,9 +51,9 @@ func InteractivePut(db *sql.DB) error {
 func createInteractiveHost(db *sql.DB) error {
 	var (
 		host             Host
-		regionIdString   string
-		identityIdString string
-		jumphostIdString string
+		regionIDString   string
+		identityIDString string
+		jumphostIDString string
 	)
 	portString := "22"
 	host.User = "root"
@@ -62,7 +62,7 @@ func createInteractiveHost(db *sql.DB) error {
 			huh.NewInput().
 				Title("Host Name").
 				Description("Please enter a unique name for your host that is easy to remember").
-				Value(&host.Name).Validate(func(s string) error {
+				Value(&host.Name).Validate(func(_ string) error {
 				// TODO: Add support for validating that the given name does not exists
 				return nil
 			}),
@@ -70,7 +70,7 @@ func createInteractiveHost(db *sql.DB) error {
 			huh.NewInput().
 				Title("Host Address").
 				Description("Please enter the hostname / IP address of the host to connect").
-				Value(&host.Address).Validate(func(s string) error {
+				Value(&host.Address).Validate(func(_ string) error {
 				// TODO: Add support for validating that the given address exists or not.
 				return nil
 			}),
@@ -113,10 +113,10 @@ func createInteractiveHost(db *sql.DB) error {
 						opts = append(opts, huh.NewOption(reg.Name, reg.Id.String()))
 					}
 					return opts
-				}, nil).Value(&regionIdString).Validate(
+				}, nil).Value(&regionIDString).Validate(
 				func(s string) error {
-					if regionIdString == "-1" {
-						return fmt.Errorf("No region present to use, please exit and create a region first")
+					if s == "-1" {
+						return fmt.Errorf("no region present to use, please exit and create a region first")
 					}
 					return nil
 				},
@@ -156,9 +156,9 @@ func createInteractiveHost(db *sql.DB) error {
 					}
 					return opts
 
-				}, nil).Value(&identityIdString).Validate(func(s string) error {
-				if identityIdString == "-1" {
-					return fmt.Errorf("No identites found in the database, please exit and insert identities first")
+				}, nil).Value(&identityIDString).Validate(func(s string) error {
+				if s == "-1" {
+					return fmt.Errorf("no identites found in the database, please exit and insert identities first")
 				}
 				return nil
 			}),
@@ -196,8 +196,8 @@ func createInteractiveHost(db *sql.DB) error {
 					}
 					return opts
 
-				}, nil).Value(&jumphostIdString).Validate(func(s string) error {
-				if jumphostIdString == "-1" {
+				}, nil).Value(&jumphostIDString).Validate(func(s string) error {
+				if s == "-1" {
 					return fmt.Errorf("error occurred while selecting jumphost, please exit and retry")
 				}
 				return nil
@@ -209,12 +209,12 @@ func createInteractiveHost(db *sql.DB) error {
 		return err
 	}
 
-	host.RegionId, _ = uuid.Parse(regionIdString)
-	host.IdentityId, _ = uuid.Parse(identityIdString)
+	host.RegionID, _ = uuid.Parse(regionIDString)
+	host.IdentityID, _ = uuid.Parse(identityIDString)
 
-	if jumphostIdString != "0" {
-		host.JumphostId.UUID = uuid.MustParse(jumphostIdString)
-		host.JumphostId.Valid = true
+	if jumphostIDString != "0" {
+		host.JumphostID.UUID = uuid.MustParse(jumphostIDString)
+		host.JumphostID.Valid = true
 	}
 	host.Port, _ = strconv.Atoi(portString)
 

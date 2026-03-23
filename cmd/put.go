@@ -26,15 +26,15 @@ var putHostCmd = &cobra.Command{
 	Aliases: []string{"h"},
 	Short:   "Store host in database",
 	Long:    "Store host data in database either from a file or interactive prompting",
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		dbConnection, err := db.GetDB()
 		if err != nil {
-			return fmt.Errorf("Error connecting to database: %w", err)
+			return fmt.Errorf("error connecting to database: %w", err)
 		}
 		defer dbConnection.Close()
 		if interactivePut {
 			if putFile != putFileExample {
-				return fmt.Errorf("interactive and file flags are mutually exclusive and please remove one flag and retry.")
+				return fmt.Errorf("interactive and file flags are mutually exclusive and please remove one flag and retry")
 			}
 			return host.InteractivePut(dbConnection)
 		}
@@ -52,10 +52,10 @@ var putIdentityCmd = &cobra.Command{
 	Short:   "Store SSH identity file in database",
 	Long:    "Store SSH identity file in database which will be used for making connection with hosts",
 	Args:    cobra.ExactArgs(2),
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		dbConnection, err := db.GetDB()
 		if err != nil {
-			return fmt.Errorf("Error connecting to database: %w", err)
+			return fmt.Errorf("error connecting to database: %w", err)
 		}
 		defer dbConnection.Close()
 
@@ -71,10 +71,10 @@ var puRegionCmd = &cobra.Command{
 	Short:   "Store host regions in database",
 	Args:    cobra.ExactArgs(1),
 	Long:    "Store host regions in database which will be used for better categorisation of hosts",
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		dbConnection, err := db.GetDB()
 		if err != nil {
-			return fmt.Errorf("Error connecting to database: %w", err)
+			return fmt.Errorf("error connecting to database: %w", err)
 		}
 		defer dbConnection.Close()
 

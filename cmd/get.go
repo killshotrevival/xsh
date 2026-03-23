@@ -36,7 +36,7 @@ var getHostCmd = &cobra.Command{
 Arguments:
   identifier: Any identifier for the resource selection. Please use * for selecting all
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		return genericGetData(getIdentifier, outputFormat, host.Print)
 	},
 }
@@ -50,7 +50,7 @@ var getRegionCmd = &cobra.Command{
 Arguments:
   identifier: Any identifier for the resource selection. Please use * for selecting all
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		return genericGetData(getIdentifier, outputFormat, region.Print)
 	},
 }
@@ -64,7 +64,7 @@ var getIdentityCmd = &cobra.Command{
 Arguments:
   identifier: Any identifier for the resource selection. Please use * for selecting all
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		return genericGetData(getIdentifier, outputFormat, identity.Print)
 	},
 }
@@ -72,7 +72,7 @@ Arguments:
 func genericGetData(identifier, outputFormat string, getFunction func(*sql.DB, string, string) error) error {
 	dbConnection, err := db.GetDB()
 	if err != nil {
-		return fmt.Errorf("Error connecting to database: %w", err)
+		return fmt.Errorf("error connecting to database: %w", err)
 	}
 	defer dbConnection.Close()
 

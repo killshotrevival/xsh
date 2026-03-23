@@ -15,10 +15,10 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-func GetIdentityById(db *sql.DB, identifier uuid.UUID) (*Identity, error) {
+func GetIdentityByID(db *sql.DB, identifier uuid.UUID) (*Identity, error) {
 	id := Identity{}
 
-	if err := db.QueryRow(getIdentityByIdStmt, identifier).Scan(&id.Id, &id.Name, &id.Path); err != nil {
+	if err := db.QueryRow(GetIdentityByIDStmt, identifier).Scan(&id.Id, &id.Name, &id.Path); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("no identity found with the given identifier (%s)", identifier)
 		}
@@ -104,7 +104,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 				continue
 			}
 			if !slices.Contains(idsAdded, id.Id) {
-				id.Tags, err = tag.GetTagsByDatatypeId(db, id.Id)
+				id.Tags, err = tag.GetTagsByDataTypeID(db, id.Id)
 				if err != nil {
 					id.Tags = []string{"error occurred while fetching"}
 				}

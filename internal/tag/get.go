@@ -15,7 +15,7 @@ import (
 
 func GetTag(db *sql.DB, identifier string) (*Tag, error) {
 	tag := Tag{}
-	if err := db.QueryRow(getTagStmt, identifier).Scan(&tag.Id, &tag.Tag); err != nil {
+	if err := db.QueryRow(getTagWithTagStmt, identifier).Scan(&tag.Id, &tag.Tag); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("no tag found with given identifier: (%s)", identifier)
 		}
@@ -24,12 +24,12 @@ func GetTag(db *sql.DB, identifier string) (*Tag, error) {
 	return &tag, nil
 }
 
-func GetTagsByDatatypeId(db *sql.DB, dataTypeId uuid.UUID) ([]string, error) {
+func GetTagsByDataTypeID(db *sql.DB, dataTypeID uuid.UUID) ([]string, error) {
 	tags := []string{}
 
-	rows, err := db.Query(getTagsByDatatypeIdStmt, dataTypeId)
+	rows, err := db.Query(getTagsByDataTypeIDStmt, dataTypeID)
 	if err != nil {
-		log.Debugf("error occurred while fetching tags for given datatype id(%s): %v", dataTypeId, err)
+		log.Debugf("error occurred while fetching tags for given datatype id(%s): %v", dataTypeID, err)
 		return nil, err
 	}
 
@@ -46,11 +46,11 @@ func GetTagsByDatatypeId(db *sql.DB, dataTypeId uuid.UUID) ([]string, error) {
 	return tags, nil
 }
 
-func GetTagMapping(db *sql.DB, tagId, datatypeId uuid.UUID) (*TagMapping, error) {
-	tm := TagMapping{}
-	if err := db.QueryRow(getTagMappingStmt, tagId, datatypeId).Scan(&tm.Id, &tm.TagId, &tm.DataTypeId); err != nil {
+func GetTagMapping(db *sql.DB, tagID, dataTypeID uuid.UUID) (*Mapping, error) {
+	tm := Mapping{}
+	if err := db.QueryRow(getTagMappingStmt, tagID, dataTypeID).Scan(&tm.Id, &tm.TagID, &tm.DataTypeID); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no tag mapping found with given identifiers: (%s | %s)", tagId, datatypeId)
+			return nil, fmt.Errorf("no tag mapping found with given identifiers: (%s | %s)", tagID, dataTypeID)
 		}
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func GetTagMapping(db *sql.DB, tagId, datatypeId uuid.UUID) (*TagMapping, error)
 
 func GetTagWithCreate(db *sql.DB, identifier string) (*Tag, error) {
 	tag := &Tag{}
-	if err := db.QueryRow(getTagStmt, identifier).Scan(&tag.Id, &tag.Tag); err != nil {
+	if err := db.QueryRow(getTagWithTagStmt, identifier).Scan(&tag.Id, &tag.Tag); err != nil {
 		if err == sql.ErrNoRows {
 			log.Debug("no tag exists in database with given value, creating a new one")
 			tag, err = NewTag(identifier)
@@ -86,12 +86,12 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 	idsAdded := []uuid.UUID{}
 	data := [][]string{}
 
-	for _, placeholder := range []string{"name", "id"} {
+	for _, placeholder := range []string{getTagWithTagStmt} {
 		if identifier == "*" {
 			log.Info("Printing all the tags present in database")
-			rows, err = db.Query("SELECT ID, TAG FROM TAGS")
+			rows, err = db.Query(getTagStmt)
 		} else {
-			rows, err = db.Query("SELECT ID, TAG FROM TAGS WHERE "+placeholder+" LIKE ?;", "%"+identifier+"%")
+			rows, err = db.Query(placeholder, "%"+identifier+"%")
 		}
 		if err != nil {
 			log.Debugf("error occurred while fetching tags: %v", err)

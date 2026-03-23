@@ -12,7 +12,7 @@ import (
 func Delete(db *sql.DB, identifier string) error {
 	var i uuid.UUID
 
-	if err := db.QueryRow(getIdentityIdByNameStmt, identifier).Scan(&i); err != nil {
+	if err := db.QueryRow(getIdentityIDByNameStmt, identifier).Scan(&i); err != nil {
 		if err == sql.ErrNoRows {
 			return fmt.Errorf("no identity found with the given identifier (%s)", identifier)
 		}

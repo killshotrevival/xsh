@@ -18,10 +18,10 @@ var (
 	deleteIdentityStmt = "DELETE FROM identities WHERE ID = ?"
 
 	getIdentityStmt         = "SELECT ID, NAME, PATH FROM IDENTITIES"
-	getIdentityIdByNameStmt = "SELECT ID FROM IDENTITIES WHERE NAME = ?"
+	getIdentityIDByNameStmt = "SELECT ID FROM IDENTITIES WHERE NAME = ?"
 	getIdentityByNameStmt   = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE NAME = ?"
 	getIdentityByPathStmt   = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE PATH = ?"
-	getIdentityByIdStmt     = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE ID = ?"
+	GetIdentityByIDStmt     = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE ID = ?"
 
 	sshKeyMarkers = []string{
 		"-----BEGIN OPENSSH PRIVATE KEY-----",

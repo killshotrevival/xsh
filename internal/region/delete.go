@@ -11,7 +11,7 @@ import (
 
 func Delete(db *sql.DB, identifier string) error {
 	var id uuid.UUID
-	if err := db.QueryRow(getRegionIdByNameStmt, identifier).Scan(&id); err != nil {
+	if err := db.QueryRow(getRegionIDByNameStmt, identifier).Scan(&id); err != nil {
 		if err == sql.ErrNoRows {
 			return fmt.Errorf("no region found with given name")
 		}

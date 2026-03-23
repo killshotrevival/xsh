@@ -18,7 +18,7 @@ var (
 	deleteRegionStmt       = "DELETE REGIONS WHERE ID = ?"
 	selectRegionStmt       = "SELECT ID, NAME FROM REGIONS"
 	selectRegionByNameStmt = "SELECT ID, NAME FROM REGIONS WHERE NAME LIKE ?"
-	getRegionIdByNameStmt  = "SELECT ID FROM REGIONS WHERE NAME = ?"
+	getRegionIDByNameStmt  = "SELECT ID FROM REGIONS WHERE NAME = ?"
 )
 
 func NewRegion(name string) (*Region, error) {

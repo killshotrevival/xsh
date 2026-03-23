@@ -27,7 +27,7 @@ var initCmd = &cobra.Command{
 	RunE:  initXSH,
 }
 
-func initXSH(cmd *cobra.Command, args []string) error {
+func initXSH(_ *cobra.Command, _ []string) error {
 
 	log.Info("Iitialising xsh configuration directory")
 	if err := config.InitConfigDir(); err != nil {
@@ -38,13 +38,13 @@ func initXSH(cmd *cobra.Command, args []string) error {
 	log.Info("Initialising database")
 	dbExists, err := db.CheckDB()
 	if err != nil {
-		return fmt.Errorf("Error checking database: %w", err)
+		return fmt.Errorf("error checking database: %w", err)
 	}
 
 	if !dbExists {
 		err := db.InitDB()
 		if err != nil {
-			return fmt.Errorf("Error initializing database: %w", err)
+			return fmt.Errorf("error initializing database: %w", err)
 		}
 		log.Info("Database initialized successfully.")
 	}
@@ -53,13 +53,13 @@ func initXSH(cmd *cobra.Command, args []string) error {
 	log.Info("Pre populating identity table")
 	dbConnection, err := db.GetDB()
 	if err != nil {
-		return fmt.Errorf("Error connecting to database: %w", err)
+		return fmt.Errorf("error connecting to database: %w", err)
 	}
 	defer dbConnection.Close()
 
 	err = identity.InitIdentityStore(dbConnection)
 	if err != nil {
-		return fmt.Errorf("Error initializing identity store: %w", err)
+		return fmt.Errorf("error initializing identity store: %w", err)
 	}
 	log.Info("Identity table populated successfully")
 	return nil

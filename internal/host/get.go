@@ -22,10 +22,10 @@ func GetHostByName(db *sql.DB, identifier string) (*Host, error) {
 	)
 }
 
-func GetHostById(db *sql.DB, identifier string) (*Host, error) {
+func GetHostByID(db *sql.DB, identifier string) (*Host, error) {
 	return getHost(
 		db,
-		getHostByIdStmt,
+		GetHostByIDStmt,
 		identifier,
 	)
 }
@@ -38,9 +38,9 @@ func getHost(db *sql.DB, queryString, identifier string) (*Host, error) {
 		&host.Address,
 		&host.Port,
 		&host.User,
-		&host.RegionId,
-		&host.IdentityId,
-		&host.JumphostId,
+		&host.RegionID,
+		&host.IdentityID,
+		&host.JumphostID,
 	); err != nil {
 		return nil, err
 	}
@@ -116,9 +116,9 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 				&host.Address,
 				&host.Port,
 				&host.User,
-				&host.JumphostId,
-				&host.RegionId,
-				&host.IdentityId,
+				&host.JumphostID,
+				&host.RegionID,
+				&host.IdentityID,
 				&host.Region,
 				&host.IdentityFile,
 			); err != nil {
@@ -127,7 +127,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 			}
 
 			if !slices.Contains(idsAdded, host.Id) {
-				host.Tags, err = tag.GetTagsByDatatypeId(db, host.Id)
+				host.Tags, err = tag.GetTagsByDataTypeID(db, host.Id)
 				if err != nil {
 					host.Tags = []string{"error occurred while fetching"}
 				}

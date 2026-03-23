@@ -12,10 +12,10 @@ type Tag struct {
 	Tag string    `json:"tag"`
 }
 
-type TagMapping struct {
+type Mapping struct {
 	Id         uuid.UUID `json:"id"`
-	TagId      uuid.UUID `json:"tag_id"`
-	DataTypeId uuid.UUID `json:"data_type_id"`
+	TagID      uuid.UUID `json:"tag_id"`
+	DataTypeID uuid.UUID `json:"data_type_id"`
 }
 
 var (
@@ -25,9 +25,10 @@ var (
 	deleteTagStmt        = "DELETE FROM TAGS WHERE ID = ?"
 	deleteTagMappingStmt = "DELETE FROM TAGMAPPINGS WHERE ID = ?"
 
-	getTagIdStmt            = "SELECT ID FROM TAGS WHERE TAG = ?"
-	getTagStmt              = "SELECT ID, TAG FROM TAGS WHERE TAG = ?"
-	getTagsByDatatypeIdStmt = "SELECT T.TAG FROM TAGS AS T JOIN TAGMAPPINGS AS TM ON T.ID = TM.TAG_ID WHERE TM.DATA_TYPE_ID = ?"
+	getTagStmt              = "SELECT ID, TAG FROM TAGS"
+	getTagIDStmt            = "SELECT ID FROM TAGS WHERE TAG = ?"
+	getTagWithTagStmt       = "SELECT ID, TAG FROM TAGS WHERE TAG = ?"
+	getTagsByDataTypeIDStmt = "SELECT T.TAG FROM TAGS AS T JOIN TAGMAPPINGS AS TM ON T.ID = TM.TAG_ID WHERE TM.DATA_TYPE_ID = ?"
 	getTagMappingStmt       = "SELECT ID, TAG_ID, DATA_TYPE_ID FROM TAGMAPPINGS WHERE TAG_ID = ? AND DATA_TYPE_ID = ?"
 )
 
@@ -47,24 +48,24 @@ func (t *Tag) Store(db *sql.DB) error {
 	return err
 }
 
-func NewTagMapping(tagId, dataTypeId uuid.UUID) (*TagMapping, error) {
+func NewTagMapping(tagID, dataTypeID uuid.UUID) (*Mapping, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {
 		return nil, err
 	}
-	return &TagMapping{
+	return &Mapping{
 		Id:         id,
-		TagId:      tagId,
-		DataTypeId: dataTypeId,
+		TagID:      tagID,
+		DataTypeID: dataTypeID,
 	}, nil
 }
 
-func (tm *TagMapping) Store(db *sql.DB) error {
-	_, err := db.Exec(insertTagMappingStmt, tm.Id, tm.TagId, tm.DataTypeId)
+func (tm *Mapping) Store(db *sql.DB) error {
+	_, err := db.Exec(insertTagMappingStmt, tm.Id, tm.TagID, tm.DataTypeID)
 	return err
 }
 
-func (tm *TagMapping) Delete(db *sql.DB) error {
+func (tm *Mapping) Delete(db *sql.DB) error {
 	_, err := db.Exec(deleteTagMappingStmt, tm.Id)
 	return err
 }

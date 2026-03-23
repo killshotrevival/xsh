@@ -23,7 +23,7 @@ var exampleHostCmd = &cobra.Command{
 	Aliases: []string{"h"},
 	Short:   "Generate example format for host",
 	Long:    `Get JSON example of the datatype under example.json file. Can be used for JSON inserting data`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		return generateExampleFromComments(host.Host{}, []string{"id", "region_name", "jumphost_name", "identitiy_file_name", "tags"})
 	},
 }
@@ -33,7 +33,7 @@ var exampleIdentityCmd = &cobra.Command{
 	Aliases: []string{"i"},
 	Short:   "Generate example format for identity",
 	Long:    `Get JSON example of the datatype under example.json file. Can be used for JSON inserting data`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		return generateExampleFromComments(identity.Identity{}, []string{"id", "tags"})
 	},
 }

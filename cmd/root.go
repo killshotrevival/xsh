@@ -25,7 +25,7 @@ var rootCmd = &cobra.Command{
 	Use:     "xsh",
 	Short:   "Extended SSH",
 	Long:    "A tool to extend the functionality of SSH with additional features and capabilities.",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+	PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
 		if debug {
 			log.SetLevel(log.DebugLevel)
 			log.SetReportCaller(true)
@@ -76,6 +76,6 @@ func init() {
 	exampleCmd.AddCommand(exampleHostCmd, exampleIdentityCmd)
 
 	// Tag Command
-	tagCmd.AddCommand(tagHostCmd, tagIdentityCmd, tagRegionCmd)
+	tagCmd.AddCommand(tagHostCmd, TagIDentityCmd, tagRegionCmd)
 	tagCmd.PersistentFlags().BoolVarP(&remove, "remove", "r", false, "Remove Tag mapping")
 }

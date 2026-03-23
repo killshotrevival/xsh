@@ -27,8 +27,8 @@ var connectCmd = &cobra.Command{
 	RunE:  sshConnect,
 }
 
-func sshConnect(cmd *cobra.Command, args []string) error {
-	sshString, err := buildSshString(args[0])
+func sshConnect(_ *cobra.Command, args []string) error {
+	sshString, err := buildSSHString(args[0])
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func sshConnect(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func buildSshString(identifier string) (string, error) {
+func buildSSHString(identifier string) (string, error) {
 	var (
 		cHost, cjumpHost            *host.Host
 		cIdentity, cJumhostIdentity *identity.Identity
@@ -67,18 +67,18 @@ func buildSshString(identifier string) (string, error) {
 		return "", err
 	}
 
-	cIdentity, err = identity.GetIdentityById(dbConnection, cHost.IdentityId)
+	cIdentity, err = identity.GetIdentityByID(dbConnection, cHost.IdentityID)
 	if err != nil {
 		return "", err
 	}
 
-	if cHost.JumphostId.Valid {
-		cjumpHost, err = host.GetHostById(dbConnection, cHost.JumphostId.UUID.String())
+	if cHost.JumphostID.Valid {
+		cjumpHost, err = host.GetHostByID(dbConnection, cHost.JumphostID.UUID.String())
 		if err != nil {
 			return "", err
 		}
 
-		cJumhostIdentity, err = identity.GetIdentityById(dbConnection, cjumpHost.IdentityId)
+		cJumhostIdentity, err = identity.GetIdentityByID(dbConnection, cjumpHost.IdentityID)
 		if err != nil {
 			return "", err
 		}

@@ -26,7 +26,7 @@ var deleteHostCmd = &cobra.Command{
 Arguments:
   identifier: Any identifier for the resource selection. Please use * for selecting all
  `,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		return genericDelete(args[0], host.Delete)
 	},
 }
@@ -41,7 +41,7 @@ var deleteRegionCmd = &cobra.Command{
 Arguments:
   identifier: Any identifier for the resource selection. Please use * for selecting all
  `,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		return genericDelete(args[0], region.Delete)
 	},
 }
@@ -56,7 +56,7 @@ var deleteIdentityCmd = &cobra.Command{
 Arguments:
   identifier: Any identifier for the resource selection. Please use * for selecting all
  `,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		return genericDelete(args[0], identity.Delete)
 	},
 }

@@ -35,7 +35,7 @@ Arguments:
   identifier: Any identifier for the resource selection.
   tag: Tag value you want to place / remove on the resource
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		return genericTag(args[0], args[1], host.PutTagMapping, host.DeleteTagMapping)
 	},
 }
@@ -51,12 +51,12 @@ Arguments:
   identifier: Any identifier for the resource selection.
   tag: Tag value you want to place / remove on the resource
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		return genericTag(args[0], args[1], region.PutTagMapping, region.DeleteTagMapping)
 	},
 }
 
-var tagIdentityCmd = &cobra.Command{
+var TagIDentityCmd = &cobra.Command{
 	Use:     "identity [identifier] [tag]",
 	Aliases: []string{"i"},
 	Args:    cobra.ExactArgs(2),
@@ -67,7 +67,7 @@ Arguments:
   identifier: Any identifier for the resource selection.
   tag: Tag value you want to place / remove on the resource
 	`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		return genericTag(args[0], args[1], identity.PutTagMapping, identity.DeleteTagMapping)
 	},
 }
