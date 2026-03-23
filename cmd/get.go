@@ -1,22 +1,23 @@
 package cmd
 
 import (
+	"database/sql"
 	"fmt"
 	db "xsh/internal/db"
 	"xsh/internal/host"
 	"xsh/internal/identity"
 	"xsh/internal/region"
-	"xsh/internal/tag"
 
 	"github.com/spf13/cobra"
 )
 
 var (
-	outputFormat string
+	outputFormat  string
+	getIdentifier string
 )
 
 var getCmd = &cobra.Command{
-	Use:   "get [resource] [identifier]",
+	Use:   "get [resource]",
 	Short: "Get data from the database.",
 	Long: `Retrieve data from the database based on specified criteria.
 	
@@ -24,36 +25,56 @@ Arguments:
   resource: Type of the resource. Possible values are (i)dentity / (h)ost / (r)egion
   identifier: Any identifier for the resource selection. Please use * for selecting all
 	`,
-	Args: cobra.ExactArgs(2),
-	RunE: getData,
 }
 
-func getData(cmd *cobra.Command, args []string) error {
+var getHostCmd = &cobra.Command{
+	Use:     "host",
+	Aliases: []string{"h"},
+	Short:   "Get host from the database.",
+	Long: `Retrieve host from the database based on specified criteria.
+	
+Arguments:
+  identifier: Any identifier for the resource selection. Please use * for selecting all
+	`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return genericGetData(getIdentifier, outputFormat, host.Print)
+	},
+}
+
+var getRegionCmd = &cobra.Command{
+	Use:     "region",
+	Aliases: []string{"r"},
+	Short:   "Get region from the database.",
+	Long: `Retrieve region from the database based on specified criteria.
+	
+Arguments:
+  identifier: Any identifier for the resource selection. Please use * for selecting all
+	`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return genericGetData(getIdentifier, outputFormat, region.Print)
+	},
+}
+
+var getIdentityCmd = &cobra.Command{
+	Use:     "identity",
+	Aliases: []string{"i"},
+	Short:   "Get identity from the database.",
+	Long: `Retrieve identity from the database based on specified criteria.
+	
+Arguments:
+  identifier: Any identifier for the resource selection. Please use * for selecting all
+	`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return genericGetData(getIdentifier, outputFormat, identity.Print)
+	},
+}
+
+func genericGetData(identifier, outputFormat string, getFunction func(*sql.DB, string, string) error) error {
 	dbConnection, err := db.GetDB()
 	if err != nil {
 		return fmt.Errorf("Error connecting to database: %w", err)
 	}
 	defer dbConnection.Close()
 
-	switch args[0] {
-	case "i":
-		fallthrough
-	case "identity":
-		return identity.Print(dbConnection, args[1], outputFormat)
-	case "r":
-		fallthrough
-	case "region":
-		_, err := region.PrintRegions(dbConnection, args[1], outputFormat)
-		return err
-	case "h":
-		fallthrough
-	case "hosts":
-		return host.Print(dbConnection, args[1], outputFormat)
-	case "t":
-		fallthrough
-	case "tag":
-		return tag.Print(dbConnection, args[1], outputFormat)
-	default:
-		return fmt.Errorf("invalid data type selected for fetcing")
-	}
+	return getFunction(dbConnection, identifier, outputFormat)
 }

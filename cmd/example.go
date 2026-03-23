@@ -15,28 +15,27 @@ import (
 var exampleCmd = &cobra.Command{
 	Use:   "example [resource]",
 	Short: "Generate example format for resource",
-	Long: `Get JSON example of the datatype under example.json file. Can be used for JSON inserting data
-
-Arguments:
-  resource: Type of the resource. Possible values are (i)dentity / (h)ost / (r)egion
-`,
-	Args: cobra.ExactArgs(1),
-	RunE: exampleData,
+	Long:  `Get JSON example of the datatype under example.json file. Can be used for JSON inserting data`,
 }
 
-func exampleData(cmd *cobra.Command, args []string) error {
-	switch args[0] {
-	case "h":
-		fallthrough
-	case "hosts":
+var exampleHostCmd = &cobra.Command{
+	Use:     "host",
+	Aliases: []string{"h"},
+	Short:   "Generate example format for host",
+	Long:    `Get JSON example of the datatype under example.json file. Can be used for JSON inserting data`,
+	RunE: func(cmd *cobra.Command, args []string) error {
 		return generateExampleFromComments(host.Host{}, []string{"id", "region_name", "jumphost_name", "identitiy_file_name", "tags"})
-	case "i":
-		fallthrough
-	case "identity":
+	},
+}
+
+var exampleIdentityCmd = &cobra.Command{
+	Use:     "identity",
+	Aliases: []string{"i"},
+	Short:   "Generate example format for identity",
+	Long:    `Get JSON example of the datatype under example.json file. Can be used for JSON inserting data`,
+	RunE: func(cmd *cobra.Command, args []string) error {
 		return generateExampleFromComments(identity.Identity{}, []string{"id", "tags"})
-	default:
-		return fmt.Errorf("Invalid datatype selected for creating example file")
-	}
+	},
 }
 
 func generateExampleFromComments(v any, ignoreKeys []string) error {

@@ -22,9 +22,10 @@ var putCmd = &cobra.Command{
 }
 
 var putHostCmd = &cobra.Command{
-	Use:   "host",
-	Short: "Store host in database",
-	Long:  "Store host data in database either from a file or interactive prompting",
+	Use:     "host",
+	Aliases: []string{"h"},
+	Short:   "Store host in database",
+	Long:    "Store host data in database either from a file or interactive prompting",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dbConnection, err := db.GetDB()
 		if err != nil {
@@ -46,9 +47,10 @@ var putHostCmd = &cobra.Command{
 }
 
 var putIdentityCmd = &cobra.Command{
-	Use:   "identity",
-	Short: "Store SSH identity file in database",
-	Long:  "Store SSH identity file in database which will be used for making connection with hosts",
+	Use:     "identity",
+	Aliases: []string{"i"},
+	Short:   "Store SSH identity file in database",
+	Long:    "Store SSH identity file in database which will be used for making connection with hosts",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dbConnection, err := db.GetDB()
 		if err != nil {
@@ -63,9 +65,10 @@ var putIdentityCmd = &cobra.Command{
 }
 
 var puRegionCmd = &cobra.Command{
-	Use:   "region",
-	Short: "Store host regions in database",
-	Long:  "Store host regions in database which will be used for better categorisation of hosts",
+	Use:     "region",
+	Aliases: []string{"r"},
+	Short:   "Store host regions in database",
+	Long:    "Store host regions in database which will be used for better categorisation of hosts",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dbConnection, err := db.GetDB()
 		if err != nil {

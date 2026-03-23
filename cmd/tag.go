@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"database/sql"
 	"xsh/internal/db"
 	"xsh/internal/host"
 	"xsh/internal/identity"
@@ -13,50 +13,75 @@ import (
 var remove bool
 
 var tagCmd = &cobra.Command{
-	Use:   "tag [resource] [identifier] [tag]",
+	Use:   "tag [command] [identifier] [tag]",
 	Short: "Tag resources",
 	Long: `Tag resources so that filtering can be done easily
 	
 Arguments:
-  resource: Type of the resource. Possible values are (i)dentity / (h)ost / (r)egion
-  identifier: Any identifier for the resource selection. Please use * for selecting all
+  command: Type of the resource.
+  identifier: Any identifier for the resource selection.
   tag: Tag value you want to place / remove on the resource
 	`,
-	Args: cobra.ExactArgs(3),
-	RunE: tagData,
 }
 
-func tagData(cmd *cobra.Command, args []string) error {
-	dataType, dataTypeValue, tagValue := args[0], args[1], args[2]
+var tagHostCmd = &cobra.Command{
+	Use:     "host [identifier] [tag]",
+	Aliases: []string{"h"},
+	Short:   "Tag host",
+	Long: `Tag host so that filtering can be done easily
 
+Arguments:
+  identifier: Any identifier for the resource selection.
+  tag: Tag value you want to place / remove on the resource
+	`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return genericTag(args[0], args[1], host.PutTagMapping, host.DeleteTagMapping)
+	},
+}
+
+var tagRegionCmd = &cobra.Command{
+	Use:     "region [identifier] [tag]",
+	Aliases: []string{"r"},
+	Short:   "Tag region",
+	Long: `Tag region so that filtering can be done easily
+
+Arguments:
+  identifier: Any identifier for the resource selection.
+  tag: Tag value you want to place / remove on the resource
+	`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return genericTag(args[0], args[1], region.PutTagMapping, region.DeleteTagMapping)
+	},
+}
+
+var tagIdentityCmd = &cobra.Command{
+	Use:     "identity [identifier] [tag]",
+	Aliases: []string{"i"},
+	Short:   "Tag identity",
+	Long: `Tag identity so that filtering can be done easily
+
+Arguments:
+  identifier: Any identifier for the resource selection.
+  tag: Tag value you want to place / remove on the resource
+	`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return genericTag(args[0], args[1], identity.PutTagMapping, identity.DeleteTagMapping)
+	},
+}
+
+func genericTag(
+	identifier, tagValue string,
+	putTagMapping,
+	deleteTagMapping func(*sql.DB, string, string) error,
+) error {
 	dbConnection, err := db.GetDB()
 	if err != nil {
 		return err
 	}
-	switch dataType {
-	case "i":
-		fallthrough
-	case "identity":
-		if remove {
-			return identity.DeleteTagMapping(dbConnection, dataTypeValue, tagValue)
-		}
-		return identity.PutTagMapping(dbConnection, dataTypeValue, tagValue)
-	case "r":
-		fallthrough
-	case "region":
-		if remove {
-			return region.DeleteTagMapping(dbConnection, dataTypeValue, tagValue)
-		}
-		return region.PutTagMapping(dbConnection, dataTypeValue, tagValue)
 
-	case "h":
-		fallthrough
-	case "host":
-		if remove {
-			return host.DeleteTagMapping(dbConnection, dataTypeValue, tagValue)
-		}
-		return host.PutTagMapping(dbConnection, dataTypeValue, tagValue)
-	default:
-		return fmt.Errorf("invalid data type selected for tagging")
+	defer dbConnection.Close()
+	if remove {
+		return deleteTagMapping(dbConnection, identifier, tagValue)
 	}
+	return putTagMapping(dbConnection, identifier, tagValue)
 }

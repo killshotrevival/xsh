@@ -19,16 +19,16 @@ type TagMapping struct {
 }
 
 var (
-	insertTagStmt        = "insert into tags (id, tag) values (?, ?)"
-	insertTagMappingStmt = "insert into tagmappings (id, tag_Id, data_type_id) values (?, ?, ?)"
+	insertTagStmt        = "INSERT INTO TAGS (ID, TAG) VALUES (?, ?)"
+	insertTagMappingStmt = "INSERT INTO TAGMAPPINGS (ID, TAG_ID, DATA_TYPE_ID) VALUES (?, ?, ?)"
 
-	deleteTagStmt        = "delete from tags where id = ?"
-	deleteTagMappingStmt = "delete from tagmappings where id = ?"
+	deleteTagStmt        = "DELETE FROM TAGS WHERE ID = ?"
+	deleteTagMappingStmt = "DELETE FROM TAGMAPPINGS WHERE ID = ?"
 
-	getTagIdStmt            = "select id from tags where tag = ?"
-	getTagStmt              = "select id, tag from tags where tag = ?"
-	getTagsByDatatypeIdStmt = "select t.tag from tags as t join tagmappings as tm on t.id = tm.tag_id where tm.data_type_id = ?"
-	getTagMappingStmt       = "select id, tag_id, data_type_id from tagmappings where tag_Id = ? and data_type_id = ?"
+	getTagIdStmt            = "SELECT ID FROM TAGS WHERE TAG = ?"
+	getTagStmt              = "SELECT ID, TAG FROM TAGS WHERE TAG = ?"
+	getTagsByDatatypeIdStmt = "SELECT T.TAG FROM TAGS AS T JOIN TAGMAPPINGS AS TM ON T.ID = TM.TAG_ID WHERE TM.DATA_TYPE_ID = ?"
+	getTagMappingStmt       = "SELECT ID, TAG_ID, DATA_TYPE_ID FROM TAGMAPPINGS WHERE TAG_ID = ? AND DATA_TYPE_ID = ?"
 )
 
 func NewTag(tag string) (*Tag, error) {

@@ -63,7 +63,7 @@ func GetRegions(db *sql.DB) (*[]Region, error) {
 	return &regions, nil
 }
 
-func PrintRegions(db *sql.DB, identifier, outputFormat string) (*[]Region, error) {
+func Print(db *sql.DB, identifier, outputFormat string) error {
 	var rows *sql.Rows
 	var err error
 
@@ -112,7 +112,7 @@ func PrintRegions(db *sql.DB, identifier, outputFormat string) (*[]Region, error
 	switch strings.ToLower(outputFormat) {
 	case "table":
 		log.Debug("Printing data in table")
-		return nil, table.NewTable(
+		return table.NewTable(
 			[]string{
 				"ID",
 				"NAME",
@@ -123,10 +123,8 @@ func PrintRegions(db *sql.DB, identifier, outputFormat string) (*[]Region, error
 	case "json":
 		log.Debug("Writing data to file")
 		by, _ := json.Marshal(&regions)
-		return nil, os.WriteFile("region.json", by, 0644)
-	case "list":
-		return &regions, nil
+		return os.WriteFile("region.json", by, 0644)
 	default:
-		return nil, fmt.Errorf("invalid output format received")
+		return fmt.Errorf("invalid output format received")
 	}
 }

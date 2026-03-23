@@ -65,8 +65,17 @@ func init() {
 	putHostCmd.PersistentFlags().StringVarP(&putFile, "file", "f", putFileExample, "Path of the host file")
 
 	// Get Command
+	getCmd.AddCommand(getHostCmd, getRegionCmd, getIdentityCmd)
 	getCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "table", "Format of the output")
+	getCmd.PersistentFlags().StringVarP(&getIdentifier, "identifier", "i", "*", "Identifier for filtering the data")
+
+	// Delete Command
+	deleteCmd.AddCommand(deleteHostCmd, deleteIdentityCmd, deleteIdentityCmd)
+
+	// Example Command
+	exampleCmd.AddCommand(exampleHostCmd, exampleIdentityCmd)
 
 	// Tag Command
+	tagCmd.AddCommand(tagHostCmd, tagIdentityCmd, tagRegionCmd)
 	tagCmd.PersistentFlags().BoolVarP(&remove, "remove", "r", false, "Remove Tag mapping")
 }
