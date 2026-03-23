@@ -28,41 +28,7 @@ go build -o xsh .
 
 ## Usage
 
-### Connect to a Host
-
-```bash
-# Connect using host name
-xsh ssh webserver-01
-
-# Connect using IP address
-xsh ssh 192.168.1.100
-
-# Print the SSH command without executing
-xsh ssh webserver-01 --dry-run
-```
-
-### Store Host Information
-
-```bash
-# Add a new host
-xsh put host --name webserver-01 --address 192.168.1.100 --user root
-
-# Add a host with jump host
-xsh put host --name private-db --address 10.0.0.50 --user admin --jumphost bastion-01
-
-# Add an identity file
-xsh put identity --name production-key --path ~/.ssh/prod_rsa
-```
-
-### Retrieve Information
-
-```bash
-# Get host details
-xsh get host webserver-01
-
-# Use in scripts with other SSH commands
-ssh -AJ $(xsh get jumphost bastion-01) root@10.0.0.50
-```
+Please follow [this](./docs/xsh.md) for more information
 
 ## Database Schema
 
@@ -76,7 +42,7 @@ XSH uses SQLite to store configuration with the following structure:
 
 ## Configuration
 
-The database is stored at `~/.xsh/config.db` by default. Override with:
+The database is stored at `~/.xsh/xsh.db` by default. Override with:
 
 ```bash
 export XSH_DB_PATH=/custom/path/config.db

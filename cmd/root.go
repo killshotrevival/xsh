@@ -57,7 +57,7 @@ func Execute() {
 func init() {
 	// Global flag available to all subcommands
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug logging")
-	rootCmd.AddCommand(putCmd, getCmd, initCmd, connectCmd, deleteCmd, tagCmd, exampleCmd)
+	rootCmd.AddCommand(docsCmd, putCmd, getCmd, initCmd, connectCmd, deleteCmd, tagCmd, exampleCmd)
 
 	// Put Command
 	putCmd.AddCommand(putHostCmd, puRegionCmd, putIdentityCmd)

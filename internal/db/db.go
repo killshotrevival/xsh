@@ -32,6 +32,11 @@ var (
 )
 
 func GetDBPath() (string, error) {
+	value, prsent := os.LookupEnv("XSH_DB_PATH")
+	if prsent {
+		log.Debug("Using DB prsent at %s", value)
+		return value, nil
+	}
 	configDir, err := config.GetConfigDir()
 	if err != nil {
 		return "", err

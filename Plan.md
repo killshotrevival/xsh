@@ -30,7 +30,7 @@ All configuration data is persisted using **SQLite**, chosen for its:
 - Reliable ACID compliance
 - Excellent Go driver support (`modernc.org/sqlite`)
 
-**Default location:** `~/.xsh/config.db`
+**Default location:** `~/.xsh/xsh.db`
 
 ---
 
