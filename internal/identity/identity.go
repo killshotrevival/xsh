@@ -115,7 +115,7 @@ func InitIdentityStore(db *sql.DB) error {
 
 	log.Infof("SSH Dir found: %s", sshHomeDir)
 
-	filepath.WalkDir(sshHomeDir, func(path string, d os.DirEntry, err error) error {
+	if err := filepath.WalkDir(sshHomeDir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return nil
 		}
@@ -141,7 +141,10 @@ func InitIdentityStore(db *sql.DB) error {
 		}
 
 		return nil
-	})
+	}); err != nil {
+		log.Debugf("error occurred while trying to walt the ssh home directory: %v", err)
+		return err
+	}
 
 	return nil
 }

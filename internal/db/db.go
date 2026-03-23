@@ -192,7 +192,10 @@ func InitDB() error {
 	}
 
 	log.Info("Applyting migrations")
-	applyMigrations(db, fileNames)
+	if err := applyMigrations(db, fileNames); err != nil {
+		log.Debugf("error occurred while applying migrations: %v", err)
+		return err
+	}
 
 	return nil
 }

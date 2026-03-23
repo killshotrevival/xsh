@@ -1,5 +1,10 @@
+# Makefile for building and managing the xsh application
 PROJECT = bin/xsh
-VERSION = 1.2.1
+
+# Version of the appliction
+VERSION = dev
+
+
 build-mac:
 	@echo "Building the app for mac OS"
 	mkdir -p bin/
@@ -17,10 +22,6 @@ clean:
 	# Remove the binaries directory
 	rm -rf ./bin/*
 
-run:
-	@echo "Running the app for linux OS"
-	go run ./... scan
-	
 lint:
 	@echo "Running Golang Lint..."
 	golangci-lint run

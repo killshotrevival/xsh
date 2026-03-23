@@ -85,11 +85,11 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 
 	data := [][]string{}
 
-	for _, placeholder := range []string{"name", "id", "path"} {
+	for _, placeholder := range []string{getIdentityByNameStmt, getIdentityByPathStmt} {
 		if identifier == "*" {
-			rows, err = db.Query("select id, name, path from identities")
+			rows, err = db.Query(getIdentityStmt)
 		} else {
-			rows, err = db.Query("select id, name, path from identities where "+placeholder+" like ?;", "%"+identifier+"%")
+			rows, err = db.Query(placeholder, "%"+identifier+"%")
 		}
 		if err != nil {
 			log.Debugf("error occurred while fetching identities: %v", err)

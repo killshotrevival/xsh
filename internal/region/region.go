@@ -15,9 +15,10 @@ type Region struct {
 var (
 	insertRegionStmt = "INSERT INTO regions (id, name) VALUES (?, ?)"
 
-	deleteRegionStmt      = "DELETE REGIONS WHERE ID = ?"
-	selectRegionStmr      = "select id, name from Regions"
-	getRegionIdByNameStmt = "SELECT ID FROM REGIONS WHERE NAME = ?"
+	deleteRegionStmt       = "DELETE REGIONS WHERE ID = ?"
+	selectRegionStmt       = "SELECT ID, NAME FROM REGIONS"
+	selectRegionByNameStmt = "SELECT ID, NAME FROM REGIONS WHERE NAME LIKE ?"
+	getRegionIdByNameStmt  = "SELECT ID FROM REGIONS WHERE NAME = ?"
 )
 
 func NewRegion(name string) (*Region, error) {

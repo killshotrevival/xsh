@@ -44,7 +44,7 @@ func getRegionAndTag(db *sql.DB, identittyName, tagName string) (*Region, *tag.T
 }
 
 func GetRegions(db *sql.DB) (*[]Region, error) {
-	rows, err := db.Query(selectRegionStmr)
+	rows, err := db.Query(selectRegionStmt)
 	if err != nil {
 		return nil, err
 	}
@@ -71,12 +71,12 @@ func Print(db *sql.DB, identifier, outputFormat string) error {
 	idsAdded := []uuid.UUID{}
 	data := [][]string{}
 
-	for _, placeholder := range []string{"name", "id"} {
+	for _, stmt := range []string{selectRegionByNameStmt} {
 		if identifier == "*" {
 			log.Info("Printing all the regions present in database")
-			rows, err = db.Query(selectRegionStmr)
+			rows, err = db.Query(selectRegionStmt)
 		} else {
-			rows, err = db.Query(selectRegionStmr+" where "+placeholder+" like ?;", "%"+identifier+"%")
+			rows, err = db.Query(stmt, "%"+identifier+"%")
 		}
 		if err != nil {
 			log.Debugf("error occurred while fetching Regions: %v", err)

@@ -27,6 +27,7 @@ Arguments:
 var tagHostCmd = &cobra.Command{
 	Use:     "host [identifier] [tag]",
 	Aliases: []string{"h"},
+	Args:    cobra.ExactArgs(2),
 	Short:   "Tag host",
 	Long: `Tag host so that filtering can be done easily
 
@@ -43,6 +44,7 @@ var tagRegionCmd = &cobra.Command{
 	Use:     "region [identifier] [tag]",
 	Aliases: []string{"r"},
 	Short:   "Tag region",
+	Args:    cobra.ExactArgs(2),
 	Long: `Tag region so that filtering can be done easily
 
 Arguments:
@@ -57,6 +59,7 @@ Arguments:
 var tagIdentityCmd = &cobra.Command{
 	Use:     "identity [identifier] [tag]",
 	Aliases: []string{"i"},
+	Args:    cobra.ExactArgs(2),
 	Short:   "Tag identity",
 	Long: `Tag identity so that filtering can be done easily
 

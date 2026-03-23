@@ -19,6 +19,7 @@ var deleteCmd = &cobra.Command{
 var deleteHostCmd = &cobra.Command{
 	Use:     "host [identifier]",
 	Aliases: []string{"h"},
+	Args:    cobra.ExactArgs(1),
 	Short:   "Delete host from the database.",
 	Long: `Delete host from the database based on specified criteria.
 
@@ -32,6 +33,7 @@ Arguments:
 
 var deleteRegionCmd = &cobra.Command{
 	Use:     "region [identifier]",
+	Args:    cobra.ExactArgs(1),
 	Aliases: []string{"r"},
 	Short:   "Delete region from the database.",
 	Long: `Delete region from the database based on specified criteria.
@@ -46,6 +48,7 @@ Arguments:
 
 var deleteIdentityCmd = &cobra.Command{
 	Use:     "identity [identifier]",
+	Args:    cobra.ExactArgs(1),
 	Aliases: []string{"i"},
 	Short:   "Delete identity from the database.",
 	Long: `Delete identity from the database based on specified criteria.

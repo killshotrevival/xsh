@@ -30,7 +30,10 @@ var initCmd = &cobra.Command{
 func initXSH(cmd *cobra.Command, args []string) error {
 
 	log.Info("Iitialising xsh configuration directory")
-	config.InitConfigDir()
+	if err := config.InitConfigDir(); err != nil {
+		log.Debugf("Error occurred while initialising config dir: %v", err)
+		return err
+	}
 
 	log.Info("Initialising database")
 	dbExists, err := db.CheckDB()

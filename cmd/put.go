@@ -51,6 +51,7 @@ var putIdentityCmd = &cobra.Command{
 	Aliases: []string{"i"},
 	Short:   "Store SSH identity file in database",
 	Long:    "Store SSH identity file in database which will be used for making connection with hosts",
+	Args:    cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dbConnection, err := db.GetDB()
 		if err != nil {
@@ -68,6 +69,7 @@ var puRegionCmd = &cobra.Command{
 	Use:     "region",
 	Aliases: []string{"r"},
 	Short:   "Store host regions in database",
+	Args:    cobra.ExactArgs(1),
 	Long:    "Store host regions in database which will be used for better categorisation of hosts",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dbConnection, err := db.GetDB()

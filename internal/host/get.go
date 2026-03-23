@@ -94,12 +94,12 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 	data := [][]string{}
 	printHost := []Host{}
 
-	for _, placeholder := range []string{"h.name"} {
+	for _, placeholder := range []string{getHostWithNameStmt, getHostWithAddressStmt, getHostWithUserStmt} {
 		if identifier == "*" {
 			log.Info("Printing all the hosts present in database")
-			rows, err = db.Query(printHostStmt)
+			rows, err = db.Query(getHostStmt)
 		} else {
-			rows, err = db.Query(printHostStmt+" WHERE "+placeholder+" LIKE ?;", "%"+identifier+"%")
+			rows, err = db.Query(placeholder, "%"+identifier+"%")
 		}
 		if err != nil {
 			log.Debugf("error occurred while fetching hosts: %v", err)
