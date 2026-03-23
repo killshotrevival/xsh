@@ -28,6 +28,25 @@ func GetIdentityById(db *sql.DB, identifier uuid.UUID) (*Identity, error) {
 	return &id, nil
 }
 
+func GetIdentity(db *sql.DB) (*[]Identity, error) {
+	rows, err := db.Query(getIdentityStmt)
+	if err != nil {
+		log.Debugf("error occurred while reading identity from database: %v", err)
+		return nil, err
+	}
+
+	var ids []Identity
+	for rows.Next() {
+		var id Identity
+		if err := rows.Scan(&id.Id, &id.Name, &id.Path); err != nil {
+			log.Debugf("error occurred while reading identity row: %v", err)
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	return &ids, nil
+}
+
 func GetIdentityByName(db *sql.DB, identifier string) (*Identity, error) {
 	id := Identity{}
 

@@ -10,11 +10,15 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-var debug bool
+var (
+	debug bool
 
-// This variable is replaced in runtime while building the application
-// for example: go build -ldflags "-X 'xsh/cmd.Version=1.2.3'"
-var Version = "dev"
+	// This variable is replaced in runtime while building the application
+	// for example: go build -ldflags "-X 'xsh/cmd.Version=1.2.3'"
+	Version = "dev"
+
+	putFileExample = "/path/to/file"
+)
 
 var rootCmd = &cobra.Command{
 	Version: Version,
@@ -53,27 +57,16 @@ func Execute() {
 func init() {
 	// Global flag available to all subcommands
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug logging")
+	rootCmd.AddCommand(putCmd, getCmd, initCmd, connectCmd, deleteCmd, tagCmd, exampleCmd)
 
 	// Put Command
-	rootCmd.AddCommand(putCmd)
+	putCmd.AddCommand(putHostCmd, puRegionCmd, putIdentityCmd)
+	putHostCmd.PersistentFlags().BoolVarP(&interactivePut, "interactive", "i", false, "Insert host in interactive mode")
+	putHostCmd.PersistentFlags().StringVarP(&putFile, "file", "f", putFileExample, "Path of the host file")
 
 	// Get Command
-	rootCmd.AddCommand(getCmd)
 	getCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "table", "Format of the output")
 
-	// Init Command
-	rootCmd.AddCommand(initCmd)
-
-	// Connect Command
-	rootCmd.AddCommand(connectCmd)
-
-	// Delete Command
-	rootCmd.AddCommand(deleteCmd)
-
 	// Tag Command
-	rootCmd.AddCommand(tagCmd)
 	tagCmd.PersistentFlags().BoolVarP(&remove, "remove", "r", false, "Remove Tag mapping")
-
-	// Example Command
-	rootCmd.AddCommand(exampleCmd)
 }

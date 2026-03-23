@@ -43,7 +43,8 @@ func getData(cmd *cobra.Command, args []string) error {
 	case "r":
 		fallthrough
 	case "region":
-		return region.PrintRegions(dbConnection, args[1], outputFormat)
+		_, err := region.PrintRegions(dbConnection, args[1], outputFormat)
+		return err
 	case "h":
 		fallthrough
 	case "hosts":

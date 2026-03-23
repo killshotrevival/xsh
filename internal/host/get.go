@@ -64,6 +64,28 @@ func getHostAndTag(db *sql.DB, hostName, tagName string) (*Host, *tag.Tag, error
 
 }
 
+func GetShortHosts(db *sql.DB) (*[]ShortHost, error) {
+	rows, err := db.Query(getShortHostStmt)
+	if err != nil {
+		log.Debugf("error occurred while reading hosts from database: %v", err)
+		return nil, err
+	}
+
+	var hosts []ShortHost
+	for rows.Next() {
+		var sh ShortHost
+
+		if err := rows.Scan(&sh.Id, &sh.Name); err != nil {
+			log.Debugf("error occurred while reading row: %v", err)
+			return nil, err
+		}
+
+		hosts = append(hosts, sh)
+	}
+
+	return &hosts, nil
+}
+
 func Print(db *sql.DB, identifier string, outputFormat string) error {
 	var rows *sql.Rows
 	var err error

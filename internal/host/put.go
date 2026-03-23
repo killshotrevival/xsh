@@ -23,7 +23,9 @@ func PutHost(db *sql.DB, filepath string) error {
 		return err
 	}
 
-	json.Unmarshal(data, &host)
+	if err := json.Unmarshal(data, &host); err != nil {
+		return err
+	}
 
 	return host.Store(db)
 

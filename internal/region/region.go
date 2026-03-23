@@ -16,6 +16,7 @@ var (
 	insertRegionStmt = "INSERT INTO regions (id, name) VALUES (?, ?)"
 
 	deleteRegionStmt      = "DELETE REGIONS WHERE ID = ?"
+	selectRegionStmr      = "SELECT ID, NAME FROM REGIONS"
 	getRegionIdByNameStmt = "SELECT ID FROM REGIONS WHERE NAME = ?"
 )
 

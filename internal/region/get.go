@@ -43,7 +43,27 @@ func getRegionAndTag(db *sql.DB, identittyName, tagName string) (*Region, *tag.T
 
 }
 
-func PrintRegions(db *sql.DB, identifier, outputFormat string) error {
+func GetRegions(db *sql.DB) (*[]Region, error) {
+	rows, err := db.Query(selectRegionStmr)
+	if err != nil {
+		return nil, err
+	}
+
+	var regions []Region
+	for rows.Next() {
+		var reg Region
+		if err := rows.Scan(
+			&reg.Id, &reg.Name,
+		); err != nil {
+			return nil, err
+		}
+
+		regions = append(regions, reg)
+	}
+	return &regions, nil
+}
+
+func PrintRegions(db *sql.DB, identifier, outputFormat string) (*[]Region, error) {
 	var rows *sql.Rows
 	var err error
 
@@ -54,9 +74,9 @@ func PrintRegions(db *sql.DB, identifier, outputFormat string) error {
 	for _, placeholder := range []string{"name", "id"} {
 		if identifier == "*" {
 			log.Info("Printing all the regions present in database")
-			rows, err = db.Query("select id, name from Regions")
+			rows, err = db.Query(selectRegionStmr)
 		} else {
-			rows, err = db.Query("select id, name from regions where "+placeholder+" like ?;", "%"+identifier+"%")
+			rows, err = db.Query(selectRegionStmr+" where "+placeholder+" like ?;", "%"+identifier+"%")
 		}
 		if err != nil {
 			log.Debugf("error occurred while fetching Regions: %v", err)
@@ -92,7 +112,7 @@ func PrintRegions(db *sql.DB, identifier, outputFormat string) error {
 	switch strings.ToLower(outputFormat) {
 	case "table":
 		log.Debug("Printing data in table")
-		return table.NewTable(
+		return nil, table.NewTable(
 			[]string{
 				"ID",
 				"NAME",
@@ -103,8 +123,10 @@ func PrintRegions(db *sql.DB, identifier, outputFormat string) error {
 	case "json":
 		log.Debug("Writing data to file")
 		by, _ := json.Marshal(&regions)
-		return os.WriteFile("region.json", by, 0644)
+		return nil, os.WriteFile("region.json", by, 0644)
+	case "list":
+		return &regions, nil
 	default:
-		return fmt.Errorf("invalid output format received")
+		return nil, fmt.Errorf("invalid output format received")
 	}
 }
