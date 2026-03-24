@@ -35,26 +35,111 @@ func InteractivePut(db *sql.DB) error {
 		),
 	)
 
-	err := form.Run()
-	if err != nil {
+	if err := form.Run(); err != nil {
 		return err
 	}
 
 	if createOption == 1 {
-		// TODO
-		return fmt.Errorf("cloning is not supported right now")
+		return cloneHost(db)
 	}
 
-	return createInteractiveHost(db)
+	return createHost(db)
 }
 
-func createInteractiveHost(db *sql.DB) error {
+func cloneHost(db *sql.DB) error {
+	var (
+		cloneHostId string
+	)
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				Title("Select Host").
+				Description("Please select the host you want to clone from").
+				OptionsFunc(func() []huh.Option[string] {
+					hosts, err := GetShortHosts(db)
+					if err != nil {
+						return []huh.Option[string]{
+							huh.NewOption(
+								fmt.Sprintf("error occurred while fetchinig hosts: %v", err), "-1",
+							),
+						}
+					}
+
+					if len(*hosts) == 0 {
+						return []huh.Option[string]{
+							huh.NewOption("no host present to select", "0"),
+						}
+					}
+
+					opts := []huh.Option[string]{}
+					for _, sh := range *hosts {
+						opts = append(opts, huh.NewOption(
+							sh.Name, sh.Id.String(),
+						))
+					}
+					return opts
+
+				}, nil).Value(&cloneHostId).Validate(func(s string) error {
+				if s == "-1" {
+					return fmt.Errorf("error occurred while selecting host, please exit and retry")
+				}
+				return nil
+			}),
+		),
+	)
+
+	if err := form.Run(); err != nil {
+		return err
+	}
+
+	host, err := GetHostByID(db, cloneHostId)
+	if err != nil {
+		return err
+	}
+
+	host.Name = ""
+
+	form = huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Host Name").
+				Description("Please enter a unique name for your host that is easy to remember").
+				Value(&host.Name).Validate(func(_ string) error {
+				// TODO: Add support for validating that the given name does not exists
+				return nil
+			}),
+
+			huh.NewInput().
+				Title("Host Address").
+				Description("Please enter the hostname / IP address of the host to connect").
+				Value(&host.Address).Validate(func(_ string) error {
+				// TODO: Add support for validating that the given address exists or not.
+				return nil
+			}),
+		),
+	)
+
+	if err := form.Run(); err != nil {
+		return err
+	}
+
+	host.Id, err = uuid.NewRandom()
+	if err != nil {
+		return err
+	}
+
+	return host.Store(db)
+}
+
+func createHost(db *sql.DB) error {
 	var (
 		host             Host
 		regionIDString   string
 		identityIDString string
 		jumphostIDString string
+		err              error
 	)
+
 	portString := "22"
 	host.User = "root"
 	form := huh.NewForm(
@@ -217,6 +302,11 @@ func createInteractiveHost(db *sql.DB) error {
 		host.JumphostID.Valid = true
 	}
 	host.Port, _ = strconv.Atoi(portString)
+
+	host.Id, err = uuid.NewRandom()
+	if err != nil {
+		return err
+	}
 
 	return host.Store(db)
 }

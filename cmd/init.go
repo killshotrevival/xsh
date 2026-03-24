@@ -1,14 +1,6 @@
 // This file will hold code for cli to initialize the XSH environment
 package cmd
 
-/*
-TODO:
-1. Init the XSH root directory in the user's home directory (e.g., ~/.xsh)
-2. Check if SQLite database exists, if not create it
-3. Check if tables exists in the database, if not create them
-4. Read ~/.ssh/config, ~/.bashrc, ~/.zshrc and store relevant information in the database
-*/
-
 import (
 	"fmt"
 

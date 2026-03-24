@@ -13,12 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-/*
-TODO:
-1. Create SSH connection with the server using the ssh cli of the system
-2. Talk to the database and extract all the relivant information for the server we are connecting to and use it to enhance the ssh connection
-*/
-
 var connectCmd = &cobra.Command{
 	Use:   "connect [host name]",
 	Short: "Connect SSH.",
