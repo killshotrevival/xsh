@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	headerColour = tcell.ColorYellow
-	cellColour   = tcell.ColorWhite
+	headerColour = tcell.NewHexColor(0x6562db)
+	cellColour   = tcell.NewHexColor(0xFFFDF5)
 )
 
 type Table struct {

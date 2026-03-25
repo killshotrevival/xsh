@@ -8,6 +8,7 @@ import (
 	"xsh/internal/region"
 
 	"charm.land/huh/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/google/uuid"
 )
 
@@ -18,6 +19,55 @@ var (
 	}
 )
 
+func xshTheme(isDark bool) *huh.Styles {
+	t := huh.ThemeBase(isDark)
+	lightDark := lipgloss.LightDark(isDark)
+
+	var (
+		normalFg = lightDark(lipgloss.Color("252"), lipgloss.Color("235"))
+		indigo   = lightDark(lipgloss.Color("#5A56E0"), lipgloss.Color("#7571F9"))
+		cream    = lightDark(lipgloss.Color("#FFFDF5"), lipgloss.Color("#FFFDF5"))
+		fuchsia  = lipgloss.Color("#F780E2")
+		green    = lightDark(lipgloss.Color("#02BA84"), lipgloss.Color("#02BF87"))
+		red      = lightDark(lipgloss.Color("#FF4672"), lipgloss.Color("#ED567A"))
+	)
+
+	t.Focused.Base = t.Focused.Base.BorderForeground(lipgloss.Color("238"))
+	t.Focused.Card = t.Focused.Base
+	t.Focused.Title = t.Focused.Title.Foreground(indigo)
+	t.Focused.NoteTitle = t.Focused.NoteTitle.Foreground(indigo).MarginBottom(1)
+	t.Focused.Directory = t.Focused.Directory.Foreground(indigo)
+	t.Focused.Description = t.Focused.Description.Foreground(lightDark(lipgloss.Color(""), lipgloss.Color("243")))
+	t.Focused.ErrorIndicator = t.Focused.ErrorIndicator.Foreground(red)
+	t.Focused.ErrorMessage = t.Focused.ErrorMessage.Foreground(red)
+	t.Focused.SelectSelector = t.Focused.SelectSelector.Foreground(fuchsia)
+	t.Focused.NextIndicator = t.Focused.NextIndicator.Foreground(fuchsia)
+	t.Focused.PrevIndicator = t.Focused.PrevIndicator.Foreground(fuchsia)
+	t.Focused.Option = t.Focused.Option.Foreground(normalFg)
+	t.Focused.MultiSelectSelector = t.Focused.MultiSelectSelector.Foreground(fuchsia)
+	t.Focused.SelectedOption = t.Focused.SelectedOption.Foreground(green)
+	t.Focused.SelectedPrefix = lipgloss.NewStyle().Foreground(lightDark(lipgloss.Color("#02CF92"), lipgloss.Color("#02A877"))).SetString("✓ ")
+	t.Focused.UnselectedPrefix = lipgloss.NewStyle().Foreground(lightDark(lipgloss.Color(""), lipgloss.Color("243"))).SetString("• ")
+	t.Focused.UnselectedOption = t.Focused.UnselectedOption.Foreground(normalFg)
+	t.Focused.FocusedButton = t.Focused.FocusedButton.Foreground(cream).Background(fuchsia)
+	t.Focused.Next = t.Focused.FocusedButton
+	t.Focused.BlurredButton = t.Focused.BlurredButton.Foreground(normalFg).Background(lightDark(lipgloss.Color("237"), lipgloss.Color("252")))
+
+	t.Focused.TextInput.Cursor = t.Focused.TextInput.Cursor.Foreground(green)
+	t.Focused.TextInput.Placeholder = t.Focused.TextInput.Placeholder.Foreground(lightDark(lipgloss.Color("248"), lipgloss.Color("238")))
+	t.Focused.TextInput.Prompt = t.Focused.TextInput.Prompt.Foreground(fuchsia)
+
+	t.Blurred = t.Focused
+	t.Blurred.Base = t.Focused.Base.BorderStyle(lipgloss.HiddenBorder())
+	t.Blurred.Card = t.Blurred.Base
+	t.Blurred.NextIndicator = lipgloss.NewStyle()
+	t.Blurred.PrevIndicator = lipgloss.NewStyle()
+
+	t.Group.Title = t.Focused.Title
+	t.Group.Description = t.Focused.Description
+	return t
+}
+
 func InteractivePut(db *sql.DB) error {
 	var createOption int
 	form := huh.NewForm(
@@ -25,15 +75,12 @@ func InteractivePut(db *sql.DB) error {
 			huh.NewSelect[int]().
 				Title("Choose how you want to create a new host").
 				Description("Please choose how you want to proceed with creating a new host").
-				OptionsFunc(func() []huh.Option[int] {
-					opt := []huh.Option[int]{}
-					for k, v := range hostCreateOptions {
-						opt = append(opt, huh.NewOption(v, k))
-					}
-					return opt
-				}, nil).Value(&createOption),
+				Options(
+					huh.NewOption("Clone from an existing host", 1),
+					huh.NewOption("Create a new host from scratch", 2),
+				).Value(&createOption),
 		),
-	)
+	).WithTheme(huh.ThemeFunc(xshTheme))
 
 	if err := form.Run(); err != nil {
 		return err
@@ -310,3 +357,55 @@ func createHost(db *sql.DB) error {
 
 	return host.Store(db)
 }
+
+// func showError(app *tview.Application, msg string, previousPrimitive tview.Primitive) {
+// 	modal := tview.NewModal().
+// 		SetText(msg).
+// 		AddButtons([]string{"OK"}).
+// 		SetDoneFunc(func(i int, l string) {
+// 			app.SetRoot(previousPrimitive, true) // restore list
+// 		})
+
+// 	app.SetRoot(modal, true)
+// }
+
+// func NewInteractivePut(db *sql.DB) error {
+// 	app := tview.NewApplication()
+// 	list := tview.NewList().
+// 		AddItem("Clone", "Clone from an existring host", 'a', nil).
+// 		AddItem("New", "Create a new host from scratch", 'b', nil).
+// 		AddItem("Quit", "Press to exit", 'q', func() {
+// 			app.Stop()
+// 		})
+
+// 	list = list.SetSelectedFunc(func(i int, s1, s2 string, r rune) {
+// 		defer app.Stop()
+// 		if i == 0 {
+// 			log.Debug("Cloning the host")
+// 			showError(app, "Cloning it is", list)
+// 			return
+// 		}
+// 		log.Debug("Creating a new host")
+// 	})
+// 	// list := tview.NewList().
+// 	// 	AddItem("Option 1", "First choice", '1', func() {
+// 	// 		fmt.Println("Selected Option 1")
+// 	// 		app.Stop()
+// 	// 	}).
+// 	// 	AddItem("Option 2", "Second choice", '2', func() {
+// 	// 		fmt.Println("Selected Option 2")
+// 	// 		app.Stop()
+// 	// 	}).
+// 	// 	AddItem("Option 3", "Third choice", '3', func() {
+// 	// 		fmt.Println("Selected Option 3")
+// 	// 		app.Stop()
+// 	// 	})
+
+// 	// list.SetBorder(true).SetTitle("Choose an option")
+
+// 	if err := app.SetRoot(list, true).EnableMouse(true).Run(); err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }

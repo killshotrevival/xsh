@@ -35,4 +35,10 @@ verify: lint test
 
 docs:
 	@echo "Generating documentation"
-	go run ./... gendocs          
+	go run ./... gendocs   
+
+put-host:
+	go run ./... put h -i
+
+get-hosts:
+	go run ./... get h  

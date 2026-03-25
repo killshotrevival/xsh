@@ -1,5 +1,7 @@
 # XSH
 
+![image](./assets/spirit_animal.png)
+
 > A powerful CLI tool for managing SSH connections across massive clusters of machines.
 
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go&logoColor=white)](https://golang.org/)
