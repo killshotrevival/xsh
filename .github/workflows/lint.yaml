@@ -1,6 +1,6 @@
-name: ✔ Lint Checks
+name: ✔ Verification Checks
 
-run-name: 🕵🏻‍♂️ ${{ github.actor }} Running Lint Checks 🕵🏻‍♂️
+run-name: 🕵🏻‍♂️ ${{ github.actor }} Running Verification Checks 🕵🏻‍♂️
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
     - '**'  
 
 jobs: 
-  Lint: 
+  Verify: 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -20,3 +20,5 @@ jobs:
       with:
         version: latest
         args: --timeout=30m --new-from-rev=origin/main
+    - name: Run Unit Tests
+      run: go test ./... -run=.

@@ -30,7 +30,7 @@ test:
 	@echo "Running Unit tests"
 	go test ./... -run=.
 
-verify: lint test
+verify: test lint 
 	@echo "Code verification passed"
 
 docs:

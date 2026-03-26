@@ -20,6 +20,9 @@ jobs:
             go-version-file: "go.mod"
             cache: true
 
+        - name: Run Unit Tests
+          run: go test ./... -run=.
+
         - name: Build
           run: make VERSION=$VERSION build-linux
           env:
@@ -32,6 +35,7 @@ jobs:
               bin/xsh-linux
 
   Mac-Build: 
+    needs: Build
     runs-on: macos-latest
     steps:
         - name: Checkout
