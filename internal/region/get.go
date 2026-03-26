@@ -73,7 +73,7 @@ func Print(db *sql.DB, identifier, outputFormat string) error {
 
 	for _, stmt := range []string{selectRegionByNameStmt} {
 		if identifier == "*" {
-			log.Info("Printing all the regions present in database")
+			log.Debugf("Printing all the regions present in database")
 			rows, err = db.Query(selectRegionStmt)
 		} else {
 			rows, err = db.Query(stmt, "%"+identifier+"%")

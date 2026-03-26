@@ -57,7 +57,7 @@ func (i *Identity) Store(db *sql.DB) error {
 	}
 
 	if status {
-		log.Info("Identity with path already exists in the table")
+		log.Debug("Identity with path already exists in the table")
 		return nil
 	}
 	_, err = db.Exec(insertIdentityStmt, i.Id, i.Name, i.Path)
@@ -113,7 +113,7 @@ func InitIdentityStore(db *sql.DB) error {
 
 	sshHomeDir := filepath.Join(homeDir, ".ssh")
 
-	log.Infof("SSH Dir found: %s", sshHomeDir)
+	log.Debugf("SSH Dir found: %s", sshHomeDir)
 
 	if err := filepath.WalkDir(sshHomeDir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
@@ -131,7 +131,7 @@ func InitIdentityStore(db *sql.DB) error {
 				return nil
 			}
 
-			log.Infof("Storing Identity file to database: %s", identity.Path)
+			log.Debugf("Storing Identity file to database: %s", identity.Path)
 			err = identity.Store(db)
 			if err != nil {
 				log.Errorf("Error storing identity for %s: %v", path, err)

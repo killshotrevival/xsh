@@ -140,7 +140,7 @@ func CheckAndApplyMigrations() error {
 	}
 
 	if len(fileNames) > 0 {
-		log.Infof("Seems like there are %d number of database migrations that are not yet applied to the local database. Applying them ...", len(fileNames))
+		log.Debugf("Seems like there are %d number of database migrations that are not yet applied to the local database. Applying them ...", len(fileNames))
 		if err := applyMigrations(db, fileNames); err != nil {
 			return err
 		}
@@ -191,7 +191,7 @@ func InitDB() error {
 		fileNames = append(fileNames, file.Name())
 	}
 
-	log.Info("Applyting migrations")
+	log.Debugf("Applyting migrations")
 	if err := applyMigrations(db, fileNames); err != nil {
 		log.Debugf("error occurred while applying migrations: %v", err)
 		return err

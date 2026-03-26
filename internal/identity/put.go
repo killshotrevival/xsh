@@ -8,6 +8,7 @@ import (
 )
 
 func PutIdentity(db *sql.DB, name, path string) error {
+	// TODO: Check if the path provided contains a file or not
 	id, err := NewIdentity(name, path)
 	if err != nil {
 		return nil

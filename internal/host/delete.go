@@ -20,12 +20,13 @@ func Delete(db *sql.DB, identifier string) error {
 		return err
 	}
 
+	// TODO: Check if there are hosts present which are using this host as jump host
+
 	if _, err = db.Exec(deleteHostStmt, h); err != nil {
 		return err
 	}
 
 	// TODO: Delete tag mapping for the host
-
 	return nil
 }
 

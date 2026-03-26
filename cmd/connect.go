@@ -27,7 +27,9 @@ func sshConnect(_ *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Println(sshString)
+	if debug {
+		sshString = sshString + " -v"
+	}
 	command := exec.Command("bash", "-c", sshString)
 
 	// Attach terminal directly
@@ -42,7 +44,7 @@ func sshConnect(_ *cobra.Command, args []string) error {
 		log.Error("- If this execption occurred while exiting the ssh session, please ignore it. We are building a patch for this ")
 		return err
 	}
-	log.Info("Completed SSH session gracefully")
+	log.Debug("Completed SSH session gracefully")
 	return nil
 }
 

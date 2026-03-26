@@ -19,10 +19,13 @@ func Delete(db *sql.DB, identifier string) error {
 		return err
 	}
 
+	// TODO: Check if there are hosts present attached to this database
+
 	if _, err := db.Exec(deleteRegionStmt, id); err != nil {
 		fmt.Println("herere")
 		return err
 	}
+
 	return nil
 }
 

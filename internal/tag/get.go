@@ -88,7 +88,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 
 	for _, placeholder := range []string{getTagWithTagStmt} {
 		if identifier == "*" {
-			log.Info("Printing all the tags present in database")
+			log.Debug("Printing all the tags present in database")
 			rows, err = db.Query(getTagStmt)
 		} else {
 			rows, err = db.Query(placeholder, "%"+identifier+"%")

@@ -18,6 +18,7 @@ func Delete(db *sql.DB, identifier string) error {
 		}
 		return err
 	}
+	// TODO: Chec if there are hosts present attached to this identity file
 
 	if _, err := db.Exec(deleteIdentityStmt, i); err != nil {
 		return err

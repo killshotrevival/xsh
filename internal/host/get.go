@@ -96,7 +96,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 
 	for _, placeholder := range []string{getHostWithNameStmt, getHostWithAddressStmt, getHostWithUserStmt} {
 		if identifier == "*" {
-			log.Info("Printing all the hosts present in database")
+			log.Debug("Printing all the hosts present in database")
 			rows, err = db.Query(getHostStmt)
 		} else {
 			rows, err = db.Query(placeholder, "%"+identifier+"%")
