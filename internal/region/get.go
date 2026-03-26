@@ -14,12 +14,16 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	noRegionErr = "no region present with given identifier"
+)
+
 func GetRegionByName(db *sql.DB, identifier string) (*Region, error) {
 	region := Region{Name: identifier}
 
 	if err := db.QueryRow(getRegionIDByNameStmt, identifier).Scan(&region.Id); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no region present with given identifier (%s): %v", identifier, err)
+			return nil, fmt.Errorf("%s (%s): %v", noRegionErr, identifier, err)
 		}
 		return nil, err
 	}

@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"testing"
 	config "xsh/internal/config"
 
 	"github.com/charmbracelet/log"
@@ -55,6 +56,30 @@ func CheckDB() (bool, error) {
 	}
 
 	return true, nil
+}
+
+func GetTestDB(t *testing.T) *sql.DB {
+	// ":memory:" creates a fresh DB in RAM for every call
+	db, err := sql.Open("sqlite3", ":memory:")
+	if err != nil {
+		t.Fatalf("failed to open database: %v", err)
+	}
+
+	files, err := fs.ReadDir(migrationFiles, "migrations")
+	if err != nil {
+		t.Fatalf("error occurred while reading migrations directory: %v", err)
+	}
+	fileNames := []string{}
+
+	for _, file := range files {
+		fileNames = append(fileNames, file.Name())
+	}
+
+	if err := applyMigrations(db, fileNames); err != nil {
+		t.Fatalf("error occurred while applying migrations: %v", err)
+	}
+
+	return db
 }
 
 func GetDB() (*sql.DB, error) {
