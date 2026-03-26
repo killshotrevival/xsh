@@ -35,7 +35,7 @@ var (
 func GetDBPath() (string, error) {
 	value, prsent := os.LookupEnv("XSH_DB_PATH")
 	if prsent {
-		log.Debug("Using DB prsent at %s", value)
+		log.Debugf("[database] using database path from XSH_DB_PATH environment variable: %s", value)
 		return value, nil
 	}
 	configDir, err := config.GetConfigDir()
@@ -113,7 +113,7 @@ func TableExists(db *sql.DB, tableName string) (bool, error) {
 func getCurrentAppliedMigrationVersion(db *sql.DB) (int, error) {
 	var version int
 	if err := db.QueryRow(migrationVersionCheckQuery).Scan(&version); err != nil {
-		log.Debugf("error occurred while fetching the version number from the schema_version table: %v", err)
+		log.Debugf("[database] failed to retrieve current migration version from schema_version table: %v", err)
 		return -1, err
 	}
 	return version, nil
@@ -124,7 +124,7 @@ func CheckAndApplyMigrations() error {
 	newVersion := -1
 	db, err := GetDB()
 	if err != nil {
-		log.Debugf("error occurred while connecting to database: %v", err)
+		log.Debugf("[database] failed to establish database connection for migration check: %v", err)
 		return err
 	}
 
@@ -132,7 +132,7 @@ func CheckAndApplyMigrations() error {
 
 	files, err := fs.ReadDir(migrationFiles, "migrations")
 	if err != nil {
-		log.Debugf("error occurred while reading migrations directory: %v", err)
+		log.Debugf("[database] failed to read embedded migrations directory: %v", err)
 		return nil
 	}
 	sort.Slice(files, func(i, j int) bool {
@@ -145,13 +145,13 @@ func CheckAndApplyMigrations() error {
 	}
 	fileNames := []string{}
 
-	log.Debug("checking which all migration files to apply based on version number")
+	log.Debug("[database] evaluating pending migrations against current schema version")
 	for _, file := range files {
 		versionStr := strings.Split(file.Name(), "_")[0]
 
 		version, err := strconv.Atoi(versionStr)
 		if err != nil {
-			log.Debugf("error occurred while converting migratiion file name to version number(%s): %v", file.Name(), err)
+			log.Debugf("[database] failed to parse version number from migration filename %q: %v", file.Name(), err)
 			return err
 		}
 
@@ -165,17 +165,17 @@ func CheckAndApplyMigrations() error {
 	}
 
 	if len(fileNames) > 0 {
-		log.Debugf("Seems like there are %d number of database migrations that are not yet applied to the local database. Applying them ...", len(fileNames))
+		log.Debugf("[database] found %d pending migration(s) to apply to the local database", len(fileNames))
 		if err := applyMigrations(db, fileNames); err != nil {
 			return err
 		}
 
 		if _, err = db.Exec(updateSchemaVersionQuery, newVersion); err != nil {
-			log.Debugf("error occurred while updating schema version to latest versiion %d -> %d", currentVersion, newVersion)
+			log.Debugf("[database] failed to update schema version from %d to %d: %v", currentVersion, newVersion, err)
 			return err
 		}
 	} else {
-		log.Debug("No new migration file found for applying")
+		log.Debug("[database] schema is up to date, no pending migrations to apply")
 	}
 	return nil
 }
@@ -184,12 +184,12 @@ func applyMigrations(db *sql.DB, fileNames []string) error {
 	for _, file := range fileNames {
 		content, err := migrationFiles.ReadFile("migrations/" + file)
 		if err != nil {
-			log.Debugf("error occurred while reading migration file (%s): %v", file, err)
+			log.Debugf("[database] failed to read migration file %q: %v", file, err)
 			return err
 		}
 
 		if _, err = db.Exec(string(content)); err != nil {
-			log.Debugf("error occurred while applying migration (%s): %v", file, err)
+			log.Debugf("[database] failed to execute migration %q: %v", file, err)
 			return err
 		}
 	}
@@ -199,7 +199,7 @@ func applyMigrations(db *sql.DB, fileNames []string) error {
 func InitDB() error {
 	db, err := GetDB()
 	if err != nil {
-		log.Debugf("error occurred while connecting to database: %v", err)
+		log.Debugf("[database] failed to establish database connection during initialization: %v", err)
 		return err
 	}
 
@@ -207,7 +207,7 @@ func InitDB() error {
 
 	files, err := fs.ReadDir(migrationFiles, "migrations")
 	if err != nil {
-		log.Debugf("error occurred while reading migrations directory: %v", err)
+		log.Debugf("[database] failed to read embedded migrations directory during initialization: %v", err)
 		return err
 	}
 	fileNames := []string{}
@@ -216,9 +216,9 @@ func InitDB() error {
 		fileNames = append(fileNames, file.Name())
 	}
 
-	log.Debugf("Applyting migrations")
+	log.Debugf("[database] applying initial database migrations")
 	if err := applyMigrations(db, fileNames); err != nil {
-		log.Debugf("error occurred while applying migrations: %v", err)
+		log.Debugf("[database] failed to apply initial migrations: %v", err)
 		return err
 	}
 

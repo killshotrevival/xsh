@@ -23,11 +23,11 @@ func CheckConfigDir() bool {
 	}
 
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
-		log.Debugf("Config directory does not exist at: %s", configDir)
+		log.Debugf("[config] configuration directory does not exist at: %s", configDir)
 		return false
 	}
 
-	log.Debugf("Config directory exists at: %s", configDir)
+	log.Debugf("[config] configuration directory verified at: %s", configDir)
 	return true
 }
 
@@ -42,6 +42,6 @@ func InitConfigDir() error {
 		return err
 	}
 
-	log.Debugf("Config directory created at: %s", configDir)
+	log.Debugf("[config] configuration directory created successfully at: %s", configDir)
 	return nil
 }

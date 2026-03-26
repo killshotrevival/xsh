@@ -34,7 +34,7 @@ func GetRegionByName(db *sql.DB, identifier string) (*Region, error) {
 func getRegionAndTag(db *sql.DB, identittyName, tagName string) (*Region, *tag.Tag, error) {
 	host, err := GetRegionByName(db, identittyName)
 	if err != nil {
-		log.Debugf("error occurred while fetching region from given identifier(%s): %v", identittyName, err)
+		log.Debugf("[region] failed to retrieve region by name %q: %v", identittyName, err)
 		return nil, nil, err
 	}
 
@@ -77,13 +77,13 @@ func Print(db *sql.DB, identifier, outputFormat string) error {
 
 	for _, stmt := range []string{selectRegionByNameStmt} {
 		if identifier == "*" {
-			log.Debugf("Printing all the regions present in database")
+			log.Debugf("[region] listing all regions from the database")
 			rows, err = db.Query(selectRegionStmt)
 		} else {
 			rows, err = db.Query(stmt, "%"+identifier+"%")
 		}
 		if err != nil {
-			log.Debugf("error occurred while fetching Regions: %v", err)
+			log.Debugf("[region] failed to query regions matching identifier %q: %v", identifier, err)
 			continue
 		}
 
@@ -91,7 +91,7 @@ func Print(db *sql.DB, identifier, outputFormat string) error {
 			r := Region{}
 			err := rows.Scan(&r.Id, &r.Name)
 			if err != nil {
-				log.Debugf("error occurred while reading identity: %v", err)
+				log.Debugf("[region] failed to scan region row from result set: %v", err)
 				continue
 			}
 
@@ -115,7 +115,7 @@ func Print(db *sql.DB, identifier, outputFormat string) error {
 	}
 	switch strings.ToLower(outputFormat) {
 	case "table":
-		log.Debug("Printing data in table")
+		log.Debug("[region] rendering region data as table")
 		return table.NewTable(
 			[]string{
 				"ID",
@@ -125,7 +125,7 @@ func Print(db *sql.DB, identifier, outputFormat string) error {
 			data,
 		).Print()
 	case "json":
-		log.Debug("Writing data to file")
+		log.Debug("[region] exporting region data to region.json")
 		by, _ := json.Marshal(&regions)
 		return os.WriteFile("region.json", by, 0644)
 	default:

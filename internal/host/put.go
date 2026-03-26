@@ -40,7 +40,7 @@ func PutTagMapping(db *sql.DB, hostName, tagName string) error {
 	}
 	tm, err := tag.NewTagMapping(nTag.Id, host.Id)
 	if err != nil {
-		log.Debugf("error occurred while creating new tag mapping object; %v", err)
+		log.Debugf("[host] failed to create tag mapping for host %q and tag %q: %v", hostName, tagName, err)
 		return err
 	}
 

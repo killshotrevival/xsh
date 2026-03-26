@@ -33,7 +33,7 @@ func DeleteTagMapping(db *sql.DB, identittyName, tagName string) error {
 	}
 	tm, err := tag.GetTagMapping(db, nTag.Id, host.Id)
 	if err != nil {
-		log.Debugf("error occurred while fetching tag mapping object: %v", err)
+		log.Debugf("[identity] failed to retrieve tag mapping for identity %q and tag %q: %v", identittyName, tagName, err)
 		return err
 	}
 

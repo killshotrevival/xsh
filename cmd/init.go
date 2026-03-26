@@ -23,7 +23,7 @@ func initXSH(_ *cobra.Command, _ []string) error {
 
 	log.Info("Iitialising xsh configuration directory")
 	if err := config.InitConfigDir(); err != nil {
-		log.Debugf("Error occurred while initialising config dir: %v", err)
+		log.Debugf("[init] failed to initialize configuration directory: %v", err)
 		return err
 	}
 

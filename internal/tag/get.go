@@ -33,7 +33,7 @@ func GetTagsByDataTypeID(db *sql.DB, dataTypeID uuid.UUID) ([]string, error) {
 
 	rows, err := db.Query(getTagsByDataTypeIDStmt, dataTypeID)
 	if err != nil {
-		log.Debugf("error occurred while fetching tags for given datatype id(%s): %v", dataTypeID, err)
+		log.Debugf("[tag] failed to query tags for data type ID %q: %v", dataTypeID, err)
 		return nil, err
 	}
 
@@ -41,7 +41,7 @@ func GetTagsByDataTypeID(db *sql.DB, dataTypeID uuid.UUID) ([]string, error) {
 		var tag string
 		err := rows.Scan(&tag)
 		if err != nil {
-			log.Debugf("error occurred while reading tag from database: %v", err)
+			log.Debugf("[tag] failed to scan tag row from result set: %v", err)
 			continue
 		}
 		tags = append(tags, tag)
@@ -66,15 +66,15 @@ func GetTagWithCreate(db *sql.DB, identifier string) (*Tag, error) {
 	tag := &Tag{}
 	if err := db.QueryRow(getTagWithTagStmt, identifier).Scan(&tag.Id, &tag.Tag); err != nil {
 		if err == sql.ErrNoRows {
-			log.Debug("no tag exists in database with given value, creating a new one")
+			log.Debug("[tag] no existing tag found for the given value, creating a new entry")
 			tag, err = NewTag(identifier)
 			if err != nil {
-				log.Debugf("error occurred while creating new tag")
+				log.Debugf("[tag] failed to create new tag with value %q", identifier)
 				return nil, err
 			}
 
 			if err := tag.Store(db); err != nil {
-				log.Debugf("error occurred while storing new tag to database: %v", err)
+				log.Debugf("[tag] failed to persist new tag %q to database: %v", identifier, err)
 				return nil, err
 			}
 		}
@@ -93,13 +93,13 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 
 	for _, placeholder := range []string{getTagWithTagStmt} {
 		if identifier == "*" {
-			log.Debug("Printing all the tags present in database")
+			log.Debug("[tag] listing all tags from the database")
 			rows, err = db.Query(getTagStmt)
 		} else {
 			rows, err = db.Query(placeholder, "%"+identifier+"%")
 		}
 		if err != nil {
-			log.Debugf("error occurred while fetching tags: %v", err)
+			log.Debugf("[tag] failed to query tags matching identifier %q: %v", identifier, err)
 			continue
 		}
 
@@ -109,7 +109,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 				&tag.Id,
 				&tag.Tag,
 			); err != nil {
-				log.Debugf("error occurred while reading tag: %v", err)
+				log.Debugf("[tag] failed to scan tag row during listing: %v", err)
 				continue
 			}
 
@@ -130,7 +130,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 			data,
 		).Print()
 	case "json":
-		log.Debug("Writing data to file")
+		log.Debug("[tag] exporting tag data to tags.json")
 		by, _ := json.Marshal(&tags)
 		return os.WriteFile("tags.json", by, 0644)
 	default:

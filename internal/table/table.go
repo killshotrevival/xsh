@@ -45,7 +45,7 @@ func (t *Table) Print() error {
 	}
 
 	if err := app.SetRoot(table, true).SetFocus(table).Run(); err != nil {
-		log.Debugf("error occurred while rendering table: %v", err)
+		log.Debugf("[table] failed to render table view: %v", err)
 		return err
 	}
 

@@ -48,7 +48,7 @@ func NewHost(name, address, user string, port int, regionID, identityID uuid.UUI
 		return nil, err
 	}
 	if port == 0 {
-		log.Debug("Port number found is 0, defaulting it to 22")
+		log.Debug("[host] port not specified, defaulting to 22")
 		port = 22
 	}
 	return &Host{
@@ -69,7 +69,7 @@ func (h *Host) Store(db *sql.DB) error {
 		return err
 	}
 	if rows.Next() {
-		log.Debug("Host with this address already exists")
+		log.Warn("[host] a host with this address already exists, skipping insert")
 		return nil
 	}
 

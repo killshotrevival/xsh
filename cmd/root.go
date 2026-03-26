@@ -35,17 +35,17 @@ var rootCmd = &cobra.Command{
 
 		present, err := db.CheckDB()
 		if err != nil {
-			log.Debugf("error occurred while checking if DB file is present: %v", err)
+			log.Debugf("[root] failed to verify database file existence: %v", err)
 			return nil
 		}
 
 		if present {
-			log.Debug("DB found, checking for migrations to apply")
+			log.Debug("[root] database file found, checking for pending migrations")
 			if err := db.CheckAndApplyMigrations(); err != nil {
 				return fmt.Errorf("error occurred while checking and applying database migration: %v", err)
 			}
 		} else {
-			log.Debug("Datbase file not found, seems like the user is yet to init the environment.")
+			log.Warn("[root] database file not found; run 'xsh init' to set up the environment")
 		}
 
 		// Apply tview theme

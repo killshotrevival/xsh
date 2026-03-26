@@ -87,7 +87,7 @@ func Interactive(dbConnection *sql.DB) error {
 				case "host":
 					allHosts, err := host.GetShortHosts(dbConnection)
 					if err != nil {
-						log.Debugf("error occurred while trying to select host: %v", err)
+						log.Debugf("[delete] failed to retrieve host list for interactive selection: %v", err)
 						return []huh.Option[string]{
 							huh.NewOption("error occurred while trying to select hosts", "-1"),
 						}
@@ -98,7 +98,7 @@ func Interactive(dbConnection *sql.DB) error {
 				case "region":
 					allRegions, err := region.GetRegions(dbConnection)
 					if err != nil {
-						log.Debugf("error occurred while trying to select regions: %v", err)
+						log.Debugf("[delete] failed to retrieve region list for interactive selection: %v", err)
 						return []huh.Option[string]{
 							huh.NewOption("error occurred while trying to select regions", "-1"),
 						}
@@ -109,7 +109,7 @@ func Interactive(dbConnection *sql.DB) error {
 				case "identity":
 					allIDs, err := identity.GetIdentity(dbConnection)
 					if err != nil {
-						log.Debugf("error occurred while trying to select identities: %v", err)
+						log.Debugf("[delete] failed to retrieve identity list for interactive selection: %v", err)
 						return []huh.Option[string]{
 							huh.NewOption("error occurred while trying to select identities", "-1"),
 						}
@@ -136,9 +136,9 @@ func Interactive(dbConnection *sql.DB) error {
 	}
 
 	for _, id := range idLists {
-		log.Debugf("deleting %s %s", id, resource)
+		log.Debugf("[delete] removing %s resource %q", resource, id)
 		if err := resourceDeleteMapping[resource](dbConnection, id); err != nil {
-			log.Debugf("error occurred while trying to delete %s %s: %v", id, resource, err)
+			log.Debugf("[delete] failed to delete %s resource %q: %v", resource, id, err)
 		}
 	}
 

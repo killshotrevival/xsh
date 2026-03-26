@@ -44,7 +44,7 @@ func sshConnect(_ *cobra.Command, args []string) error {
 		log.Error("- If this execption occurred while exiting the ssh session, please ignore it. We are building a patch for this ")
 		return err
 	}
-	log.Debug("Completed SSH session gracefully")
+	log.Debug("[connect] SSH session completed successfully")
 	return nil
 }
 

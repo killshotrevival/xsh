@@ -35,7 +35,7 @@ func GetIdentityByID(db *sql.DB, identifier uuid.UUID) (*Identity, error) {
 func GetIdentity(db *sql.DB) (*[]Identity, error) {
 	rows, err := db.Query(getIdentityStmt)
 	if err != nil {
-		log.Debugf("error occurred while reading identity from database: %v", err)
+		log.Debugf("[identity] failed to query identity list from database: %v", err)
 		return nil, err
 	}
 
@@ -43,7 +43,7 @@ func GetIdentity(db *sql.DB) (*[]Identity, error) {
 	for rows.Next() {
 		var id Identity
 		if err := rows.Scan(&id.Id, &id.Name, &id.Path); err != nil {
-			log.Debugf("error occurred while reading identity row: %v", err)
+			log.Debugf("[identity] failed to scan identity row from result set: %v", err)
 			return nil, err
 		}
 		ids = append(ids, id)
@@ -67,7 +67,7 @@ func GetIdentityByName(db *sql.DB, identifier string) (*Identity, error) {
 func getIdentityAndTag(db *sql.DB, identittyName, tagName string) (*Identity, *tag.Tag, error) {
 	host, err := GetIdentityByName(db, identittyName)
 	if err != nil {
-		log.Debugf("error occurred while fetching identity from given identifier(%s): %v", identittyName, err)
+		log.Debugf("[identity] failed to retrieve identity by name %q: %v", identittyName, err)
 		return nil, nil, err
 	}
 
@@ -96,7 +96,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 			rows, err = db.Query(placeholder, "%"+identifier+"%")
 		}
 		if err != nil {
-			log.Debugf("error occurred while fetching identities: %v", err)
+			log.Debugf("[identity] failed to query identities matching identifier %q: %v", identifier, err)
 			continue
 		}
 
@@ -104,7 +104,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 			id := Identity{}
 			err := rows.Scan(&id.Id, &id.Name, &id.Path)
 			if err != nil {
-				log.Debugf("error occurred while reading identity: %v", err)
+				log.Debugf("[identity] failed to scan identity row during listing: %v", err)
 				continue
 			}
 			if !slices.Contains(idsAdded, id.Id) {
@@ -134,7 +134,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 
 		return t.Print()
 	case "json":
-		log.Debug("Writing data to file")
+		log.Debug("[identity] exporting identity data to identity.json")
 
 		by, _ := json.Marshal(&identities)
 

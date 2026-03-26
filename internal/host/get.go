@@ -58,7 +58,7 @@ func getHost(db *sql.DB, queryString, identifier string) (*Host, error) {
 func getHostAndTag(db *sql.DB, hostName, tagName string) (*Host, *tag.Tag, error) {
 	host, err := GetHostByName(db, hostName)
 	if err != nil {
-		log.Debugf("error occurred while fetching host from given identifier(%s): %v", hostName, err)
+		log.Debugf("[host] failed to retrieve host by identifier %q: %v", hostName, err)
 		return nil, nil, err
 	}
 
@@ -74,7 +74,7 @@ func getHostAndTag(db *sql.DB, hostName, tagName string) (*Host, *tag.Tag, error
 func GetShortHosts(db *sql.DB) (*[]ShortHost, error) {
 	rows, err := db.Query(getShortHostStmt)
 	if err != nil {
-		log.Debugf("error occurred while reading hosts from database: %v", err)
+		log.Debugf("[host] failed to query short host list from database: %v", err)
 		return nil, err
 	}
 
@@ -83,7 +83,7 @@ func GetShortHosts(db *sql.DB) (*[]ShortHost, error) {
 		var sh ShortHost
 
 		if err := rows.Scan(&sh.Id, &sh.Name); err != nil {
-			log.Debugf("error occurred while reading row: %v", err)
+			log.Debugf("[host] failed to scan short host row from result set: %v", err)
 			return nil, err
 		}
 
@@ -103,13 +103,13 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 
 	for _, placeholder := range []string{getHostWithNameStmt, getHostWithAddressStmt, getHostWithUserStmt} {
 		if identifier == "*" {
-			log.Debug("Printing all the hosts present in database")
+			log.Debug("[host] listing all hosts from the database")
 			rows, err = db.Query(getHostStmt)
 		} else {
 			rows, err = db.Query(placeholder, "%"+identifier+"%")
 		}
 		if err != nil {
-			log.Debugf("error occurred while fetching hosts: %v", err)
+			log.Debugf("[host] failed to query hosts matching identifier %q: %v", identifier, err)
 			continue
 		}
 
@@ -129,7 +129,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 				&host.Region,
 				&host.IdentityFile,
 			); err != nil {
-				log.Debugf("error occurred while reading host: %v", err)
+				log.Debugf("[host] failed to scan host row during listing: %v", err)
 				continue
 			}
 
@@ -161,7 +161,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 
 	switch strings.ToLower(outputFormat) {
 	case "table":
-		log.Debug("Printing data in table")
+		log.Debug("[host] rendering host data as table")
 		t := table.NewTable(
 			[]string{"NAME", "ADDRESS", "JUMPHOST", "USER", "REGION", "IDENTITY FILE", "TAGS"},
 			data,
@@ -169,7 +169,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 		return t.Print()
 
 	case "json":
-		log.Debug("writing data in hosts.json file")
+		log.Debug("[host] exporting host data to hosts.json")
 		by, _ := json.Marshal(&printHost)
 		return os.WriteFile("hosts.json", by, 0644)
 	default:

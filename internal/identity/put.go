@@ -23,7 +23,7 @@ func PutTagMapping(db *sql.DB, identittyName, tagName string) error {
 	}
 	tm, err := tag.NewTagMapping(nTag.Id, host.Id)
 	if err != nil {
-		log.Debugf("error occurred while creating new tag mapping object; %v", err)
+		log.Debugf("[identity] failed to create tag mapping for identity %q and tag %q: %v", identittyName, tagName, err)
 		return err
 	}
 
