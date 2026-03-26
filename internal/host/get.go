@@ -134,10 +134,11 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 			}
 
 			if !slices.Contains(idsAdded, host.Id) {
-				host.Tags, err = tag.GetTagsByDataTypeID(db, host.Id)
-				if err != nil {
-					host.Tags = []string{"error occurred while fetching"}
-				}
+				// TODO: Freezed until further development
+				// host.Tags, err = tag.GetTagsByDataTypeID(db, host.Id)
+				// if err != nil {
+				// 	host.Tags = []string{"error occurred while fetching"}
+				// }
 				idsAdded = append(idsAdded, host.Id)
 				host.getJumphost(db)
 
@@ -149,7 +150,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 					host.User,
 					host.Region,
 					host.IdentityFile,
-					tag.ToString(host.Tags),
+					// tag.ToString(host.Tags),
 				})
 
 			}
@@ -163,7 +164,8 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 	case "table":
 		log.Debug("[host] rendering host data as table")
 		t := table.NewTable(
-			[]string{"NAME", "ADDRESS", "JUMPHOST", "USER", "REGION", "IDENTITY FILE", "TAGS"},
+			[]string{"NAME", "ADDRESS", "JUMPHOST", "USER", "REGION", "IDENTITY FILE"}, // "TAGS"
+
 			data,
 		)
 		return t.Print()

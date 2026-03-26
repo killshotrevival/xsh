@@ -108,17 +108,18 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 				continue
 			}
 			if !slices.Contains(idsAdded, id.Id) {
-				id.Tags, err = tag.GetTagsByDataTypeID(db, id.Id)
-				if err != nil {
-					id.Tags = []string{"error occurred while fetching"}
-				}
+				// TODO: Freezed until further development
+				// id.Tags, err = tag.GetTagsByDataTypeID(db, id.Id)
+				// if err != nil {
+				// 	id.Tags = []string{"error occurred while fetching"}
+				// }
 				idsAdded = append(idsAdded, id.Id)
 				identities = append(identities, id)
 				data = append(data, []string{
 					id.Id.String(),
 					id.Name,
 					id.Path,
-					tag.ToString(id.Tags),
+					// tag.ToString(id.Tags),
 				})
 			}
 		}
@@ -129,7 +130,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 	switch strings.ToLower(outputFormat) {
 	case "table":
 		t := table.NewTable([]string{
-			"ID", "NAME", "PATH", "TAGS",
+			"ID", "NAME", "PATH",
 		}, data)
 
 		return t.Print()

@@ -1,3 +1,4 @@
+// Tagging resources are freezed until further development
 package cmd
 
 import (

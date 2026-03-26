@@ -96,16 +96,17 @@ func Print(db *sql.DB, identifier, outputFormat string) error {
 			}
 
 			if !slices.Contains(idsAdded, r.Id) {
-				r.Tags, err = tag.GetTagsByDataTypeID(db, r.Id)
-				if err != nil {
-					r.Tags = []string{"error occurred while fetching"}
-				}
+				// TODO: Freezed until further development
+				// r.Tags, err = tag.GetTagsByDataTypeID(db, r.Id)
+				// if err != nil {
+				// 	r.Tags = []string{"error occurred while fetching"}
+				// }
 				idsAdded = append(idsAdded, r.Id)
 				regions = append(regions, r)
 				data = append(data, []string{
 					r.Id.String(),
 					r.Name,
-					tag.ToString(r.Tags),
+					// tag.ToString(r.Tags),
 				})
 			}
 		}
@@ -120,7 +121,7 @@ func Print(db *sql.DB, identifier, outputFormat string) error {
 			[]string{
 				"ID",
 				"NAME",
-				"TAGS",
+				// "TAGS",
 			},
 			data,
 		).Print()
