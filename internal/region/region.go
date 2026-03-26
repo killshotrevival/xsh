@@ -15,7 +15,7 @@ type Region struct {
 var (
 	insertRegionStmt = "INSERT INTO regions (id, name) VALUES (?, ?)"
 
-	deleteRegionStmt       = "DELETE REGIONS WHERE ID = ?"
+	deleteRegionStmt       = "DELETE FROM REGIONS WHERE ID = ?"
 	selectRegionStmt       = "SELECT ID, NAME FROM REGIONS"
 	selectRegionByNameStmt = "SELECT ID, NAME FROM REGIONS WHERE NAME LIKE ?"
 	getRegionIDByNameStmt  = "SELECT ID FROM REGIONS WHERE NAME = ?"

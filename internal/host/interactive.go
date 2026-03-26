@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"xsh/internal/identity"
 	"xsh/internal/region"
+	"xsh/internal/theme"
 
 	"charm.land/huh/v2"
 	"github.com/google/uuid"
@@ -30,7 +31,7 @@ func InteractivePut(db *sql.DB) error {
 					huh.NewOption("Create a new host from scratch", 2),
 				).Value(&createOption),
 		),
-	).WithTheme(huh.ThemeFunc(huh.ThemeCharm))
+	).WithTheme(huh.ThemeFunc(theme.ThemeXSH))
 
 	if err := form.Run(); err != nil {
 		return err
@@ -83,10 +84,14 @@ func cloneHost(db *sql.DB) error {
 				return nil
 			}),
 		),
-	)
+	).WithTheme(huh.ThemeFunc(theme.ThemeXSH))
 
 	if err := form.Run(); err != nil {
 		return err
+	}
+
+	if cloneHostId == "0" {
+		return createHost(db)
 	}
 
 	host, err := GetHostByID(db, cloneHostId)
@@ -114,7 +119,7 @@ func cloneHost(db *sql.DB) error {
 				return nil
 			}),
 		),
-	).WithTheme(huh.ThemeFunc(huh.ThemeCharm))
+	).WithTheme(huh.ThemeFunc(theme.ThemeXSH))
 
 	if err := form.Run(); err != nil {
 		return err
@@ -285,7 +290,7 @@ func createHost(db *sql.DB) error {
 				return nil
 			}),
 		),
-	).WithTheme(huh.ThemeFunc(huh.ThemeCharm))
+	).WithTheme(huh.ThemeFunc(theme.ThemeXSH))
 
 	if err := form.Run(); err != nil {
 		return err

@@ -7,30 +7,19 @@ import (
 )
 
 var (
-	headerColour     = tcell.NewHexColor(0x7571F9)
-	cellColour       = tcell.NewHexColor(0xFFFDF5)
-	backgroundColour = tcell.NewHexColor(0x1A1B26)
+	headerColour = tcell.NewHexColor(0x7571F9)
+	cellColour   = tcell.NewHexColor(0xFFFDF5)
 )
 
 type Table struct {
-	Headers     []string
-	Data        [][]string
-	headerStyle tcell.Style
-	dataStyle   tcell.Style
+	Headers []string
+	Data    [][]string
 }
 
 func NewTable(headers []string, data [][]string) *Table {
-	headerStyle := tcell.Style{}.Bold(true).
-		Background(backgroundColour)
-
-	dataStyle := tcell.Style{}.
-		Background(backgroundColour)
-
 	return &Table{
-		Headers:     headers,
-		Data:        data,
-		headerStyle: headerStyle,
-		dataStyle:   dataStyle,
+		Headers: headers,
+		Data:    data,
 	}
 }
 
@@ -40,7 +29,7 @@ func (t *Table) Print() error {
 
 	for c, value := range t.Headers {
 		table.SetCell(0, c,
-			tview.NewTableCell(value).SetStyle(t.headerStyle).
+			tview.NewTableCell(value).
 				SetTextColor(headerColour).
 				SetAlign(tview.AlignCenter))
 	}
@@ -49,7 +38,7 @@ func (t *Table) Print() error {
 		for c, value := range row {
 
 			table.SetCell(r+1, c,
-				tview.NewTableCell(value).SetStyle(t.dataStyle).
+				tview.NewTableCell(value).
 					SetTextColor(cellColour).
 					SetAlign(tview.AlignCenter))
 		}

@@ -4,6 +4,7 @@ package cmd
 import (
 	"fmt"
 	"xsh/internal/db"
+	"xsh/internal/theme"
 
 	"github.com/spf13/cobra"
 
@@ -46,6 +47,10 @@ var rootCmd = &cobra.Command{
 		} else {
 			log.Debug("Datbase file not found, seems like the user is yet to init the environment.")
 		}
+
+		// Apply tview theme
+		theme.ApplyTviewTheme()
+
 		return nil
 	},
 }
@@ -70,7 +75,7 @@ func init() {
 	getCmd.PersistentFlags().StringVarP(&getIdentifier, "identifier", "i", "*", "Identifier for filtering the data")
 
 	// Delete Command
-	deleteCmd.AddCommand(deleteHostCmd, deleteIdentityCmd, deleteRegionCmd)
+	deleteCmd.PersistentFlags().BoolVarP(&interactiveDelete, "interactive", "i", false, "Insert host in interactive mode")
 
 	// Example Command
 	exampleCmd.AddCommand(exampleHostCmd, exampleIdentityCmd)

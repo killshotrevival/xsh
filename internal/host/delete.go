@@ -24,6 +24,8 @@ func Delete(db *sql.DB, identifier string) error {
 		return err
 	}
 
+	// TODO: Delete tag mapping for the host
+
 	return nil
 }
 

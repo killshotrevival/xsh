@@ -2,71 +2,145 @@ package cmd
 
 import (
 	"database/sql"
+	"fmt"
+	"slices"
 	"xsh/internal/db"
 	"xsh/internal/host"
 	"xsh/internal/identity"
 	"xsh/internal/region"
+	"xsh/internal/theme"
 
+	"charm.land/huh/v2"
+	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
 
+var interactiveDelete bool
+
+var resourceDeleteMapping = map[string]func(*sql.DB, string) error{
+	"host":     host.Delete,
+	"region":   region.Delete,
+	"identity": identity.Delete,
+}
+
 var deleteCmd = &cobra.Command{
-	Use:   "delete [resource] [identifier]",
+	Use:   "delete",
 	Short: "Delete data from the database.",
 	Long:  `Delete data from the database based on specified criteria.`,
+	RunE:  deleteData,
 }
 
-var deleteHostCmd = &cobra.Command{
-	Use:     "host [identifier]",
-	Aliases: []string{"h"},
-	Args:    cobra.ExactArgs(1),
-	Short:   "Delete host from the database.",
-	Long: `Delete host from the database based on specified criteria.
-
-Arguments:
-  identifier: Any identifier for the resource selection. Please use * for selecting all
- `,
-	RunE: func(_ *cobra.Command, args []string) error {
-		return genericDelete(args[0], host.Delete)
-	},
-}
-
-var deleteRegionCmd = &cobra.Command{
-	Use:     "region [identifier]",
-	Args:    cobra.ExactArgs(1),
-	Aliases: []string{"r"},
-	Short:   "Delete region from the database.",
-	Long: `Delete region from the database based on specified criteria.
-
-Arguments:
-  identifier: Any identifier for the resource selection. Please use * for selecting all
- `,
-	RunE: func(_ *cobra.Command, args []string) error {
-		return genericDelete(args[0], region.Delete)
-	},
-}
-
-var deleteIdentityCmd = &cobra.Command{
-	Use:     "identity [identifier]",
-	Args:    cobra.ExactArgs(1),
-	Aliases: []string{"i"},
-	Short:   "Delete identity from the database.",
-	Long: `Delete identity from the database based on specified criteria.
-
-Arguments:
-  identifier: Any identifier for the resource selection. Please use * for selecting all
- `,
-	RunE: func(_ *cobra.Command, args []string) error {
-		return genericDelete(args[0], identity.Delete)
-	},
-}
-
-func genericDelete(identifer string, deletecFunc func(*sql.DB, string) error) error {
+func deleteData(cmd *cobra.Command, args []string) error {
 	dbConnection, err := db.GetDB()
 	if err != nil {
 		return err
 	}
 
 	defer dbConnection.Close()
-	return deletecFunc(dbConnection, identifer)
+	if interactiveDelete {
+		return Interactive(dbConnection)
+	}
+
+	if len(args) < 2 {
+		return fmt.Errorf("Expect arguments 2, found %d", len(args))
+	}
+
+	resource, identifier := args[0], args[1]
+
+	return resourceDeleteMapping[resource](dbConnection, identifier)
+}
+
+func Interactive(dbConnection *sql.DB) error {
+
+	var (
+		resource string
+		idLists  []string
+	)
+
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				Value(&resource).
+				Height(5).
+				Title("Select Resource").
+				Description("Please select the resource to delete").
+				OptionsFunc(func() []huh.Option[string] {
+					opts := []huh.Option[string]{}
+
+					for key := range resourceDeleteMapping {
+						opts = append(opts, huh.NewOption(key, key))
+					}
+					return opts
+				}, nil),
+		),
+		huh.NewGroup(
+			huh.NewMultiSelect[string]().
+				TitleFunc(func() string {
+					return fmt.Sprintf("Select %s(s)", resource)
+				}, nil).
+				DescriptionFunc(func() string {
+					return fmt.Sprintf("Please select all the %s(s) to delete", resource)
+				}, nil).OptionsFunc(func() []huh.Option[string] {
+				opts := []huh.Option[string]{}
+
+				switch resource {
+				case "host":
+					allHosts, err := host.GetShortHosts(dbConnection)
+					if err != nil {
+						log.Debugf("error occurred while trying to select host: %v", err)
+						return []huh.Option[string]{
+							huh.NewOption("error occurred while trying to select hosts", "-1"),
+						}
+					}
+					for _, host := range *allHosts {
+						opts = append(opts, huh.NewOption(host.Name, host.Name))
+					}
+				case "region":
+					allRegions, err := region.GetRegions(dbConnection)
+					if err != nil {
+						log.Debugf("error occurred while trying to select regions: %v", err)
+						return []huh.Option[string]{
+							huh.NewOption("error occurred while trying to select regions", "-1"),
+						}
+					}
+					for _, region := range *allRegions {
+						opts = append(opts, huh.NewOption(region.Name, region.Name))
+					}
+				case "identity":
+					allIds, err := identity.GetIdentity(dbConnection)
+					if err != nil {
+						log.Debugf("error occurred while trying to select identities: %v", err)
+						return []huh.Option[string]{
+							huh.NewOption("error occurred while trying to select identities", "-1"),
+						}
+					}
+					for _, id := range *allIds {
+						opts = append(opts, huh.NewOption(id.Name, id.Name))
+					}
+
+				}
+				return opts
+
+			}, nil).
+				Value(&idLists).Validate(func(s []string) error {
+				if slices.Contains(s, "-1") {
+					return fmt.Errorf("Invalid value selected")
+				}
+				return nil
+			}),
+		),
+	).WithTheme(huh.ThemeFunc(theme.ThemeXSH))
+
+	if err := form.Run(); err != nil {
+		return err
+	}
+
+	for _, id := range idLists {
+		log.Debugf("deleting %s %s", id, resource)
+		if err := resourceDeleteMapping[resource](dbConnection, id); err != nil {
+			log.Debugf("error occurred while trying to delete %s %s: %v", id, resource, err)
+		}
+	}
+
+	return nil
 }
