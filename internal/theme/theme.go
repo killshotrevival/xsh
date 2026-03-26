@@ -19,7 +19,7 @@ var (
 
 func ApplyTviewTheme() {
 	// Apply global styles for borders and backgrounds
-	tview.Styles.PrimitiveBackgroundColor = tcell.GetColor(BgColor)
+	// tview.Styles.PrimitiveBackgroundColor = tcell.GetColor(BgColor)
 	tview.Styles.ContrastBackgroundColor = tcell.GetColor("#313244") // Slightly lighter for contrast
 	tview.Styles.BorderColor = tcell.GetColor(MutedColor)
 	tview.Styles.TitleColor = tcell.GetColor(AccentColor)
