@@ -27,7 +27,7 @@ func ApplyTviewTheme() {
 	tview.Styles.SecondaryTextColor = tcell.GetColor(MutedColor)
 }
 
-func ThemeXSH(isDark bool) *huh.Styles {
+func XSH(isDark bool) *huh.Styles {
 	t := huh.ThemeBase(isDark)
 
 	// 1. General Form & Group styling

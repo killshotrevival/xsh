@@ -13,11 +13,15 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	noTagFoundError = "no tag found with given identifier"
+)
+
 func GetTag(db *sql.DB, identifier string) (*Tag, error) {
 	tag := Tag{}
 	if err := db.QueryRow(getTagWithTagStmt, identifier).Scan(&tag.Id, &tag.Tag); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no tag found with given identifier: (%s)", identifier)
+			return nil, fmt.Errorf("%s: (%s)", noTagFoundError, identifier)
 		}
 		return nil, err
 	}
@@ -57,6 +61,7 @@ func GetTagMapping(db *sql.DB, tagID, dataTypeID uuid.UUID) (*Mapping, error) {
 	return &tm, nil
 }
 
+// GetTagWithCreate will create a new with value equals to identifier if no tag is present in the database with the given name
 func GetTagWithCreate(db *sql.DB, identifier string) (*Tag, error) {
 	tag := &Tag{}
 	if err := db.QueryRow(getTagWithTagStmt, identifier).Scan(&tag.Id, &tag.Tag); err != nil {

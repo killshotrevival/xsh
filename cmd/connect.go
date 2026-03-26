@@ -28,7 +28,7 @@ func sshConnect(_ *cobra.Command, args []string) error {
 	}
 
 	if debug {
-		sshString = sshString + " -v"
+		sshString += " -v"
 	}
 	command := exec.Command("bash", "-c", sshString)
 

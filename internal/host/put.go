@@ -16,6 +16,8 @@ func PutHost(db *sql.DB, filepath string) error {
 		return err
 	}
 
+	// TODO: Validate the IDs redceived in the file
+
 	host := Host{Id: id}
 
 	data, err := os.ReadFile(filepath)

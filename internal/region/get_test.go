@@ -3,26 +3,28 @@ package region
 import (
 	"testing"
 	"xsh/internal/db"
-)
 
-var (
-	testResgionName = "testing-region"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetRegionByName(t *testing.T) {
 	dbConnection := db.GetTestDB(t)
+	defer dbConnection.Close()
 	if err := PutRegion(dbConnection, testResgionName); err != nil {
 		t.Fatalf("error occurred while adding region to database: %v", err)
 	}
 
-	_, err := GetRegionByName(dbConnection, testResgionName)
+	reg, err := GetRegionByName(dbConnection, testResgionName)
 	if err != nil {
 		t.Fatalf("unable to fetch region by name: %v", err)
 	}
+
+	assert.Equal(t, reg.Name, testResgionName)
 }
 
 func TestGetRegions(t *testing.T) {
 	dbConnection := db.GetTestDB(t)
+	defer dbConnection.Close()
 	if err := PutRegion(dbConnection, testResgionName); err != nil {
 		t.Fatalf("error occurred while adding region to database: %v", err)
 	}

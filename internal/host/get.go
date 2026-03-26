@@ -14,6 +14,10 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	noHostFoundError = "no host found with the given identifier"
+)
+
 func GetHostByName(db *sql.DB, identifier string) (*Host, error) {
 	return getHost(
 		db,
@@ -42,6 +46,9 @@ func getHost(db *sql.DB, queryString, identifier string) (*Host, error) {
 		&host.IdentityID,
 		&host.JumphostID,
 	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("%s : %v", noHostFoundError, err)
+		}
 		return nil, err
 	}
 

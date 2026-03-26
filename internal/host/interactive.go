@@ -12,13 +12,6 @@ import (
 	"github.com/google/uuid"
 )
 
-var (
-	hostCreateOptions = map[int]string{
-		1: "Clone from an existing host",
-		2: "Create a new host from scratch",
-	}
-)
-
 func InteractivePut(db *sql.DB) error {
 	var createOption int
 	form := huh.NewForm(
@@ -31,7 +24,7 @@ func InteractivePut(db *sql.DB) error {
 					huh.NewOption("Create a new host from scratch", 2),
 				).Value(&createOption),
 		),
-	).WithTheme(huh.ThemeFunc(theme.ThemeXSH))
+	).WithTheme(huh.ThemeFunc(theme.XSH))
 
 	if err := form.Run(); err != nil {
 		return err
@@ -46,7 +39,7 @@ func InteractivePut(db *sql.DB) error {
 
 func cloneHost(db *sql.DB) error {
 	var (
-		cloneHostId string
+		cloneHostID string
 	)
 	form := huh.NewForm(
 		huh.NewGroup(
@@ -77,24 +70,24 @@ func cloneHost(db *sql.DB) error {
 					}
 					return opts
 
-				}, nil).Value(&cloneHostId).Validate(func(s string) error {
+				}, nil).Value(&cloneHostID).Validate(func(s string) error {
 				if s == "-1" {
 					return fmt.Errorf("error occurred while selecting host, please exit and retry")
 				}
 				return nil
 			}),
 		),
-	).WithTheme(huh.ThemeFunc(theme.ThemeXSH))
+	).WithTheme(huh.ThemeFunc(theme.XSH))
 
 	if err := form.Run(); err != nil {
 		return err
 	}
 
-	if cloneHostId == "0" {
+	if cloneHostID == "0" {
 		return createHost(db)
 	}
 
-	host, err := GetHostByID(db, cloneHostId)
+	host, err := GetHostByID(db, cloneHostID)
 	if err != nil {
 		return err
 	}
@@ -119,7 +112,7 @@ func cloneHost(db *sql.DB) error {
 				return nil
 			}),
 		),
-	).WithTheme(huh.ThemeFunc(theme.ThemeXSH))
+	).WithTheme(huh.ThemeFunc(theme.XSH))
 
 	if err := form.Run(); err != nil {
 		return err
@@ -290,7 +283,7 @@ func createHost(db *sql.DB) error {
 				return nil
 			}),
 		),
-	).WithTheme(huh.ThemeFunc(theme.ThemeXSH))
+	).WithTheme(huh.ThemeFunc(theme.XSH))
 
 	if err := form.Run(); err != nil {
 		return err

@@ -30,7 +30,7 @@ var deleteCmd = &cobra.Command{
 	RunE:  deleteData,
 }
 
-func deleteData(cmd *cobra.Command, args []string) error {
+func deleteData(_ *cobra.Command, args []string) error {
 	dbConnection, err := db.GetDB()
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func deleteData(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(args) < 2 {
-		return fmt.Errorf("Expect arguments 2, found %d", len(args))
+		return fmt.Errorf("expect arguments 2, found %d", len(args))
 	}
 
 	resource, identifier := args[0], args[1]
@@ -107,14 +107,14 @@ func Interactive(dbConnection *sql.DB) error {
 						opts = append(opts, huh.NewOption(region.Name, region.Name))
 					}
 				case "identity":
-					allIds, err := identity.GetIdentity(dbConnection)
+					allIDs, err := identity.GetIdentity(dbConnection)
 					if err != nil {
 						log.Debugf("error occurred while trying to select identities: %v", err)
 						return []huh.Option[string]{
 							huh.NewOption("error occurred while trying to select identities", "-1"),
 						}
 					}
-					for _, id := range *allIds {
+					for _, id := range *allIDs {
 						opts = append(opts, huh.NewOption(id.Name, id.Name))
 					}
 
@@ -124,12 +124,12 @@ func Interactive(dbConnection *sql.DB) error {
 			}, nil).
 				Value(&idLists).Validate(func(s []string) error {
 				if slices.Contains(s, "-1") {
-					return fmt.Errorf("Invalid value selected")
+					return fmt.Errorf("invalid value selected")
 				}
 				return nil
 			}),
 		),
-	).WithTheme(huh.ThemeFunc(theme.ThemeXSH))
+	).WithTheme(huh.ThemeFunc(theme.XSH))
 
 	if err := form.Run(); err != nil {
 		return err

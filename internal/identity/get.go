@@ -15,6 +15,10 @@ import (
 	"github.com/charmbracelet/log"
 )
 
+var (
+	noIdentityFoundErr = "no identity found with the given identifier"
+)
+
 func GetIdentityByID(db *sql.DB, identifier uuid.UUID) (*Identity, error) {
 	id := Identity{}
 
@@ -52,7 +56,7 @@ func GetIdentityByName(db *sql.DB, identifier string) (*Identity, error) {
 
 	if err := db.QueryRow(getIdentityByNameStmt, identifier).Scan(&id.Id, &id.Name, &id.Path); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no identity found with the given identifier (%s)", identifier)
+			return nil, fmt.Errorf("%s (%s)", noIdentityFoundErr, identifier)
 		}
 		return nil, err
 	}
