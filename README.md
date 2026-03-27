@@ -41,6 +41,7 @@ This command will initilise the xsh environment as well as read the following fi
 - .ssh/config (TODO): Read the config file for populating the already present host configruation
 - .zshrc / .bashrc (TODO): Read the config file for populating the already present host configruation
 
+<!-- TODo: Add Gifs for all the comments -->
 ### Add New Resources
 ```bash
 # This command will add a new region in the database that can be mapped to hosts

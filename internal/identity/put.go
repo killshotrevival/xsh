@@ -9,6 +9,7 @@ import (
 
 func PutIdentity(db *sql.DB, name, path string) error {
 	// TODO: Check if the path provided contains a file or not
+	// Make sure the path provided is abslute path not relative path
 	id, err := NewIdentity(name, path)
 	if err != nil {
 		return nil

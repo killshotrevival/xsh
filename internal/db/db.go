@@ -181,6 +181,7 @@ func CheckAndApplyMigrations() error {
 }
 
 func applyMigrations(db *sql.DB, fileNames []string) error {
+	// TODO: Before applying the migration, make sure to make a backup database
 	for _, file := range fileNames {
 		content, err := migrationFiles.ReadFile("migrations/" + file)
 		if err != nil {
