@@ -32,7 +32,11 @@ go.work.sum
 # .vscode/
 
 # Temp output files
-*.json
+host.json
+region.json
+identity.json
+example.json
+resource.json
 
 # XSH binary
 xsh

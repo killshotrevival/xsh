@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout
-          uses: actions/checkout@v6
+          uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
         - name: Setup Go
-          uses: actions/setup-go@v6
+          uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417
           with:
             go-version-file: "go.mod"
             cache: true
@@ -29,7 +29,7 @@ jobs:
             VERSION: ${{  github.ref_name }}
 
         - name: Uploading artifacts
-          uses: softprops/action-gh-release@v2
+          uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe
           with:
             files: |
               bin/xsh-linux
@@ -39,10 +39,10 @@ jobs:
     runs-on: macos-latest
     steps:
         - name: Checkout
-          uses: actions/checkout@v6
+          uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
         - name: Setup Go
-          uses: actions/setup-go@v6
+          uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417
           with:
             go-version-file: "go.mod"
             cache: true
@@ -53,7 +53,7 @@ jobs:
             VERSION: ${{ github.ref_name }}
 
         - name: Uploading artifacts
-          uses: softprops/action-gh-release@v2
+          uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe
           with:
             files: |
               bin/xsh-mac

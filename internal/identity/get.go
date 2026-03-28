@@ -80,7 +80,7 @@ func getIdentityAndTag(db *sql.DB, identittyName, tagName string) (*Identity, *t
 
 }
 
-func Print(db *sql.DB, identifier string, outputFormat string) error {
+func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 	var rows *sql.Rows
 	var err error
 
@@ -135,11 +135,11 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 
 		return t.Print()
 	case "json":
-		log.Debug("[identity] exporting identity data to identity.json")
+		log.Debug("[identity] exporting identity data to json file")
 
 		by, _ := json.Marshal(&identities)
 
-		return os.WriteFile("identity.json", by, 0644)
+		return os.WriteFile(outputFile, by, 0644)
 	default:
 		return fmt.Errorf("invalid output format provided")
 	}

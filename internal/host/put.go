@@ -11,25 +11,39 @@ import (
 )
 
 func PutHost(db *sql.DB, filepath string) error {
-	id, err := uuid.NewUUID()
-	if err != nil {
-		return err
-	}
-
-	// TODO: Validate the IDs redceived in the file
-
-	host := Host{Id: id}
-
 	data, err := os.ReadFile(filepath)
 	if err != nil {
 		return err
 	}
 
+	hosts := []Host{}
+	host := Host{}
 	if err := json.Unmarshal(data, &host); err != nil {
-		return err
+		log.Debugf("[host] error occurred while parsing single host file, check for multipl host in the file: %v", err)
+		if err := json.Unmarshal(data, &hosts); err != nil {
+			log.Debugf("[host] error occurred while reading multiplke hosts from the file: %v", err)
+			return err
+		}
+	} else {
+		hosts = append(hosts, host)
 	}
 
-	return host.Store(db)
+	for _, h := range hosts {
+		id, err := uuid.NewUUID()
+		if err != nil {
+			log.Warnf("[host] error occurred while trying to generate the id for host: %v", err)
+			continue
+		}
+		h.Id = id
+		// TODO: Validate the IDs redceived in the file
+
+		if err := h.Store(db); err != nil {
+			log.Warnf("[host] error occurred while writing hosts: %v", err)
+		}
+
+	}
+
+	return nil
 
 }
 

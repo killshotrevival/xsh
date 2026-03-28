@@ -93,7 +93,7 @@ func GetShortHosts(db *sql.DB) (*[]ShortHost, error) {
 	return &hosts, nil
 }
 
-func Print(db *sql.DB, identifier string, outputFormat string) error {
+func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 	var rows *sql.Rows
 	var err error
 
@@ -171,9 +171,9 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 		return t.Print()
 
 	case "json":
-		log.Debug("[host] exporting host data to hosts.json")
+		log.Debug("[host] exporting host data to json file", "outputfile", outputFile)
 		by, _ := json.Marshal(&printHost)
-		return os.WriteFile("hosts.json", by, 0644)
+		return os.WriteFile(outputFile, by, 0644)
 	default:
 		return fmt.Errorf("invalid output format provided")
 	}

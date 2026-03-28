@@ -67,7 +67,7 @@ func GetRegions(db *sql.DB) (*[]Region, error) {
 	return &regions, nil
 }
 
-func Print(db *sql.DB, identifier, outputFormat string) error {
+func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 	var rows *sql.Rows
 	var err error
 
@@ -126,9 +126,9 @@ func Print(db *sql.DB, identifier, outputFormat string) error {
 			data,
 		).Print()
 	case "json":
-		log.Debug("[region] exporting region data to region.json")
+		log.Debug("[region] exporting region data to json file")
 		by, _ := json.Marshal(&regions)
-		return os.WriteFile("region.json", by, 0644)
+		return os.WriteFile(outputFile, by, 0644)
 	default:
 		return fmt.Errorf("invalid output format received")
 	}

@@ -13,6 +13,7 @@ import (
 
 var (
 	outputFormat  string
+	getOutputFile string
 	getIdentifier string
 )
 
@@ -69,12 +70,12 @@ Arguments:
 	},
 }
 
-func genericGetData(identifier, outputFormat string, getFunction func(*sql.DB, string, string) error) error {
+func genericGetData(identifier, outputFormat string, getFunction func(*sql.DB, string, string, string) error) error {
 	dbConnection, err := db.GetDB()
 	if err != nil {
 		return fmt.Errorf("error connecting to database: %w", err)
 	}
 	defer dbConnection.Close()
 
-	return getFunction(dbConnection, identifier, outputFormat)
+	return getFunction(dbConnection, identifier, outputFormat, getOutputFile)
 }

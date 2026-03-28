@@ -12,20 +12,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var outputFile string
+
 var exampleCmd = &cobra.Command{
 	// TODO: Take output file name as input
 	Use:   "example [resource]",
 	Short: "Generate example format for resource",
-	Long:  `Get JSON example of the datatype under example.json file. Can be used for JSON inserting data`,
+	Long:  `Get JSON example of the datatype under a file. Can be used for JSON inserting data`,
 }
 
 var exampleHostCmd = &cobra.Command{
 	Use:     "host",
 	Aliases: []string{"h"},
 	Short:   "Generate example format for host",
-	Long:    `Get JSON example of the datatype under example.json file. Can be used for JSON inserting data`,
+	Long:    `Get JSON example of the datatype under a file. Can be used for JSON inserting data`,
 	RunE: func(_ *cobra.Command, _ []string) error {
-		return generateExampleFromComments(host.Host{}, []string{"id", "region_name", "jumphost_name", "identitiy_file_name", "tags"})
+		return generateExampleFromComments(host.Host{}, []string{"id", "region_name", "jumphost_name", "identitiy_file_name", "tags"}, outputFile)
 	},
 }
 
@@ -33,13 +35,13 @@ var exampleIdentityCmd = &cobra.Command{
 	Use:     "identity",
 	Aliases: []string{"i"},
 	Short:   "Generate example format for identity",
-	Long:    `Get JSON example of the datatype under example.json file. Can be used for JSON inserting data`,
+	Long:    `Get JSON example of the datatype under a file. Can be used for JSON inserting data`,
 	RunE: func(_ *cobra.Command, _ []string) error {
-		return generateExampleFromComments(identity.Identity{}, []string{"id", "tags"})
+		return generateExampleFromComments(identity.Identity{}, []string{"id", "tags"}, outputFile)
 	},
 }
 
-func generateExampleFromComments(v any, ignoreKeys []string) error {
+func generateExampleFromComments(v any, ignoreKeys []string, output string) error {
 	val := reflect.TypeOf(v)
 
 	result := "{\n"
@@ -64,6 +66,6 @@ func generateExampleFromComments(v any, ignoreKeys []string) error {
 	result = result[0 : len(result)-2]
 	result += "\n}\n"
 
-	return os.WriteFile("example.json", []byte(result), 0644)
+	return os.WriteFile(output, []byte(result), 0644)
 
 }

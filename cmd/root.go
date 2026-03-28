@@ -73,12 +73,14 @@ func init() {
 	getCmd.AddCommand(getHostCmd, getRegionCmd, getIdentityCmd)
 	getCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "table", "Format of the output")
 	getCmd.PersistentFlags().StringVarP(&getIdentifier, "identifier", "i", "*", "Identifier for filtering the data")
+	getCmd.PersistentFlags().StringVarP(&getOutputFile, "output-file", "f", "resource.json", "Output file name, only used when output format is `json`")
 
 	// Delete Command
 	deleteCmd.PersistentFlags().BoolVarP(&interactiveDelete, "interactive", "i", false, "Insert host in interactive mode")
 
 	// Example Command
 	exampleCmd.AddCommand(exampleHostCmd, exampleIdentityCmd)
+	exampleCmd.PersistentFlags().StringVarP(&outputFile, "output", "o", "example.json", "Output file name")
 
 	// Tag Command
 	tagCmd.AddCommand(tagHostCmd, TagIDentityCmd, tagRegionCmd)

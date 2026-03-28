@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"xsh/internal/utils"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -16,16 +17,14 @@ func removeTempDir(path string, t *testing.T) {
 }
 
 func TestGetDBPath(t *testing.T) {
-	path, err := os.MkdirTemp("", "xsh_temp_dir_*")
-	if err != nil {
-		t.Fatalf("error ocurred while creating temp dir for testing: %v", err)
-	}
 
-	defer removeTempDir(path, t)
+	path := utils.GetXSHTempDir(t)
+
+	defer utils.RemoveTempDir(path, t)
 
 	dbPath := filepath.Join(path, "xsh.db")
 
-	if err = os.Setenv("XSH_DB_PATH", dbPath); err != nil {
+	if err := os.Setenv("XSH_DB_PATH", dbPath); err != nil {
 		t.Fatalf("error occured while populating XSH_DB_PATH env: %v", err)
 	}
 
@@ -39,16 +38,14 @@ func TestGetDBPath(t *testing.T) {
 }
 
 func TestInitDB(t *testing.T) {
-	path, err := os.MkdirTemp("", "xsh_temp_dir_*")
-	if err != nil {
-		t.Fatalf("error ocurred while creating temp dir for testing: %v", err)
-	}
 
-	defer removeTempDir(path, t)
+	path := utils.GetXSHTempDir(t)
+
+	defer utils.RemoveTempDir(path, t)
 
 	dbPath := filepath.Join(path, "xsh.db")
 
-	if err = os.Setenv("XSH_DB_PATH", dbPath); err != nil {
+	if err := os.Setenv("XSH_DB_PATH", dbPath); err != nil {
 		t.Fatalf("error occured while populating XSH_DB_PATH env: %v", err)
 	}
 

@@ -7,6 +7,9 @@
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go&logoColor=white)](https://golang.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+![Release status](https://github.com/killshotrevival/xsh/actions/workflows/release.yaml/badge.svg)
+
+
 ## Overview
 
 XSH extends SSH functionality by providing a unified interface for storing, managing, and executing SSH connections. It eliminates the need to remember complex SSH commands, IP addresses, and configuration details by storing everything in a local SQLite database.
@@ -22,6 +25,12 @@ XSH extends SSH functionality by providing a unified interface for storing, mana
 
 ## Installation
 
+### Install From Github
+- Go to release section of xsh repo, https://github.com/killshotrevival/xsh/releases
+
+- Download the desired cli
+
+### Build From Source
 ```bash
 git clone https://github.com/killshotrevival/xsh.git
 cd xsh
@@ -29,7 +38,19 @@ cd xsh
 make build
 ```
 
-## Usage
+### Ensure Presence In PATH
+
+```bash
+
+mkdir -p ~/.local/bin
+mv xsh ~/.local/bin/
+chmod +x ~/.local/bin/xsh
+
+# Make sure the binary directory is presnet under $PATH
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc   # or ~/.zshrc
+```
+
+## Quick Start
 
 ### System Init
 ```bash
@@ -41,7 +62,6 @@ This command will initilise the xsh environment as well as read the following fi
 - .ssh/config (TODO): Read the config file for populating the already present host configruation
 - .zshrc / .bashrc (TODO): Read the config file for populating the already present host configruation
 
-<!-- TODo: Add Gifs for all the comments -->
 ### Add New Resources
 ```bash
 # This command will add a new region in the database that can be mapped to hosts
