@@ -36,7 +36,7 @@ func TestDeleteJumphost(t *testing.T) {
 		t.Fatalf("error occurred while adding host to database: %v", err)
 	}
 
-	err := Delete(dbConnection, testHostName)
+	err := Delete(dbConnection, testJumpHostName)
 
 	assert.Equal(t, jumphostDeleteError, err)
 }

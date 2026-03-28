@@ -19,7 +19,7 @@ func TestGetTag(t *testing.T) {
 		t.Fatalf("error occurred while fetching tag from database: %v", err)
 	}
 
-	assert.Equal(t, tag.Tag, testTag)
+	assert.Equal(t, testTag, tag.Tag)
 }
 
 func TestGetTagWithCreate(t *testing.T) {
@@ -40,5 +40,5 @@ func TestGetTagWithCreate(t *testing.T) {
 		t.Fatalf("error occurred while fetching tag from database: %v", err)
 	}
 
-	assert.Equal(t, tag.Tag, tempTag)
+	assert.Equal(t, tempTag, tag.Tag)
 }

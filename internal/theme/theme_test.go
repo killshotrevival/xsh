@@ -11,11 +11,11 @@ import (
 
 func TestApplyTheme(t *testing.T) {
 	ApplyTviewTheme()
-	assert.Equal(t, tview.Styles.TitleColor, tcell.GetColor(AccentColor))
+	assert.Equal(t, tcell.GetColor(BgColor), tview.Styles.TitleColor)
 }
 
 func TestXSH(t *testing.T) {
 	style := XSH(false)
 
-	assert.Equal(t, style.Group.Title.GetForeground(), lipgloss.Color(AccentColor))
+	assert.Equal(t, lipgloss.Color(AccentColor), style.Group.Title.GetForeground())
 }

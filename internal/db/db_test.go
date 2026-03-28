@@ -33,7 +33,7 @@ func TestGetDBPath(t *testing.T) {
 		t.Fatalf("error occurred while fetchinig DB PATh")
 	}
 
-	assert.Equal(t, p, dbPath)
+	assert.Equal(t, dbPath, p)
 
 }
 

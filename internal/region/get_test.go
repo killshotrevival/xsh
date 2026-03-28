@@ -19,7 +19,7 @@ func TestGetRegionByName(t *testing.T) {
 		t.Fatalf("unable to fetch region by name: %v", err)
 	}
 
-	assert.Equal(t, reg.Name, testResgionName)
+	assert.Equal(t, testResgionName, reg.Name)
 }
 
 func TestGetRegions(t *testing.T) {

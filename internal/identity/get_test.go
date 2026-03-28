@@ -38,5 +38,5 @@ func TestGetIdentityByName(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error occurred while trying to fetch identity with name: %v", err)
 	}
-	assert.Equal(t, id.Name, testIdentityName)
+	assert.Equal(t, testIdentityName, id.Name)
 }
