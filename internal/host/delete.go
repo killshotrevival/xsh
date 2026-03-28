@@ -9,6 +9,10 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	jumphostDeleteError = fmt.Errorf("other hosts are using this resource as jumphost, can not proceed with deleting")
+)
+
 func Delete(db *sql.DB, identifier string) error {
 	var h uuid.UUID
 
@@ -20,7 +24,15 @@ func Delete(db *sql.DB, identifier string) error {
 		return err
 	}
 
-	// TODO: Check if there are hosts present which are using this host as jump host
+	rows, err := db.Query(getHostByJumphostIdStmt, h)
+	if err != nil {
+		log.Debugf("[host] error occurred while checking the jumphost mapping: %v", err)
+		return err
+	}
+
+	if rows.Next() {
+		return jumphostDeleteError
+	}
 
 	if _, err = db.Exec(deleteHostStmt, h); err != nil {
 		return err

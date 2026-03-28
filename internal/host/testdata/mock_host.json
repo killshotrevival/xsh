@@ -1,20 +1,30 @@
 [
     {
-    "address": "example.com",
-    "identity_id": "7f1620cb-b627-4f32-a7eb-e05d19d6065c",
-    "jumphost_id": null,
-    "name": "test-host",
-    "port": 22,
-    "region_id": "dbd31312-f575-4d2f-803d-57b506b14d0c",
-    "user": "ptyagi"
+        "address": "example.com",
+        "identity_id": "7f1620cb-b627-4f32-a7eb-e05d19d6065c",
+        "jumphost_id": null,
+        "name": "test-host",
+        "port": 22,
+        "region_id": "dbd31312-f575-4d2f-803d-57b506b14d0c",
+        "user": "ptyagi"
     },
     {
-    "address": "test-example.ai",
-    "identity_id": "7f1620cb-b627-4f32-a7eb-e05d19d6065c",
-    "jumphost_id": null,
-    "name": "test-host-1",
-    "port": 22,
-    "region_id": "dbd31312-f575-4d2f-803d-57b506b14d0c",
-    "user": "ptyagi"
+        "address": "test-example.ai",
+        "identity_id": "7f1620cb-b627-4f32-a7eb-e05d19d6065c",
+        "jumphost_id": "1ace2504-5d53-4e30-86b4-0df294aac52f",
+        "name": "test-host-1",
+        "port": 22,
+        "region_id": "dbd31312-f575-4d2f-803d-57b506b14d0c",
+        "user": "ptyagi"
+    },
+    {
+        "id": "1ace2504-5d53-4e30-86b4-0df294aac52f",
+        "address": "jumphost.ai",
+        "identity_id": "7f1620cb-b627-4f32-a7eb-e05d19d6065c",
+        "jumphost_id": null,
+        "name": "jumphost-1",
+        "port": 22,
+        "region_id": "dbd31312-f575-4d2f-803d-57b506b14d0c",
+        "user": "ptyagi"
     }
 ]

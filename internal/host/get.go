@@ -29,7 +29,7 @@ func GetHostByName(db *sql.DB, identifier string) (*Host, error) {
 func GetHostByID(db *sql.DB, identifier string) (*Host, error) {
 	return getHost(
 		db,
-		GetHostByIDStmt,
+		getHostByIDStmt,
 		identifier,
 	)
 }

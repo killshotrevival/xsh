@@ -7,6 +7,7 @@ import (
 
 var (
 	testHostName         = "test-host"
+	testJumpHostName     = "jumphost-1"
 	testHostJSONFilePath = "testdata/mock_host.json"
 )
 

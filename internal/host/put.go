@@ -29,12 +29,14 @@ func PutHost(db *sql.DB, filepath string) error {
 	}
 
 	for _, h := range hosts {
-		id, err := uuid.NewUUID()
-		if err != nil {
-			log.Warnf("[host] error occurred while trying to generate the id for host: %v", err)
-			continue
+		if h.Id == uuid.Nil {
+			id, err := uuid.NewUUID()
+			if err != nil {
+				log.Warnf("[host] error occurred while trying to generate the id for host: %v", err)
+				continue
+			}
+			h.Id = id
 		}
-		h.Id = id
 		// TODO: Validate the IDs redceived in the file
 
 		if err := h.Store(db); err != nil {

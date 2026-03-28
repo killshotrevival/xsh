@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 	"xsh/internal/db"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDelete(t *testing.T) {
@@ -25,4 +27,16 @@ func TestDelete(t *testing.T) {
 	}
 
 	t.Fatal("host present in database event though delete executed successfully")
+}
+
+func TestDeleteJumphost(t *testing.T) {
+	dbConnection := db.GetTestDB(t)
+	defer dbConnection.Close()
+	if err := PutHost(dbConnection, testHostJSONFilePath); err != nil {
+		t.Fatalf("error occurred while adding host to database: %v", err)
+	}
+
+	err := Delete(dbConnection, testHostName)
+
+	assert.Equal(t, jumphostDeleteError, err)
 }
