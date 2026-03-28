@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"embed"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -75,7 +76,7 @@ func GetTestDB(t *testing.T) *sql.DB {
 		fileNames = append(fileNames, file.Name())
 	}
 
-	if err := applyMigrations(db, fileNames); err != nil {
+	if err := applyMigrations(db, fileNames, false); err != nil {
 		t.Fatalf("error occurred while applying migrations: %v", err)
 	}
 
@@ -94,6 +95,43 @@ func GetDB() (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func createBackup() error {
+
+	dbPath, err := GetDBPath()
+	if err != nil {
+		return err
+	}
+
+	// Create destination path: same dir + ".bck"
+	dst := dbPath + ".bck"
+
+	// Open source file
+	in, err := os.Open(dbPath)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	// Create destination file
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Copy contents
+	if _, err := io.Copy(out, in); err != nil {
+		return err
+	}
+
+	// Ensure data is flushed
+	if err := out.Sync(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func TableExists(db *sql.DB, tableName string) (bool, error) {
@@ -166,7 +204,7 @@ func CheckAndApplyMigrations() error {
 
 	if len(fileNames) > 0 {
 		log.Debugf("[database] found %d pending migration(s) to apply to the local database", len(fileNames))
-		if err := applyMigrations(db, fileNames); err != nil {
+		if err := applyMigrations(db, fileNames, true); err != nil {
 			return err
 		}
 
@@ -180,8 +218,14 @@ func CheckAndApplyMigrations() error {
 	return nil
 }
 
-func applyMigrations(db *sql.DB, fileNames []string) error {
-	// TODO: Before applying the migration, make sure to make a backup database
+func applyMigrations(db *sql.DB, fileNames []string, backup bool) error {
+	if backup {
+		log.Debug("creating a backup file before applying migrations")
+		if err := createBackup(); err != nil {
+			log.Warnf("error occurred while creating a backup file for the database")
+			return err
+		}
+	}
 	for _, file := range fileNames {
 		content, err := migrationFiles.ReadFile("migrations/" + file)
 		if err != nil {
@@ -218,7 +262,7 @@ func InitDB() error {
 	}
 
 	log.Debugf("[database] applying initial database migrations")
-	if err := applyMigrations(db, fileNames); err != nil {
+	if err := applyMigrations(db, fileNames, false); err != nil {
 		log.Debugf("[database] failed to apply initial migrations: %v", err)
 		return err
 	}

@@ -15,7 +15,6 @@ import (
 var outputFile string
 
 var exampleCmd = &cobra.Command{
-	// TODO: Take output file name as input
 	Use:   "example [resource]",
 	Short: "Generate example format for resource",
 	Long:  `Get JSON example of the datatype under a file. Can be used for JSON inserting data`,

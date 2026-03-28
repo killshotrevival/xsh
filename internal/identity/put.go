@@ -2,14 +2,27 @@ package identity
 
 import (
 	"database/sql"
+	"fmt"
+	"os"
+	"path/filepath"
 	"xsh/internal/tag"
 
 	"github.com/charmbracelet/log"
 )
 
+var (
+	relativeFilePathError = "identity file path provided is relative to the user. We need an absolute file path"
+)
+
 func PutIdentity(db *sql.DB, name, path string) error {
-	// TODO: Check if the path provided contains a file or not
-	// Make sure the path provided is abslute path not relative path
+	if !filepath.IsAbs(path) {
+		return fmt.Errorf("%s", relativeFilePathError)
+	}
+
+	if _, err := os.Stat(path); err != nil {
+		log.Debugf("error occurred while trying to fetch identity file details: %v", err)
+		return err
+	}
 	id, err := NewIdentity(name, path)
 	if err != nil {
 		return nil
