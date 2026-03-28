@@ -21,7 +21,9 @@ var (
 	getIdentityIDByNameStmt = "SELECT ID FROM IDENTITIES WHERE NAME = ?"
 	getIdentityByNameStmt   = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE NAME = ?"
 	getIdentityByPathStmt   = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE PATH = ?"
-	GetIdentityByIDStmt     = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE ID = ?"
+	getIdentityByIDStmt     = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE ID = ?"
+
+	getHostIDByIdentityStmt = "SELECT ID FROM HOSTS WHERE IDENTITY_ID = ?"
 
 	sshKeyMarkers = []string{
 		"-----BEGIN OPENSSH PRIVATE KEY-----",
@@ -32,7 +34,7 @@ var (
 )
 
 type Identity struct {
-	Id   uuid.UUID `json:"id"`
+	Id   uuid.UUID `json:"id"` //nolint:revive
 	Name string    `json:"name" comment:"Name of the identity file"`
 	Path string    `json:"path" comment:"Absolute path of the identity file"`
 	// Tags []string  `json:"tags"`

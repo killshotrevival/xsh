@@ -15,7 +15,7 @@ import (
 
 	"github.com/charmbracelet/log"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3" // SQLite driver registration
 )
 
 var (

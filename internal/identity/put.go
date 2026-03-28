@@ -11,12 +11,12 @@ import (
 )
 
 var (
-	relativeFilePathError = fmt.Errorf("identity file path provided is relative to the user. We need an absolute file path")
+	errRelativeFilePath = fmt.Errorf("identity file path provided is relative to the user. We need an absolute file path")
 )
 
 func PutIdentity(db *sql.DB, name, path string) error {
 	if !filepath.IsAbs(path) {
-		return relativeFilePathError
+		return errRelativeFilePath
 	}
 
 	if _, err := os.Stat(path); err != nil {

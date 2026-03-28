@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	jumphostDeleteError = fmt.Errorf("other hosts are using this resource as jumphost, can not proceed with deleting")
+	errJumphostDelete = fmt.Errorf("other hosts are using this resource as jumphost, can not proceed with deleting")
 )
 
 func Delete(db *sql.DB, identifier string) error {
@@ -24,21 +24,20 @@ func Delete(db *sql.DB, identifier string) error {
 		return err
 	}
 
-	rows, err := db.Query(getHostByJumphostIdStmt, h)
+	rows, err := db.Query(getHostByJumphostIDStmt, h)
 	if err != nil {
 		log.Debugf("[host] error occurred while checking the jumphost mapping: %v", err)
 		return err
 	}
 
 	if rows.Next() {
-		return jumphostDeleteError
+		return errJumphostDelete
 	}
 
 	if _, err = db.Exec(deleteHostStmt, h); err != nil {
 		return err
 	}
 
-	// TODO: Delete tag mapping for the host
 	return nil
 }
 

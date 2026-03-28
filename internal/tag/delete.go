@@ -22,5 +22,3 @@ func Delete(db *sql.DB, identifier string) error {
 	}
 	return nil
 }
-
-// TODO: Add delete tag mapping support

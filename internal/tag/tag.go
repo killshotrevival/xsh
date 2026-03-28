@@ -8,12 +8,12 @@ import (
 )
 
 type Tag struct {
-	Id  uuid.UUID `json:"id"`
+	Id  uuid.UUID `json:"id"` //nolint:revive
 	Tag string    `json:"tag"`
 }
 
 type Mapping struct {
-	Id         uuid.UUID `json:"id"`
+	Id         uuid.UUID `json:"id"` //nolint:revive
 	TagID      uuid.UUID `json:"tag_id"`
 	DataTypeID uuid.UUID `json:"data_type_id"`
 }

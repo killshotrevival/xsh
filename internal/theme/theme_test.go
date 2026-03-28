@@ -11,7 +11,7 @@ import (
 
 func TestApplyTheme(t *testing.T) {
 	ApplyTviewTheme()
-	assert.Equal(t, tcell.GetColor(BgColor), tview.Styles.TitleColor)
+	assert.Equal(t, tcell.GetColor(AccentColor), tview.Styles.TitleColor)
 }
 
 func TestXSH(t *testing.T) {

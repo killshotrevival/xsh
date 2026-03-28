@@ -23,7 +23,7 @@ func TestPutIdentity(t *testing.T) {
 
 func TestPutIdentityPath(t *testing.T) {
 	err := PutIdentity(nil, testIdentityName, "~/.ssh/testing")
-	assert.Contains(t, relativeFilePathError, err.Error())
+	assert.Equal(t, errRelativeFilePath, err)
 
 	err = PutIdentity(nil, testIdentityName, "/User/twelcon/Desktop/testing")
 	assert.Contains(t, err.Error(), "no such file or directory")

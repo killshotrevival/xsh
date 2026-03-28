@@ -7,7 +7,7 @@ import (
 )
 
 type Region struct {
-	Id   uuid.UUID `json:"id"`
+	Id   uuid.UUID `json:"id"` //nolint:revive
 	Name string    `json:"name"`
 	// Tags []string  `json:"tags"`
 }
@@ -19,6 +19,9 @@ var (
 	selectRegionStmt       = "SELECT ID, NAME FROM REGIONS"
 	selectRegionByNameStmt = "SELECT ID, NAME FROM REGIONS WHERE NAME LIKE ?"
 	getRegionIDByNameStmt  = "SELECT ID FROM REGIONS WHERE NAME = ?"
+	GetRegionByIDStmt      = "SELECT ID, NAME FROM REGIONS WHERE ID = ?"
+
+	getHostIDByRegionStmt = "SELECT ID FROM HOSTS WHERE REGION_ID = ?"
 )
 
 func NewRegion(name string) (*Region, error) {

@@ -9,6 +9,17 @@ import (
 	"github.com/google/uuid"
 )
 
+func checkIdentity(db *sql.DB, identityID string) error {
+	var hID string
+	if err := db.QueryRow(getHostIDByIdentityStmt, identityID).Scan(&hID); err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		return err
+	}
+	return fmt.Errorf("host present in the database with identity provided")
+}
+
 func Delete(db *sql.DB, identifier string) error {
 	var i uuid.UUID
 
@@ -18,7 +29,10 @@ func Delete(db *sql.DB, identifier string) error {
 		}
 		return err
 	}
-	// TODO: Chec if there are hosts present attached to this identity file
+
+	if err := checkIdentity(db, i.String()); err != nil {
+		return err
+	}
 
 	if _, err := db.Exec(deleteIdentityStmt, i); err != nil {
 		return err

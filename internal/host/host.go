@@ -9,9 +9,10 @@ import (
 
 var (
 	getHostIDByNameStmt     = "SELECT ID FROM HOSTS WHERE NAME = ?"
+	getHostIDByAddressStmt  = "SELECT ID FROM HOSTS WHERE ADDRESS = ?"
 	getHostByNameStmt       = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS WHERE NAME = ?"
 	getHostByIDStmt         = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID FROM HOSTS WHERE ID = ?"
-	getHostByJumphostIdStmt = "SELECT ID FROM HOSTS WHERE JUMPHOST_ID = ?"
+	getHostByJumphostIDStmt = "SELECT ID FROM HOSTS WHERE JUMPHOST_ID = ?"
 	getJumphostName         = "SELECT NAME FROM HOSTS WHERE ID = ?"
 	getShortHostStmt        = "SELECT ID, NAME FROM HOSTS"
 
@@ -24,12 +25,12 @@ var (
 )
 
 type ShortHost struct {
-	Id   uuid.UUID
+	Id   uuid.UUID //nolint:revive
 	Name string
 }
 
 type Host struct {
-	Id         uuid.UUID     `json:"id"`
+	Id         uuid.UUID     `json:"id"` //nolint:revive
 	Name       string        `json:"name" comment:"Unique name of the host"`
 	Address    string        `json:"address" comment:"Domain / IP address of the host without port"`
 	Port       int           `json:"port" comment:"Port on which ssh connection will be created"`
@@ -65,16 +66,16 @@ func NewHost(name, address, user string, port int, regionID, identityID uuid.UUI
 }
 
 func (h *Host) Store(db *sql.DB) error {
-	rows, err := db.Query("select id from hosts where address = ?", h.Address)
-	if err != nil {
-		return err
-	}
-	if rows.Next() {
+	if err := checkAddress(db, h.Address); err != nil {
 		log.Warn("[host] a host with this address already exists, skipping insert")
 		return nil
 	}
 
-	_, err = db.Exec(insertHostStmt, h.Id, h.Name, h.Address, h.Port, h.User, h.RegionID, h.IdentityID, h.JumphostID)
+	if err := checkName(db, h.Name); err != nil {
+		log.Warn("[host] a host with this name already exists, skipping insert")
+		return nil
+	}
+	_, err := db.Exec(insertHostStmt, h.Id, h.Name, h.Address, h.Port, h.User, h.RegionID, h.IdentityID, h.JumphostID)
 	return err
 }
 

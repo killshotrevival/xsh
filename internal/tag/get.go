@@ -132,7 +132,7 @@ func Print(db *sql.DB, identifier string, outputFormat string) error {
 	case "json":
 		log.Debug("[tag] exporting tag data to tags.json")
 		by, _ := json.Marshal(&tags)
-		return os.WriteFile("tags.json", by, 0644)
+		return os.WriteFile("tags.json", by, 0600)
 	default:
 		return fmt.Errorf("invalid output format received")
 	}

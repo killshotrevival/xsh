@@ -9,6 +9,17 @@ import (
 	"github.com/google/uuid"
 )
 
+func checkHost(db *sql.DB, regionID string) error {
+	var hID string
+	if err := db.QueryRow(getHostIDByRegionStmt, regionID).Scan(&hID); err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		return err
+	}
+	return fmt.Errorf("host present in the database with region provided")
+}
+
 func Delete(db *sql.DB, identifier string) error {
 	var id uuid.UUID
 	if err := db.QueryRow(getRegionIDByNameStmt, identifier).Scan(&id); err != nil {
@@ -19,7 +30,9 @@ func Delete(db *sql.DB, identifier string) error {
 		return err
 	}
 
-	// TODO: Check if there are hosts present attached to this database
+	if err := checkHost(db, id.String()); err != nil {
+		return err
+	}
 
 	if _, err := db.Exec(deleteRegionStmt, id); err != nil {
 		fmt.Println("herere")

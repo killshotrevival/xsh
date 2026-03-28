@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"os"
+	"xsh/internal/identity"
+	"xsh/internal/region"
 	"xsh/internal/tag"
 
 	"github.com/charmbracelet/log"
@@ -37,7 +39,27 @@ func PutHost(db *sql.DB, filepath string) error {
 			}
 			h.Id = id
 		}
-		// TODO: Validate the IDs redceived in the file
+
+		// validate jumphost id
+		if h.JumphostID.Valid {
+			_, err := GetHostByID(db, h.JumphostID.UUID.String())
+			if err != nil {
+				log.Warnf("error occurred while verifying the jumphost ID provided: %v", err)
+				return err
+			}
+		}
+
+		// validate region id
+		if _, err = region.GetRegionByID(db, h.RegionID.String()); err != nil {
+			log.Warnf("error occurred while verifying the region ID provided: %v", err)
+			return err
+		}
+
+		// validate identity id
+		if _, err = identity.GetIdentityByID(db, h.IdentityID); err != nil {
+			log.Warnf("error occurred while verifying the identity ID provided: %v", err)
+			return err
+		}
 
 		if err := h.Store(db); err != nil {
 			log.Warnf("[host] error occurred while writing hosts: %v", err)

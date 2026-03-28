@@ -22,7 +22,7 @@ var (
 func GetIdentityByID(db *sql.DB, identifier uuid.UUID) (*Identity, error) {
 	id := Identity{}
 
-	if err := db.QueryRow(GetIdentityByIDStmt, identifier).Scan(&id.Id, &id.Name, &id.Path); err != nil {
+	if err := db.QueryRow(getIdentityByIDStmt, identifier).Scan(&id.Id, &id.Name, &id.Path); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("no identity found with the given identifier (%s)", identifier)
 		}
@@ -139,7 +139,7 @@ func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 
 		by, _ := json.Marshal(&identities)
 
-		return os.WriteFile(outputFile, by, 0644)
+		return os.WriteFile(outputFile, by, 0600)
 	default:
 		return fmt.Errorf("invalid output format provided")
 	}

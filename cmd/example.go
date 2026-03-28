@@ -65,6 +65,6 @@ func generateExampleFromComments(v any, ignoreKeys []string, output string) erro
 	result = result[0 : len(result)-2]
 	result += "\n}\n"
 
-	return os.WriteFile(output, []byte(result), 0644)
+	return os.WriteFile(output, []byte(result), 0600)
 
 }

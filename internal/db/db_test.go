@@ -9,13 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func removeTempDir(path string, t *testing.T) {
-	err := os.RemoveAll(path)
-	if err != nil {
-		t.Fatalf("Error removing temp directory %s: %v\n", path, err)
-	}
-}
-
 func TestGetDBPath(t *testing.T) {
 
 	path := utils.GetXSHTempDir(t)

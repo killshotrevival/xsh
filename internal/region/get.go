@@ -18,6 +18,19 @@ var (
 	noRegionErr = "no region present with given identifier"
 )
 
+func GetRegionByID(db *sql.DB, identifier string) (*Region, error) {
+	region := Region{}
+
+	if err := db.QueryRow(GetRegionByIDStmt, identifier).Scan(&region.Id, &region.Name); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("%s (%s): %v", noRegionErr, identifier, err)
+		}
+		return nil, err
+	}
+
+	return &region, nil
+}
+
 func GetRegionByName(db *sql.DB, identifier string) (*Region, error) {
 	region := Region{Name: identifier}
 
@@ -128,7 +141,7 @@ func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 	case "json":
 		log.Debug("[region] exporting region data to json file")
 		by, _ := json.Marshal(&regions)
-		return os.WriteFile(outputFile, by, 0644)
+		return os.WriteFile(outputFile, by, 0600)
 	default:
 		return fmt.Errorf("invalid output format received")
 	}

@@ -26,6 +26,27 @@ func GetHostByName(db *sql.DB, identifier string) (*Host, error) {
 	)
 }
 
+func checkAddress(db *sql.DB, address string) error {
+	var hID string
+	if err := db.QueryRow(getHostIDByAddressStmt, address).Scan(&hID); err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+	}
+	return fmt.Errorf("host present in database with address provided")
+}
+
+func checkName(db *sql.DB, name string) error {
+	var hID string
+	if err := db.QueryRow(getHostIDByNameStmt, name).Scan(&hID); err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		return err
+	}
+	return fmt.Errorf("host present in database with name provided")
+}
+
 func GetHostByID(db *sql.DB, identifier string) (*Host, error) {
 	return getHost(
 		db,
@@ -173,7 +194,7 @@ func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 	case "json":
 		log.Debug("[host] exporting host data to json file", "outputfile", outputFile)
 		by, _ := json.Marshal(&printHost)
-		return os.WriteFile(outputFile, by, 0644)
+		return os.WriteFile(outputFile, by, 0600)
 	default:
 		return fmt.Errorf("invalid output format provided")
 	}

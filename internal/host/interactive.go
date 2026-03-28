@@ -99,17 +99,15 @@ func cloneHost(db *sql.DB) error {
 			huh.NewInput().
 				Title("Host Name").
 				Description("Please enter a unique name for your host that is easy to remember").
-				Value(&host.Name).Validate(func(_ string) error {
-				// TODO: Add support for validating that the given name does not exists
-				return nil
+				Value(&host.Name).Validate(func(s string) error {
+				return checkName(db, s)
 			}),
 
 			huh.NewInput().
 				Title("Host Address").
 				Description("Please enter the hostname / IP address of the host to connect").
-				Value(&host.Address).Validate(func(_ string) error {
-				// TODO: Add support for validating that the given address exists or not.
-				return nil
+				Value(&host.Address).Validate(func(s string) error {
+				return checkAddress(db, s)
 			}),
 		),
 	).WithTheme(huh.ThemeFunc(theme.XSH))
@@ -142,17 +140,15 @@ func createHost(db *sql.DB) error {
 			huh.NewInput().
 				Title("Host Name").
 				Description("Please enter a unique name for your host that is easy to remember").
-				Value(&host.Name).Validate(func(_ string) error {
-				// TODO: Add support for validating that the given name does not exists
-				return nil
+				Value(&host.Name).Validate(func(s string) error {
+				return checkName(db, s)
 			}),
 
 			huh.NewInput().
 				Title("Host Address").
 				Description("Please enter the hostname / IP address of the host to connect").
-				Value(&host.Address).Validate(func(_ string) error {
-				// TODO: Add support for validating that the given address exists or not.
-				return nil
+				Value(&host.Address).Validate(func(s string) error {
+				return checkAddress(db, s)
 			}),
 
 			huh.NewInput().
