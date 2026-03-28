@@ -113,6 +113,10 @@ xsh delete -i
 ### For More Details
 Please follow [this](./docs/xsh.md) for more information
 
+## Roadmap 🚴🏻
+
+For a detailed look at upcoming features — including remote backend support, SCP integration, direct SSH config management, and resource tagging — see the [Roadmap](Plan.md).
+
 ## Database Schema
 
 XSH uses SQLite to store configuration with the following structure:

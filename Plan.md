@@ -1,139 +1,73 @@
-# XSH Implementation Plan
+# XSH — Roadmap
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Storage Layer](#storage-layer)
-- [Database Schema](#database-schema)
-- [CLI Operations](#cli-operations)
+This document outlines the planned features and improvements for XSH. Each initiative is designed to extend the tool's capabilities while staying true to its core mission: simplifying SSH management at scale.
 
 ---
 
-## Overview
+## Remote Backend Support
 
-XSH is a standalone CLI tool designed to simplify SSH connection management. The tool provides:
+**Status:** Planned
 
-- Persistent storage of host configurations in a local database
-- Dynamic retrieval of connection details in multiple formats
-- Streamlined SSH connections with minimal user input
+Currently, XSH stores all connection data in a local SQLite database. While this works well for individual users, teams managing shared infrastructure often need a single source of truth for host configurations.
 
----
+Remote backend support will introduce a centralized server that teams can use to store and distribute SSH connection metadata. With this feature:
 
-## Storage Layer
+- A team administrator can define hosts, regions, and connection parameters once on the remote backend.
+- Team members pull the shared configuration automatically and only need to configure their own identity file mappings locally.
+- Changes to the shared configuration propagate to all team members, eliminating configuration drift across machines.
+- The local database will continue to work as a cache and fallback, ensuring XSH remains functional even when the remote backend is unreachable.
 
-### SQLite Database
-
-All configuration data is persisted using **SQLite**, chosen for its:
-
-- Zero-configuration setup
-- Single-file portability
-- Reliable ACID compliance
-- Excellent Go driver support (`modernc.org/sqlite`)
-
-**Default location:** `~/.xsh/xsh.db`
+This feature is aimed at organizations operating large fleets of servers where consistency and collaboration around SSH access are critical.
 
 ---
 
-## Database Schema
+## SCP Integration
 
-### Hosts Table
+**Status:** Planned
 
-Stores SSH host connection details.
+XSH already manages the details needed to establish SSH connections — host addresses, users, ports, identity files, and jump hosts. Extending this to support SCP (Secure Copy Protocol) is a natural next step.
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID | Primary key |
-| `name` | TEXT | User-friendly identifier for the host |
-| `address` | TEXT | IP address or domain name |
-| `port` | TEXT | SSH port to use for connection |
-| `user` | TEXT | SSH username |
-| `region_id` | UUID | Foreign key → `regions.id` |
-| `identity_id` | UUID | Foreign key → `identities.id` |
-| `jumphost_id` | UUID | Foreign key → `hosts.id` (self-referencing) |
+With SCP integration, users will be able to:
 
-> **Note:** Jump hosts are regular hosts referenced via `jumphost_id`, enabling recursive jump host chains.
+- Transfer files to and from remote hosts using the same simple host identifiers they already use for SSH connections.
+- Leverage jump host configurations transparently during file transfers, without manually constructing complex SCP commands.
+- Perform bulk file operations across multiple hosts in a single command.
 
-### Identities Table
-
-Manages SSH identity files (private keys).
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID | Primary key |
-| `name` | TEXT | Descriptive name for the identity |
-| `path` | TEXT | Absolute path to the identity file |
-
-### Regions Table
-
-Organizes hosts by geographic or logical regions.
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID | Primary key |
-| `name` | TEXT | Full region name (e.g., "US East") |
+The goal is to make file transfers as effortless as connecting — no need to look up addresses, ports, or identity files.
 
 ---
 
-## CLI Operations
+## Direct SSH Config Management
 
-### 1. `xsh ssh <identifier>`
+**Status:** Planned
 
-Establishes an SSH connection using stored configuration.
+Many users maintain an `~/.ssh/config` file to define connection shortcuts, proxy rules, and identity mappings. Editing this file manually is error-prone, especially as the number of hosts grows, and requires familiarity with the SSH config syntax.
 
-**Behavior:**
-- Accepts host `name` or `address` as the identifier
-- Automatically resolves identity file, user, and jump host
-- Constructs and executes the complete SSH command
+XSH will offer the ability to generate and update `~/.ssh/config` directly from its database:
 
-**Flags:**
-| Flag | Description |
-|------|-------------|
-| `--dry-run` | Print the SSH command without executing |
+- Export all or a filtered subset of hosts into properly formatted SSH config entries.
+- Keep the config file in sync with the XSH database through a single command.
+- Preserve any manually added entries in the config file that are not managed by XSH.
 
-**Example:**
-```bash
-xsh ssh webserver-01
-xsh ssh 192.168.1.100 --dry-run
-```
-
-### 2. `xsh put <resource>`
-
-Stores configuration data in the database.
-
-**Supported Resources:**
-- `host` — Add or update host configuration
-- `identity` — Register an SSH identity file
-- `region` — Define a region
-
-**Example:**
-```bash
-xsh put host --name bastion --address 10.0.0.1 --user admin
-xsh put identity --name prod-key --path ~/.ssh/prod_rsa
-```
-
-### 3. `xsh get <resource> <identifier>`
-
-Retrieves configuration data from the database.
-
-**Design Goals:**
-- Output format suitable for shell interpolation
-- Enable seamless integration with native SSH commands
-
-**Example:**
-```bash
-# Direct retrieval
-xsh get host webserver-01
-
-# Shell interpolation for complex SSH commands
-ssh -AJ $(xsh get jumphost bastion-01) root@10.0.0.50
-```
+This bridges the gap between XSH's managed workflow and tools or scripts that rely on the standard SSH config file.
 
 ---
 
-## Next Steps
+## Resource Tagging
 
-- [ ] Initialize Go module structure
-- [ ] Implement SQLite database layer
-- [ ] Build CLI command parser
-- [ ] Add unit and integration tests
-- [ ] Create installation documentation
+**Status:** Planned
+
+As the number of managed hosts grows, efficient filtering and organization become essential. Resource tagging will allow users to assign arbitrary key-value tags to hosts and identities.
+
+Planned capabilities include:
+
+- Assign one or more tags to any host or identity (e.g., `env:production`, `team:platform`, `os:ubuntu`).
+- Filter and list resources by tag during lookups and connections.
+- Combine tags with existing region-based organization for fine-grained grouping.
+- Use tags in scripting workflows to target specific subsets of infrastructure.
+
+Tagging provides a flexible, user-defined taxonomy that adapts to any team's organizational model without imposing a rigid structure.
+
+---
+
+*This roadmap is subject to change based on community feedback and project priorities. Contributions and feature requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for details.*
