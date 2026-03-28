@@ -30,37 +30,41 @@ XSH extends SSH functionality by providing a unified interface for storing, mana
 
 - Download the desired cli
 
+or you can use the following script directly
+
+```bash
+curl https://raw.githubusercontent.com/killshotrevival/xsh/refs/heads/main/install.sh | bash -
+```
+
 ### Build From Source
 ```bash
 git clone https://github.com/killshotrevival/xsh.git
 cd xsh
 
 make build
-```
 
-### Ensure Presence In PATH
-
-```bash
-
+# Placing the binary in required directory
 mkdir -p ~/.local/bin
 mv xsh ~/.local/bin/
 chmod +x ~/.local/bin/xsh
 
-# Make sure the binary directory is presnet under $PATH
+# Make sure the binary directory is present under $PATH
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc   # or ~/.zshrc
+
 ```
 
-## Quick Start
-
-### System Init
+## System Init
 ```bash
 xsh init
 ```
-This command will initilise the xsh environment as well as read the following files to populate the database for configruations:
+This command will initialize the xsh environment as well as read the following files to populate the database for configurations:
 
 - Identities in .ssh: Will look for all the identities files present in the .ssh directory and populate them in the database
-- .ssh/config (TODO): Read the config file for populating the already present host configruation
-- .zshrc / .bashrc (TODO): Read the config file for populating the already present host configruation
+- .ssh/config (TODO): Read the config file for populating the already present host configurations
+- .zshrc / .bashrc (TODO): Read the config file for populating the already present host configurations
+
+
+## Quick Start
 
 ### Add New Resources
 ```bash
@@ -68,15 +72,13 @@ This command will initilise the xsh environment as well as read the following fi
 xsh put region us-east-1
 
 # This command will add a new identity file using a unique name and its complete path
-xsh put identity peeyush-development /Users/ptyagi/.ssh/development
+xsh put identity twelcon-development /Users/twelcon/.ssh/development
 
-# This command will create a new host in interactive mode
-xsh put host -i
+# Create an example file, that can be used for creating a new host
+xsh example host -f host.json
 
-# This command can be used to create a host directly without interactive mode
-# example format for host.json can be created using `xsh example host` command
+# This command will add a new host according to the values declared in host.
 xsh put host -f host.json
-
 
 # This command can be used for viewing a list of all the hosts present
 xsh get host
@@ -90,6 +92,24 @@ xsh connect host-1
 xsh connect host-1 --debug
 ```
 
+## Pro Tips 😉
+
+### Clone A Host
+In situation where maximum properties of a new host matches a host already present in the database, it makes more sense to clone a host instead of creating a new one from scratch
+```bash
+xsh put h -i
+```
+![Clone host GIF](./assets/clone_host.gif)
+
+
+### Delete Resources interactively
+Select resource to delete interactively and delete them
+```bash
+xsh delete -i
+```
+
+![Interactive delete GIF](./assets/interactive-delete.gif)
+
 ### For More Details
 Please follow [this](./docs/xsh.md) for more information
 
@@ -101,7 +121,7 @@ XSH uses SQLite to store configuration with the following structure:
 |-------|-------------|
 | `hosts` | Host connection details (address, user, identity, jumphost) |
 | `identities` | SSH identity files (name, path) |
-| `regions` | Geographic regions for organization (name, slug) |
+| `regions` | Geographic regions for organization (name) |
 
 ## Configuration
 
