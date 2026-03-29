@@ -92,22 +92,24 @@ func buildSSHString(identifier string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf(`ssh -i %s -o ProxyCommand="ssh -i %s -W %s:%d %s@%s" %s@%s`,
+		return fmt.Sprintf(`ssh -i %s -p %d -o ProxyCommand="ssh -i %s -W %s:%d %s@%s -p %d" %s@%s`,
 			cIdentity.Path,
+			cHost.Port,
 			cJumhostIdentity.Path,
 			cHost.Address,
 			cHost.Port,
 			cjumpHost.User,
 			cjumpHost.Address,
+			cjumpHost.Port,
 			cHost.User,
 			cHost.Address,
 		), nil
 	}
 
-	return fmt.Sprintf("ssh -i %s %s@%s:%d",
+	return fmt.Sprintf("ssh -i %s -p %d %s@%s",
 		cIdentity.Path,
+		cHost.Port,
 		cHost.User,
 		cHost.Address,
-		cHost.Port,
 	), nil
 }
