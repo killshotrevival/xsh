@@ -13,7 +13,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var printConnectionString bool
+var (
+	printConnectionString bool
+	verboseConnection     bool
+)
 
 var connectCmd = &cobra.Command{
 	Use:   "connect [host name]",
@@ -29,8 +32,12 @@ func sshConnect(_ *cobra.Command, args []string) error {
 		return err
 	}
 
-	if debug {
+	if verboseConnection {
 		sshString += " -v"
+	}
+
+	if len(args) == 2 {
+		sshString += fmt.Sprintf(" %s ", args[1])
 	}
 
 	if printConnectionString {

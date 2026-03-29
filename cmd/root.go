@@ -66,6 +66,7 @@ func init() {
 
 	// Connect Command
 	connectCmd.PersistentFlags().BoolVarP(&printConnectionString, "print", "p", false, "Just print connection string, instead of connecting with the host")
+	connectCmd.PersistentFlags().BoolVarP(&verboseConnection, "verbose", "v", false, "Create ssh connection in verbose mode")
 
 	// Put Command
 	putCmd.AddCommand(putHostCmd, puRegionCmd, putIdentityCmd)
