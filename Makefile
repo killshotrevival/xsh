@@ -33,7 +33,7 @@ test:
 verify: test lint 
 	@echo "Code verification passed"
 
-docs:
+gendocs:
 	@echo "Generating documentation"
 	go run ./... gendocs   
 

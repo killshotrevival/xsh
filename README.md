@@ -89,7 +89,7 @@ xsh get host
 xsh connect host-1
 
 # Add the debug flag to connect in verbose mode
-xsh connect host-1 --debug
+xsh connect host-1 -v
 ```
 
 ## Pro Tips 😉
@@ -97,7 +97,7 @@ xsh connect host-1 --debug
 ### Clone A Host
 In situation where maximum properties of a new host matches a host already present in the database, it makes more sense to clone a host instead of creating a new one from scratch
 ```bash
-xsh put h -i
+xsh put h
 ```
 ![Clone host GIF](./assets/clone_host.gif)
 
@@ -105,7 +105,7 @@ xsh put h -i
 ### Delete Resources interactively
 Select resource to delete interactively and delete them
 ```bash
-xsh delete -i
+xsh delete
 ```
 
 ![Interactive delete GIF](./assets/interactive-delete.gif)
