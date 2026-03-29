@@ -13,11 +13,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var printConnectionString bool
+
 var connectCmd = &cobra.Command{
 	Use:   "connect [host name]",
 	Short: "Connect SSH.",
 	Long:  "Create an SSH connection with the specified server.",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.MaximumNArgs(2),
 	RunE:  sshConnect,
 }
 
@@ -29,6 +31,11 @@ func sshConnect(_ *cobra.Command, args []string) error {
 
 	if debug {
 		sshString += " -v"
+	}
+
+	if printConnectionString {
+		log.Infof("[connect] Connecting to host with: %s", sshString)
+		return nil
 	}
 	command := exec.Command("bash", "-c", sshString)
 

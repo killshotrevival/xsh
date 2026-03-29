@@ -64,6 +64,9 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug logging")
 	rootCmd.AddCommand(docsCmd, putCmd, getCmd, initCmd, connectCmd, deleteCmd, exampleCmd)
 
+	// Connect Command
+	connectCmd.PersistentFlags().BoolVarP(&printConnectionString, "print", "p", false, "Just print connection string, instead of connecting with the host")
+
 	// Put Command
 	putCmd.AddCommand(putHostCmd, puRegionCmd, putIdentityCmd)
 	putHostCmd.PersistentFlags().BoolVarP(&interactivePut, "interactive", "i", false, "Insert host in interactive mode")
