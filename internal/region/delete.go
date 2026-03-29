@@ -17,7 +17,7 @@ func checkHost(db *sql.DB, regionID string) error {
 		}
 		return err
 	}
-	return fmt.Errorf("host present in the database with region provided")
+	return fmt.Errorf("host present in the database attached with provided region")
 }
 
 func Delete(db *sql.DB, identifier string) error {

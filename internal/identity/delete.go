@@ -17,7 +17,7 @@ func checkIdentity(db *sql.DB, identityID string) error {
 		}
 		return err
 	}
-	return fmt.Errorf("host present in the database with identity provided")
+	return fmt.Errorf("host present in the database attached with provided identity file")
 }
 
 func Delete(db *sql.DB, identifier string) error {

@@ -32,17 +32,15 @@ var putHostCmd = &cobra.Command{
 			return fmt.Errorf("error connecting to database: %w", err)
 		}
 		defer dbConnection.Close()
-		if interactivePut {
-			if putFile != putFileExample {
-				return fmt.Errorf("interactive and file flags are mutually exclusive and please remove one flag and retry")
+		if putFile != putFileExample {
+			if _, err := os.Stat(putFile); err == os.ErrNotExist {
+				return fmt.Errorf("%s file does not exists", putFile)
 			}
-			return host.InteractivePut(dbConnection)
+			return host.PutHost(dbConnection, putFile)
 		}
-		if _, err := os.Stat(putFile); err == os.ErrNotExist {
-			return fmt.Errorf("%s file does not exists", putFile)
-		}
-		return host.PutHost(dbConnection, putFile)
+		return host.InteractivePut(dbConnection)
 	},
+
 	Example: "xsh put host",
 }
 

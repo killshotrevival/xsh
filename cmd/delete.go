@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"slices"
+	"strings"
 	"xsh/internal/db"
 	"xsh/internal/host"
 	"xsh/internal/identity"
@@ -27,6 +28,7 @@ var deleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete data from the database.",
 	Long:  `Delete data from the database based on specified criteria.`,
+	Args:  cobra.MaximumNArgs(2),
 	RunE:  deleteData,
 }
 
@@ -35,19 +37,20 @@ func deleteData(_ *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-
 	defer dbConnection.Close()
-	if interactiveDelete {
-		return Interactive(dbConnection)
+
+	if len(args) == 2 {
+		resource, identifier := args[0], args[1]
+		for key, deleteFunc := range resourceDeleteMapping {
+			if strings.Contains(key, strings.ToLower(resource)) {
+				return deleteFunc(dbConnection, identifier)
+			}
+		}
+		return fmt.Errorf("invalid resource type provided for deletion")
 	}
 
-	if len(args) < 2 {
-		return fmt.Errorf("expect arguments 2, found %d", len(args))
-	}
+	return Interactive(dbConnection)
 
-	resource, identifier := args[0], args[1]
-
-	return resourceDeleteMapping[resource](dbConnection, identifier)
 }
 
 func Interactive(dbConnection *sql.DB) error {
@@ -138,7 +141,7 @@ func Interactive(dbConnection *sql.DB) error {
 	for _, id := range idLists {
 		log.Debugf("[delete] removing %s resource %q", resource, id)
 		if err := resourceDeleteMapping[resource](dbConnection, id); err != nil {
-			log.Debugf("[delete] failed to delete %s resource %q: %v", resource, id, err)
+			log.Warnf("[delete] failed to delete %s resource %q: %v", resource, id, err)
 		}
 	}
 

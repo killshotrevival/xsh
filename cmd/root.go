@@ -69,7 +69,7 @@ func init() {
 
 	// Put Command
 	putCmd.AddCommand(putHostCmd, puRegionCmd, putIdentityCmd)
-	putHostCmd.PersistentFlags().BoolVarP(&interactivePut, "interactive", "i", false, "Insert host in interactive mode")
+	putHostCmd.PersistentFlags().BoolVarP(&interactivePut, "interactive", "i", true, "Insert host in interactive mode")
 	putHostCmd.PersistentFlags().StringVarP(&putFile, "file", "f", putFileExample, "Path of the host file")
 
 	// Get Command
@@ -79,7 +79,7 @@ func init() {
 	getCmd.PersistentFlags().StringVarP(&getOutputFile, "output-file", "f", "resource.json", "Output file name, only used when output format is `json`")
 
 	// Delete Command
-	deleteCmd.PersistentFlags().BoolVarP(&interactiveDelete, "interactive", "i", false, "Insert host in interactive mode")
+	deleteCmd.PersistentFlags().BoolVarP(&interactiveDelete, "interactive", "i", true, "Insert host in interactive mode")
 
 	// Example Command
 	exampleCmd.AddCommand(exampleHostCmd, exampleIdentityCmd)
