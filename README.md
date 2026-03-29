@@ -2,11 +2,10 @@
 
 ![image](./assets/spirit_animal.png)
 
-> A powerful CLI tool for managing SSH connections across massive clusters of machines.
+> Stop typing long SSH commands. Save hosts, run commands, and switch environments instantly.
 
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go&logoColor=white)](https://golang.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
 ![Release status](https://github.com/killshotrevival/xsh/actions/workflows/release.yaml/badge.svg)
 
 
@@ -88,7 +87,7 @@ xsh get host
 ```bash
 xsh connect host-1
 
-# Add the debug flag to connect in verbose mode
+# To connect in verbose mode
 xsh connect host-1 -v
 ```
 
