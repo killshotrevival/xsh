@@ -59,8 +59,8 @@ xsh init
 This command will initialize the xsh environment as well as read the following files to populate the database for configurations:
 
 - Identities in .ssh: Will look for all the identities files present in the .ssh directory and populate them in the database
+- .zshrc / .bashrc / .bash_history / .zsh_history: Read the config file for populating the already present host configurations
 - .ssh/config (TODO): Read the config file for populating the already present host configurations
-- .zshrc / .bashrc (TODO): Read the config file for populating the already present host configurations
 
 
 ## Quick Start

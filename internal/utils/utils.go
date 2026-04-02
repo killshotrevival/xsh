@@ -2,6 +2,7 @@ package utils
 
 import (
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -18,4 +19,14 @@ func RemoveTempDir(path string, t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error removing temp directory %s: %v\n", path, err)
 	}
+}
+
+func ConvertToAbs(path string) (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	path = strings.ReplaceAll(path, "~", homeDir)
+
+	return path, nil
 }

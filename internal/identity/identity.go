@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"xsh/internal/utils"
 
 	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
@@ -17,6 +18,7 @@ var (
 
 	deleteIdentityStmt = "DELETE FROM identities WHERE ID = ?"
 
+	getIdentityIDByPathStmt = "SELECT ID FROM IDENTITIES WHERE PATH = ?"
 	getIdentityStmt         = "SELECT ID, NAME, PATH FROM IDENTITIES"
 	getIdentityIDByNameStmt = "SELECT ID FROM IDENTITIES WHERE NAME = ?"
 	getIdentityByNameStmt   = "SELECT ID, NAME, PATH FROM IDENTITIES WHERE NAME = ?"
@@ -50,6 +52,38 @@ func NewIdentity(name, path string) (*Identity, error) {
 		Name: name,
 		Path: path,
 	}, nil
+}
+
+func CheckOrCreateIdentity(path string, db *sql.DB) (uuid.UUID, error) {
+	var id uuid.UUID
+	path, err := utils.ConvertToAbs(path)
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+	if err := db.QueryRow(getIdentityIDByPathStmt, path).Scan(&id); err != nil {
+		if err == sql.ErrNoRows {
+			log.Debugf("No path exists with path (%s), creating a new one", path)
+
+			if _, err := os.Stat(path); err != nil {
+				log.Debugf("[identity] error occurred while trying to fetch identity file details: %v", err)
+				return uuid.UUID{}, err
+			}
+
+			i, err := NewIdentity(filepath.Base(path), path)
+			if err != nil {
+				log.Debugf("[identity] error occurred while trying to create a new identity: %v", err)
+				return uuid.UUID{}, err
+			}
+
+			if err := i.Store(db); err != nil {
+				log.Debugf("[identity] error occurred while trying to save the identity to database: %v", err)
+				return uuid.UUID{}, err
+			}
+
+			return i.Id, nil
+		}
+	}
+	return id, nil
 }
 
 func (i *Identity) Store(db *sql.DB) error {

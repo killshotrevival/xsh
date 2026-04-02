@@ -70,14 +70,25 @@ func NewHost(name, address, user string, port int, regionID, identityID uuid.UUI
 
 func (h *Host) Store(db *sql.DB) error {
 	if err := checkAddress(db, h.Address); err != nil {
-		log.Warn("[host] a host with this address already exists, skipping insert")
+		log.Warn("[host] a host with this address already exists, skipping insert", "address", h.Address)
 		return nil
 	}
 
 	if err := checkName(db, h.Name); err != nil {
-		log.Warn("[host] a host with this name already exists, skipping insert")
+		log.Warn("[host] a host with this name already exists, skipping insert", "name", h.Name)
 		return nil
 	}
+
+	if h.IdentityID == [16]byte{} {
+		log.Warn("[host] invalid identity assigned, skipping insert", "identityId", h.IdentityID)
+		return nil
+	}
+
+	if h.RegionID == [16]byte{} {
+		log.Warn("[host] invalid region assigned, skipping insert", "regionId", h.RegionID)
+		return nil
+	}
+
 	_, err := db.Exec(insertHostStmt, h.Id, h.Name, h.Address, h.Port, h.User, h.RegionID, h.IdentityID, h.JumphostID, h.ExtraFlags)
 	return err
 }
@@ -95,6 +106,27 @@ func (h *Host) getJumphost(db *sql.DB) {
 	}
 
 	h.Jumphost = jumpHostName
+}
+
+func (h *Host) UpdateExtraFlags(flag string) {
+
+	newFlags := fmt.Sprintf("%s %s", h.ExtraFlags, flag)
+
+	if err := validateExtraFlags(newFlags); err != nil {
+		log.Debug("Flag cannot be added in the extra flags", "error", err)
+		return
+	}
+
+	h.ExtraFlags = newFlags
+
+}
+
+func (h *Host) UpdateUserAddress(s string) {
+	if strings.Contains(s, "@") {
+		addressSplit := strings.Split(s, "@")
+		h.User = addressSplit[0]
+		h.Address = addressSplit[1]
+	}
 }
 
 // This function is used for validating the flags string should not contain any

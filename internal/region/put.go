@@ -5,6 +5,11 @@ import (
 	"xsh/internal/tag"
 
 	"github.com/charmbracelet/log"
+	"github.com/google/uuid"
+)
+
+var (
+	DefaultregionID = uuid.MustParse("9236a25f-f2ef-418a-aaf5-21fb667e8073")
 )
 
 func PutRegion(db *sql.DB, name string) error {

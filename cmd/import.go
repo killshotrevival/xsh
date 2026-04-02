@@ -14,9 +14,11 @@ import (
 var (
 	printSourceFiles bool
 	sourceFiles      = []string{
-		// ".bash_history",
+		".bash_history",
 		".zsh_history",
-		// ".ssh/config",
+		".zshrc",
+		".bashrc",
+		// ".ssh/config", TODO
 	}
 )
 
@@ -45,7 +47,9 @@ func importFromSourceFiles(_ *cobra.Command, _ []string) error {
 			continue
 		}
 
-		import_xsh.Import(path, dbConnection)
+		if err := import_xsh.Import(path, dbConnection); err != nil {
+			log.Warnf("error occurred while importing %s: %v", path, err)
+		}
 	}
 
 	return nil
