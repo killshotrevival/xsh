@@ -62,11 +62,14 @@ func Execute() {
 func init() {
 	// Global flag available to all subcommands
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug logging")
-	rootCmd.AddCommand(docsCmd, putCmd, getCmd, initCmd, connectCmd, deleteCmd, exampleCmd)
+	rootCmd.AddCommand(docsCmd, putCmd, getCmd, initCmd, connectCmd, deleteCmd, exampleCmd, importCmd)
 
 	// Connect Command
 	connectCmd.PersistentFlags().BoolVarP(&printConnectionString, "print", "p", false, "Just print connection string, instead of connecting with the host")
 	connectCmd.PersistentFlags().BoolVarP(&verboseConnection, "verbose", "v", false, "Create ssh connection in verbose mode")
+
+	// Import Command
+	importCmd.PersistentFlags().BoolVarP(&printSourceFiles, "print", "p", false, "Print all the predefined files, XSH will be reading and importing from")
 
 	// Put Command
 	putCmd.AddCommand(putHostCmd, puRegionCmd, putIdentityCmd)
