@@ -2,13 +2,16 @@
 package cmd
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 	"os/exec"
 	"xsh/internal/db"
 	"xsh/internal/host"
 	"xsh/internal/identity"
+	"xsh/internal/theme"
 
+	"charm.land/huh/v2"
 	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
@@ -26,8 +29,57 @@ var connectCmd = &cobra.Command{
 	RunE:  sshConnect,
 }
 
+func interactiveHostSelect(dbConnection *sql.DB) (string, error) {
+	var h string
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				Title("Select host").
+				Description("Please select the host you want to connect to").
+				OptionsFunc(func() []huh.Option[string] {
+					opts := []huh.Option[string]{}
+
+					hosts, err := host.GetShortHosts(dbConnection)
+					if err == nil {
+						for _, ho := range *hosts {
+							opts = append(opts, huh.NewOption(ho.Name, ho.Name))
+						}
+					} else {
+						opts = append(opts, huh.NewOption("error occurred while fetching hosts from database, please try again with debug flag", "-1"))
+					}
+
+					return opts
+				}, nil).
+				Value(&h),
+		),
+	).WithTheme(huh.ThemeFunc(theme.XSH))
+
+	if err := form.Run(); err != nil {
+		return "", err
+	}
+
+	return h, nil
+}
+
 func sshConnect(_ *cobra.Command, args []string) error {
-	sshString, err := buildSSHString(args[0])
+	var host string
+	var err error
+
+	dbConnection, err := db.GetDB()
+	if err != nil {
+		return err
+	}
+
+	if len(args) > 0 {
+		host = args[0]
+	} else {
+		host, err = interactiveHostSelect(dbConnection)
+		if err != nil {
+			return err
+		}
+	}
+
+	sshString, err := buildSSHString(host, dbConnection)
 	if err != nil {
 		return err
 	}
@@ -62,17 +114,13 @@ func sshConnect(_ *cobra.Command, args []string) error {
 	return nil
 }
 
-func buildSSHString(identifier string) (string, error) {
+func buildSSHString(identifier string, dbConnection *sql.DB) (string, error) {
 	var (
 		cHost, cjumpHost            *host.Host
 		cIdentity, cJumhostIdentity *identity.Identity
 	)
-	dbConnection, err := db.GetDB()
-	if err != nil {
-		return "", err
-	}
 
-	cHost, err = host.GetHostByName(dbConnection, identifier)
+	cHost, err := host.GetHostByName(dbConnection, identifier)
 	if err != nil {
 		return "", err
 	}

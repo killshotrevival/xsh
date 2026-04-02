@@ -28,6 +28,9 @@ func GetHostByName(db *sql.DB, identifier string) (*Host, error) {
 
 func checkAddress(db *sql.DB, address string) error {
 	var hID string
+	if address == "" {
+		return fmt.Errorf("empty string address received")
+	}
 	if err := db.QueryRow(getHostIDByAddressStmt, address).Scan(&hID); err != nil {
 		if err == sql.ErrNoRows {
 			return nil
@@ -38,6 +41,9 @@ func checkAddress(db *sql.DB, address string) error {
 
 func checkName(db *sql.DB, name string) error {
 	var hID string
+	if name == "" {
+		return fmt.Errorf("empty string name received")
+	}
 	if err := db.QueryRow(getHostIDByNameStmt, name).Scan(&hID); err != nil {
 		if err == sql.ErrNoRows {
 			return nil
