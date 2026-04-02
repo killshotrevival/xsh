@@ -65,3 +65,12 @@ func TestPrintHost(t *testing.T) {
 	}
 
 }
+
+func TestValidateFlags(t *testing.T) {
+	err := validateExtraFlags("-J root@jumphost.com")
+	assert.Error(t, err)
+
+	err = validateExtraFlags("-4")
+	assert.Nil(t, err)
+
+}

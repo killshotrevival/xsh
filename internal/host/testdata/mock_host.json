@@ -7,7 +7,8 @@
         "name": "jumphost-1",
         "port": 22,
         "region_id": "dbd31312-f575-4d2f-803d-57b506b14d0c",
-        "user": "ptyagi"
+        "user": "ptyagi",
+        "extra_flags": "-4"
     },
     {
         "address": "example.com",

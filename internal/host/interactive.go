@@ -160,6 +160,11 @@ func createHost(db *sql.DB) error {
 				Title("Remote User").
 				Description("Please enter the remote username").
 				Value(&host.User).Placeholder(host.User),
+
+			huh.NewInput().
+				Title("SSH Flags").
+				Description("Extra SSH flags, that you would like to use for this host").
+				Value(&host.ExtraFlags).Validate(validateExtraFlags),
 		),
 
 		huh.NewGroup(

@@ -66,6 +66,7 @@ func getHost(db *sql.DB, queryString, identifier string) (*Host, error) {
 		&host.RegionID,
 		&host.IdentityID,
 		&host.JumphostID,
+		&host.ExtraFlags,
 	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("%s : %v", noHostFoundError, err)
@@ -145,6 +146,7 @@ func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 				&host.Port,
 				&host.User,
 				&host.JumphostID,
+				&host.ExtraFlags,
 				&host.RegionID,
 				&host.IdentityID,
 				&host.Region,
@@ -171,6 +173,7 @@ func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 					host.User,
 					host.Region,
 					host.IdentityFile,
+					host.ExtraFlags,
 					// tag.ToString(host.Tags),
 				})
 
@@ -185,7 +188,7 @@ func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 	case "table":
 		log.Debug("[host] rendering host data as table")
 		t := table.NewTable(
-			[]string{"NAME", "ADDRESS", "JUMPHOST", "USER", "REGION", "IDENTITY FILE"}, // "TAGS"
+			[]string{"NAME", "ADDRESS", "JUMPHOST", "USER", "REGION", "IDENTITY FILE", "EXTRA FLAGS"}, // "TAGS"
 
 			data,
 		)
