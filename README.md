@@ -139,6 +139,8 @@ Select resource to edit interactively
 xsh edit
 ```
 
+![Interactive edit GIF](./assets/interactive-edit.gif)
+
 ### Delete Resources Interactively
 Select resource to delete interactively and delete them
 ```bash
