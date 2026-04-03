@@ -107,7 +107,7 @@ xsh get host
 ```bash
 xsh connect host-1
 
-# For inetractively selecting the host
+# For interactively selecting the host
 xsh connect
 
 # To connect in verbose mode
@@ -115,6 +115,15 @@ xsh connect host-1 -v
 ```
 
 ## Pro Tips 😉
+
+### Importing Config
+Use the following command for importing the already defined ssh configs under predefined files to xsh
+```bash
+xsh import
+
+# Use -p flag for printing all the files xsh will be importing configurations from
+xsh import -p
+```
 
 ### Clone A Host
 In situation where maximum properties of a new host matches a host already present in the database, it makes more sense to clone a host instead of creating a new one from scratch
