@@ -1,15 +1,16 @@
-## xsh gendocs
+## xsh import
 
-Generate CLI documentation
+Import SSH configurations from predefined files
 
 ```
-xsh gendocs [flags]
+xsh import [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for gendocs
+  -h, --help    help for import
+  -p, --print   Print all the predefined files, XSH will be reading and importing from
 ```
 
 ### Options inherited from parent commands

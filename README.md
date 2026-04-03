@@ -13,14 +13,32 @@
 
 XSH extends SSH functionality by providing a unified interface for storing, managing, and executing SSH connections. It eliminates the need to remember complex SSH commands, IP addresses, and configuration details by storing everything in a local SQLite database.
 
-## Features
+## Motivation
+Here's why XSH exists:
 
-- **Centralized Configuration** — Store all SSH connection details in a structured SQLite database
-- **Simple Identifiers** — Connect to hosts using easy-to-remember names instead of IP addresses
-- **Jump Host Support** — Built-in support for SSH jump hosts (bastion servers)
-- **Identity Management** — Manage multiple SSH identity files with ease
-- **Region Tagging** — Organize hosts by region with custom slugs
-- **Flexible Output** — Retrieve connection details in various formats for scripting
+### 🎯 User-Friendly Interface Over Config Files
+Yes, you can achieve similar functionality by manually editing `~/.ssh/config`, but XSH provides a **discoverable, interactive interface** that doesn't require memorizing config file syntax. Add hosts through guided prompts, view them in beautiful tables, and connect with simple commands.
+
+### 🚫 No More Alias Sprawl
+Stop polluting your `.bashrc` or `.zshrc` with dozens of SSH aliases like `alias prod1="ssh -i ~/.ssh/prod user@192.168.1.100"`. XSH centralizes all your connections in a structured database, keeping your shell config clean.
+
+### ⚡ Effortless Resource Management
+Adding, modifying, or deleting SSH configurations should be simple:
+- **Add**: Interactive prompts or JSON imports — no manual file editing
+- **Modify**: Clone existing hosts and tweak what you need
+- **Delete**: Interactive selection with referential integrity checks
+
+### 🔍 Easy Discovery and Sharing
+- View all your hosts in formatted tables with `xsh get host`
+- Export configurations to JSON for backup or sharing
+- Auto-import existing SSH commands from your shell history during setup
+- Future: Remote backend support for team-wide configuration sharing
+
+### 🎨 Modern Developer Experience
+- Beautiful terminal UI with color-coded themes
+- Interactive menus for host selection and cloning
+- Jump host support without manually constructing complex ProxyCommand strings
+- Organize hosts by regions for better infrastructure visibility
 
 ## Installation
 
@@ -55,8 +73,10 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc   # or ~/.zshrc
 ## System Init
 ```bash
 xsh init
+
+xsh import
 ```
-This command will initialize the xsh environment as well as read the following files to populate the database for configurations:
+These command will initialize the xsh environment as well as read the following files to populate the database for configurations:
 
 - Identities in .ssh: Will look for all the identities files present in the .ssh directory and populate them in the database
 - .zshrc / .bashrc / .bash_history / .zsh_history: Read the config file for populating the already present host configurations
@@ -86,6 +106,9 @@ xsh get host
 ### Connecting To A Host
 ```bash
 xsh connect host-1
+
+# For inetractively selecting the host
+xsh connect
 
 # To connect in verbose mode
 xsh connect host-1 -v
