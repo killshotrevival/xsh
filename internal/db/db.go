@@ -186,7 +186,6 @@ func CheckAndApplyMigrations() error {
 	log.Debug("[database] evaluating pending migrations against current schema version")
 	for _, file := range files {
 		versionStr := strings.Split(file.Name(), "_")[0]
-
 		version, err := strconv.Atoi(versionStr)
 		if err != nil {
 			log.Debugf("[database] failed to parse version number from migration filename %q: %v", file.Name(), err)
@@ -208,12 +207,17 @@ func CheckAndApplyMigrations() error {
 			return err
 		}
 
-		if _, err = db.Exec(updateSchemaVersionQuery, newVersion); err != nil {
-			log.Debugf("[database] failed to update schema version from %d to %d: %v", currentVersion, newVersion, err)
-			return err
-		}
+		return updateSchemaVersion(db, newVersion)
 	} else {
 		log.Debug("[database] schema is up to date, no pending migrations to apply")
+	}
+	return nil
+}
+
+func updateSchemaVersion(db *sql.DB, version int) error {
+	if _, err := db.Exec(updateSchemaVersionQuery, version); err != nil {
+		log.Debugf("[database] failed to update schema version to %d: %v", version, err)
+		return err
 	}
 	return nil
 }
@@ -256,9 +260,22 @@ func InitDB() error {
 		return err
 	}
 	fileNames := []string{}
+	latestVersion := 0
 
 	for _, file := range files {
 		fileNames = append(fileNames, file.Name())
+
+		versionStr := strings.Split(file.Name(), "_")[0]
+		version, err := strconv.Atoi(versionStr)
+		if err != nil {
+			log.Debugf("[database] failed to parse version number from migration filename %q: %v", file.Name(), err)
+			return err
+		}
+
+		if version > latestVersion {
+			log.Debugf("Updating latest version to: %d", version)
+			latestVersion = version
+		}
 	}
 
 	log.Debugf("[database] applying initial database migrations")
@@ -267,6 +284,6 @@ func InitDB() error {
 		return err
 	}
 
-	return nil
+	return updateSchemaVersion(db, latestVersion)
 
 }

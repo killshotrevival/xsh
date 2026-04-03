@@ -39,8 +39,9 @@ func initXSH(_ *cobra.Command, _ []string) error {
 			return fmt.Errorf("error initializing database: %w", err)
 		}
 		log.Info("Database initialized successfully.")
+	} else {
+		log.Info("Database already exists. Skipping initialization.")
 	}
-	log.Info("Database already exists. Skipping initialization.")
 
 	log.Info("Pre populating identity table")
 	dbConnection, err := db.GetDB()
