@@ -22,7 +22,9 @@ var (
 	getHostWithAddressStmt  = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.EXTRA_FLAGS, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID WHERE h.ADDRESS LIKE ?;"
 	getHostWithUserStmt     = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.EXTRA_FLAGS, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID WHERE h.User LIKE ?;"
 	deleteHostStmt          = "DELETE FROM HOSTS where ID = ?"
-	insertHostStmt          = "INSERT INTO HOSTS (ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID, EXTRA_FLAGS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+
+	updateHostStmt = "UPDATE HOSTS SET NAME = ?, ADDRESS = ?, PORT = ?, USER = ?, REGION_ID = ?, IDENTITY_ID = ?, JUMPHOST_ID = ?, EXTRA_FLAGS = ? WHERE ID = ?"
+	insertHostStmt = "INSERT INTO HOSTS (ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID, EXTRA_FLAGS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 )
 
 type ShortHost struct {
@@ -31,19 +33,18 @@ type ShortHost struct {
 }
 
 type Host struct {
-	Id         uuid.UUID     `json:"id"` //nolint:revive
-	Name       string        `json:"name" comment:"Unique name of the host"`
-	Address    string        `json:"address" comment:"Domain / IP address of the host without port"`
-	Port       int           `json:"port" comment:"Port on which ssh connection will be created"`
-	User       string        `json:"user" comment:"Remote user for creating the ssh connection"`
-	RegionID   uuid.UUID     `json:"region_id" comment:"UUID of the region you want to connect this host to. You can find the id by printing the region table (xsg get 'r' '*')"`
-	IdentityID uuid.UUID     `json:"identity_id" comment:"UUID of the Identity key you want to use for connecting with the host. You can find the id by printing the identity table (xsg get 'i' '*')"`
-	JumphostID uuid.NullUUID `json:"jumphost_id" comment:"UUID of the host you want to use as jumphost. You can get the id by printing the host table (xsh get 'h' '*')"`
-	ExtraFlags string        `json:"extra_flags" comment:"Extra ssh flgs, except XSH internal ones"`
-	// Tags         []string      `json:"tags"`
-	Region       string `json:"region_name"`
-	Jumphost     string `json:"jumphost_name"`
-	IdentityFile string `json:"identitiy_file_name"`
+	Id           uuid.UUID     `json:"id"` //nolint:revive
+	Name         string        `json:"name" comment:"Unique name of the host"`
+	Address      string        `json:"address" comment:"Domain / IP address of the host without port"`
+	Port         int           `json:"port" comment:"Port on which ssh connection will be created"`
+	User         string        `json:"user" comment:"Remote user for creating the ssh connection"`
+	RegionID     uuid.UUID     `json:"region_id" comment:"UUID of the region you want to connect this host to. You can find the id by printing the region table (xsg get 'r' '*')"`
+	IdentityID   uuid.UUID     `json:"identity_id" comment:"UUID of the Identity key you want to use for connecting with the host. You can find the id by printing the identity table (xsg get 'i' '*')"`
+	JumphostID   uuid.NullUUID `json:"jumphost_id" comment:"UUID of the host you want to use as jumphost. You can get the id by printing the host table (xsh get 'h' '*')"`
+	ExtraFlags   string        `json:"extra_flags" comment:"Extra ssh flgs, except XSH internal ones"`
+	Region       string        `json:"region_name"`
+	Jumphost     string        `json:"jumphost_name"`
+	IdentityFile string        `json:"identitiy_file_name"`
 }
 
 func NewHost(name, address, user string, port int, regionID, identityID uuid.UUID, jumphostID uuid.NullUUID) (*Host, error) {
@@ -65,6 +66,11 @@ func NewHost(name, address, user string, port int, regionID, identityID uuid.UUI
 		IdentityID: identityID,
 		JumphostID: jumphostID,
 	}, nil
+}
+
+func (h *Host) Update(db *sql.DB) error {
+	_, err := db.Exec(updateHostStmt, h.Name, h.Address, h.Port, h.User, h.RegionID, h.IdentityID, h.JumphostID, h.ExtraFlags, h.Id)
+	return err
 }
 
 func (h *Host) Store(db *sql.DB) error {

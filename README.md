@@ -62,7 +62,7 @@ make build
 
 # Placing the binary in required directory
 mkdir -p ~/.local/bin
-mv xsh ~/.local/bin/
+mv bin/xsh ~/.local/bin/
 chmod +x ~/.local/bin/xsh
 
 # Make sure the binary directory is present under $PATH
@@ -133,7 +133,13 @@ xsh put h
 ![Clone host GIF](./assets/clone_host.gif)
 
 
-### Delete Resources interactively
+### Edit Resource Interactively
+Select resource to edit interactively
+```bash
+xsh edit
+```
+
+### Delete Resources Interactively
 Select resource to delete interactively and delete them
 ```bash
 xsh delete

@@ -13,6 +13,7 @@ type Region struct {
 }
 
 var (
+	updateRegionStmt = "UPDATE REGIONS SET NAME = ? WHERE ID = ?"
 	insertRegionStmt = "INSERT INTO regions (id, name) VALUES (?, ?)"
 
 	deleteRegionStmt       = "DELETE FROM REGIONS WHERE ID = ?"
@@ -34,6 +35,11 @@ func NewRegion(name string) (*Region, error) {
 		Id:   id,
 		Name: name,
 	}, nil
+}
+
+func (r *Region) Update(db *sql.DB) error {
+	_, err := db.Exec(updateRegionStmt, r.Name, r.Id)
+	return err
 }
 
 func (r *Region) Store(db *sql.DB) error {

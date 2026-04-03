@@ -35,6 +35,7 @@ func checkAddress(db *sql.DB, address string) error {
 		if err == sql.ErrNoRows {
 			return nil
 		}
+		return err
 	}
 	return fmt.Errorf("host present in database with address provided")
 }

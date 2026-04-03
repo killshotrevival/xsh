@@ -62,7 +62,7 @@ func Execute() {
 func init() {
 	// Global flag available to all subcommands
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug logging")
-	rootCmd.AddCommand(docsCmd, putCmd, getCmd, initCmd, connectCmd, deleteCmd, exampleCmd, importCmd)
+	rootCmd.AddCommand(docsCmd, putCmd, getCmd, initCmd, connectCmd, deleteCmd, exampleCmd, importCmd, editCmd)
 
 	// Connect Command
 	connectCmd.PersistentFlags().BoolVarP(&printConnectionString, "print", "p", false, "Just print connection string, instead of connecting with the host")

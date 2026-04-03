@@ -34,7 +34,7 @@ func InteractivePut(db *sql.DB) error {
 		return cloneHost(db)
 	}
 
-	return createHost(db)
+	return createHost(db, nil)
 }
 
 func cloneHost(db *sql.DB) error {
@@ -84,7 +84,7 @@ func cloneHost(db *sql.DB) error {
 	}
 
 	if cloneHostID == "0" {
-		return createHost(db)
+		return createHost(db, nil)
 	}
 
 	host, err := GetHostByID(db, cloneHostID)
@@ -124,31 +124,51 @@ func cloneHost(db *sql.DB) error {
 	return host.Store(db)
 }
 
-func createHost(db *sql.DB) error {
+func createHost(db *sql.DB, host *Host) error {
 	var (
-		host             Host
 		regionIDString   string
 		identityIDString string
 		jumphostIDString string
-		err              error
+		isUpdate         bool
 	)
 
 	portString := "22"
-	host.User = "root"
+
+	if host == nil {
+		id, err := uuid.NewRandom()
+		if err != nil {
+			return err
+		}
+		host = &Host{
+			Id:   id,
+			User: "root",
+		}
+		isUpdate = false
+	} else {
+		isUpdate = true
+		portString = strconv.Itoa(host.Port)
+	}
+
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Host Name").
 				Description("Please enter a unique name for your host that is easy to remember").
 				Value(&host.Name).Validate(func(s string) error {
-				return checkName(db, s)
+				if host.Name == "" {
+					return checkName(db, s)
+				}
+				return nil
 			}),
 
 			huh.NewInput().
 				Title("Host Address").
 				Description("Please enter the hostname / IP address of the host to connect").
 				Value(&host.Address).Validate(func(s string) error {
-				return checkAddress(db, s)
+				if host.Address == "" {
+					return checkAddress(db, s)
+				}
+				return nil
 			}),
 
 			huh.NewInput().
@@ -191,7 +211,12 @@ func createHost(db *sql.DB) error {
 					}
 					opts := []huh.Option[string]{}
 					for _, reg := range *regs {
-						opts = append(opts, huh.NewOption(reg.Name, reg.Id.String()))
+						opt := huh.NewOption(reg.Name, reg.Id.String())
+
+						if host.RegionID == reg.Id {
+							opt = opt.Selected(true)
+						}
+						opts = append(opts, opt)
 					}
 					return opts
 				}, nil).Value(&regionIDString).Validate(
@@ -229,11 +254,14 @@ func createHost(db *sql.DB) error {
 					var opts []huh.Option[string]
 
 					for _, id := range *ids {
-						opts = append(opts,
-							huh.NewOption(
-								fmt.Sprintf("%s (%s)", id.Name, id.Path), id.Id.String(),
-							),
+						opt := huh.NewOption(
+							fmt.Sprintf("%s (%s)", id.Name, id.Path), id.Id.String(),
 						)
+
+						if host.IdentityID == id.Id {
+							opt = opt.Selected(true)
+						}
+						opts = append(opts, opt)
 					}
 					return opts
 
@@ -271,9 +299,16 @@ func createHost(db *sql.DB) error {
 						),
 					}
 					for _, sh := range *hosts {
-						opts = append(opts, huh.NewOption(
-							sh.Name, sh.Id.String(),
-						))
+						if host.Id == sh.Id {
+							// Don't add the selected host as one of the jumphost to select
+							continue
+						}
+						opt := huh.NewOption(sh.Name, sh.Id.String())
+
+						if host.JumphostID.Valid && host.JumphostID.UUID == sh.Id {
+							opt = opt.Selected(true)
+						}
+						opts = append(opts, opt)
 					}
 					return opts
 
@@ -299,9 +334,8 @@ func createHost(db *sql.DB) error {
 	}
 	host.Port, _ = strconv.Atoi(portString)
 
-	host.Id, err = uuid.NewRandom()
-	if err != nil {
-		return err
+	if isUpdate {
+		return host.Update(db)
 	}
 
 	return host.Store(db)

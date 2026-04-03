@@ -18,6 +18,7 @@ A tool to extend the functionality of SSH with additional features and capabilit
 * [xsh completion](xsh_completion.md)	 - Generate the autocompletion script for the specified shell
 * [xsh connect](xsh_connect.md)	 - Connect SSH.
 * [xsh delete](xsh_delete.md)	 - Delete data from the database.
+* [xsh edit](xsh_edit.md)	 - Edit resources
 * [xsh example](xsh_example.md)	 - Generate example format for resource
 * [xsh gendocs](xsh_gendocs.md)	 - Generate CLI documentation
 * [xsh get](xsh_get.md)	 - Get data from the database.

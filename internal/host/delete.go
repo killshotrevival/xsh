@@ -30,6 +30,8 @@ func Delete(db *sql.DB, identifier string) error {
 		return err
 	}
 
+	defer rows.Close()
+
 	if rows.Next() {
 		return errJumphostDelete
 	}

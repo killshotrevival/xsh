@@ -15,6 +15,7 @@ import (
 
 var (
 	insertIdentityStmt = "INSERT INTO IDENTITIES (ID, NAME, PATH) VALUES (?, ?, ?)"
+	updateIdentityStmt = "UPDATE IDENTITIES SET NAME = ?, PATH = ? WHERE ID = ?"
 
 	deleteIdentityStmt = "DELETE FROM identities WHERE ID = ?"
 
@@ -86,32 +87,33 @@ func CheckOrCreateIdentity(path string, db *sql.DB) (uuid.UUID, error) {
 	return id, nil
 }
 
-func (i *Identity) Store(db *sql.DB) error {
-	status, err := i.ExistsInDb(db)
-	if err != nil {
-		return nil
-	}
+func (i *Identity) Update(db *sql.DB) error {
+	_, err := db.Exec(updateIdentityStmt, i.Name, i.Path, i.Id)
+	return err
+}
 
-	if status {
+func (i *Identity) Store(db *sql.DB) error {
+	err := checkIdentityPath(db, i.Path)
+	if err != nil {
 		log.Warn("[identity] identity with this path already exists in the database, skipping insert")
 		return nil
 	}
+
 	_, err = db.Exec(insertIdentityStmt, i.Id, i.Name, i.Path)
 	return err
 }
 
-func (i *Identity) ExistsInDb(db *sql.DB) (bool, error) {
-	rows, err := db.Query(getIdentityByPathStmt, i.Path)
-	if err != nil {
-		return false, fmt.Errorf("error occurred while checking identity execits in database: %w", err)
+func checkIdentityPath(db *sql.DB, path string) error {
+	var id uuid.UUID
+	if err := db.QueryRow(getIdentityIDByPathStmt, path).Scan(&id); err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		return err
 	}
 
-	defer rows.Close()
+	return fmt.Errorf("identity present in database with given path")
 
-	if rows.Next() {
-		return true, nil
-	}
-	return false, nil
 }
 
 func containsSSHKey(path string) bool {
