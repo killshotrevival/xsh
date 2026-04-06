@@ -4,6 +4,22 @@ PROJECT = bin/xsh
 # Version of the appliction
 VERSION = dev
 
+# Detect the operating system
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S),Linux)
+	os_build = build-linux
+	os_integration_test = integration-test-linux
+	os_suffix = linux
+endif
+
+ifeq ($(UNAME_S),Darwin)
+	os_build = build-mac
+	os_integration_test = integration-test-mac
+	os_suffix = mac
+endif
+
+#### Build targets
 
 build-mac:
 	@echo "Building the app for mac OS"
@@ -15,8 +31,14 @@ build-linux:
 	mkdir -p bin/	
 	GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -extldflags '-static' -X 'xsh/cmd.Version=${VERSION}'" -o ${PROJECT}-linux
 
-build: build-mac build-linux
-	@echo "Builing for mac and linux arch"
+build: $(os_build)
+
+build-all: build-linux build-mac
+	@echo "Builing the app for all OS"
+
+build-and-replace: $(os_build)
+	@echo "Replacing the existing binary"
+	mv bin/xsh-$(os_suffix) ~/.local/bin/xsh
 
 clean:
 	# Remove the binaries directory
@@ -41,7 +63,7 @@ put-host:
 	go run ./... put h -i
 
 get-hosts:
-	go run ./... get h  
+	go run ./... get h 
 
 integration-test-linux: build-linux
 	@echo "CLI created successfully, starting integration test"
@@ -50,4 +72,7 @@ integration-test-linux: build-linux
 integration-test-mac: build-mac
 	@echo "CLI created successfully, starting integration test"
 	bash test/integration.sh $(PWD)/bin/xsh-mac $(PWD)/test/test
+
+integration-test: $(os_integration_test)
+	@echo "Integration test passed" 
 	

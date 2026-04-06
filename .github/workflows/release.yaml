@@ -27,7 +27,7 @@ jobs:
           run: make unit-test
 
         - name: Build
-          run: make VERSION=$VERSION build-linux
+          run: make VERSION=$VERSION build
           env:
             VERSION: ${{  github.ref_name }}
 
@@ -57,7 +57,7 @@ jobs:
             cache: true
 
         - name: Build
-          run: make VERSION=$VERSION build-mac
+          run: make VERSION=$VERSION build
           env:
             VERSION: ${{ github.ref_name }}
 
