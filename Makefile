@@ -9,13 +9,11 @@ UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
 	os_build = build-linux
-	os_integration_test = integration-test-linux
 	os_suffix = linux
 endif
 
 ifeq ($(UNAME_S),Darwin)
 	os_build = build-mac
-	os_integration_test = integration-test-mac
 	os_suffix = mac
 endif
 
@@ -65,14 +63,9 @@ put-host:
 get-hosts:
 	go run ./... get h 
 
-integration-test-linux: build-linux
+integration-test: $(os_build)
 	@echo "CLI created successfully, starting integration test"
-	bash test/integration.sh $(PWD)/bin/xsh-linux $(PWD)/test/test
-
-integration-test-mac: build-mac
-	@echo "CLI created successfully, starting integration test"
-	bash test/integration.sh $(PWD)/bin/xsh-mac $(PWD)/test/test
-
-integration-test: $(os_integration_test)
+	bash test/integration.sh $(PWD)/bin/xsh-$(os_suffix) $(PWD)/test/test
 	@echo "Integration test passed" 
+
 	
