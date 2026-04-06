@@ -22,7 +22,7 @@ mkdir -p $CONFIG_PATH
 # Removing resources if any
 rm -f $CONFIG_PATH/xsh.db*
 
-echo "Using XSH binar : $XSH_BINARY"
+echo "Using XSH binary : $XSH_BINARY"
 echo "Using config directory: $CONFIG_PATH"
 
 # Setting the config directory path for XSH
