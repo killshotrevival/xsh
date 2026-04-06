@@ -37,6 +37,8 @@ region.json
 identity.json
 example.json
 resource.json
+mock_idfile
+xsh.db*
 
 # XSH binary
 xsh

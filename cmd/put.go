@@ -79,5 +79,5 @@ var puRegionCmd = &cobra.Command{
 		name := args[0]
 		return region.PutRegion(dbConnection, name)
 	},
-	Example: "xsh region identity [name]",
+	Example: "xsh region [name]",
 }

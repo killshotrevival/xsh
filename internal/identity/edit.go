@@ -8,8 +8,8 @@ import (
 	"charm.land/huh/v2"
 )
 
-func Edit(db *sql.DB, identityId string) error {
-	id, err := GetIdentityByName(db, identityId)
+func Edit(db *sql.DB, identityID string) error {
+	id, err := GetIdentityByName(db, identityID)
 	if err != nil {
 		return err
 	}

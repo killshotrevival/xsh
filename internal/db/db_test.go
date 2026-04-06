@@ -17,8 +17,8 @@ func TestGetDBPath(t *testing.T) {
 
 	dbPath := filepath.Join(path, "xsh.db")
 
-	if err := os.Setenv("XSH_DB_PATH", dbPath); err != nil {
-		t.Fatalf("error occured while populating XSH_DB_PATH env: %v", err)
+	if err := os.Setenv("XSH_CONFIG_PATH", path); err != nil {
+		t.Fatalf("error occured while populating XSH_CONFIG_PATH env: %v", err)
 	}
 
 	p, err := GetDBPath()
@@ -36,10 +36,8 @@ func TestInitDB(t *testing.T) {
 
 	defer utils.RemoveTempDir(path, t)
 
-	dbPath := filepath.Join(path, "xsh.db")
-
-	if err := os.Setenv("XSH_DB_PATH", dbPath); err != nil {
-		t.Fatalf("error occured while populating XSH_DB_PATH env: %v", err)
+	if err := os.Setenv("XSH_CONFIG_PATH", path); err != nil {
+		t.Fatalf("error occured while populating XSH_CONFIG_PATH env: %v", err)
 	}
 
 	if err := InitDB(); err != nil {

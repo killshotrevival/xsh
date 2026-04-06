@@ -99,7 +99,7 @@ func selectResource(dbConnection *sql.DB) (string, []string, error) {
 	}
 
 	if len(idLists) == 0 {
-		return "", nil, fmt.Errorf("No reosurce seleceted")
+		return "", nil, fmt.Errorf("no resource seleceted")
 	}
 
 	return resource, idLists, nil

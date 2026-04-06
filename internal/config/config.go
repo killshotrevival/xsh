@@ -8,6 +8,10 @@ import (
 )
 
 func GetConfigDir() (string, error) {
+	// Reading the config directory from environment variable
+	if value, ok := os.LookupEnv("XSH_CONFIG_PATH"); ok {
+		return value, nil
+	}
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		log.Errorf("error occurred while fetching user home directory: %v", err)

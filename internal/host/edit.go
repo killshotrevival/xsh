@@ -4,8 +4,8 @@ import (
 	"database/sql"
 )
 
-func Edit(db *sql.DB, hostId string) error {
-	host, err := GetHostByName(db, hostId)
+func Edit(db *sql.DB, hostID string) error {
+	host, err := GetHostByName(db, hostID)
 	if err != nil {
 		return err
 	}

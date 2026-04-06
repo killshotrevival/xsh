@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -22,6 +23,10 @@ func RemoveTempDir(path string, t *testing.T) {
 }
 
 func ConvertToAbs(path string) (string, error) {
+	// TODO: Add support for more complex relative path parsing
+	if strings.Contains(path, "..") {
+		return "", fmt.Errorf("`..` present in the string. Please provide absolute path")
+	}
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return "", err

@@ -26,11 +26,11 @@ lint:
 	@echo "Running Golang Lint..."
 	golangci-lint run
 
-test:
+unit-test:
 	@echo "Running Unit tests"
 	go test ./... -run=.
 
-verify: test lint 
+verify: unit-test lint 
 	@echo "Code verification passed"
 
 gendocs:
@@ -42,3 +42,12 @@ put-host:
 
 get-hosts:
 	go run ./... get h  
+
+integration-test-linux: build-linux
+	@echo "CLI created successfully, starting integration test"
+	bash test/integration.sh $(PWD)/bin/xsh-linux $(PWD)/test/test
+
+integration-test-mac: build-mac
+	@echo "CLI created successfully, starting integration test"
+	bash test/integration.sh $(PWD)/bin/xsh-mac $(PWD)/test/test
+	

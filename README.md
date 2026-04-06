@@ -171,7 +171,7 @@ XSH uses SQLite to store configuration with the following structure:
 The database is stored at `~/.xsh/xsh.db` by default. Override with:
 
 ```bash
-export XSH_DB_PATH=/custom/path/config.db
+export XSH_CONFIG_PATH=/custom/path/xsh
 ```
 
 ## Contributing

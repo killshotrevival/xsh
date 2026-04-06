@@ -34,11 +34,6 @@ var (
 )
 
 func GetDBPath() (string, error) {
-	value, prsent := os.LookupEnv("XSH_DB_PATH")
-	if prsent {
-		log.Debugf("[database] using database path from XSH_DB_PATH environment variable: %s", value)
-		return value, nil
-	}
 	configDir, err := config.GetConfigDir()
 	if err != nil {
 		return "", err
@@ -206,11 +201,9 @@ func CheckAndApplyMigrations() error {
 		if err := applyMigrations(db, fileNames, true); err != nil {
 			return err
 		}
-
 		return updateSchemaVersion(db, newVersion)
-	} else {
-		log.Debug("[database] schema is up to date, no pending migrations to apply")
 	}
+	log.Debug("[database] schema is up to date, no pending migrations to apply")
 	return nil
 }
 
