@@ -58,12 +58,11 @@ curl https://raw.githubusercontent.com/killshotrevival/xsh/refs/heads/main/insta
 git clone https://github.com/killshotrevival/xsh.git
 cd xsh
 
-make build
-
-# Placing the binary in required directory
+# Creating the directory where the binary will be placed
 mkdir -p ~/.local/bin
-mv bin/xsh ~/.local/bin/
-chmod +x ~/.local/bin/xsh
+
+# This will build the binary according to the OS arch and place it under the required directory
+make build-and-replace
 
 # Make sure the binary directory is present under $PATH
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc   # or ~/.zshrc
