@@ -32,7 +32,7 @@ jobs:
             VERSION: ${{  github.ref_name }}
 
         - name: Run Integration Test
-          run: make integration-test-linux
+          run: make integration-test
 
         - name: Uploading artifacts
           uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe
@@ -62,7 +62,7 @@ jobs:
             VERSION: ${{ github.ref_name }}
 
         - name: Run Integration Test
-          run: make integration-test-mac
+          run: make integration-test
 
         - name: Uploading artifacts
           uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe
