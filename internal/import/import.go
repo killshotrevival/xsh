@@ -11,7 +11,6 @@ import (
 	"strings"
 	"xsh/internal/host"
 	"xsh/internal/identity"
-	"xsh/internal/region"
 
 	"github.com/charmbracelet/log"
 	"github.com/google/shlex"
@@ -88,14 +87,9 @@ func commandToHost(command string, db *sql.DB) (*host.Host, error) {
 		return nil, fmt.Errorf("found `$` in the command, seems like there is bash variable replacement present, not importing this one")
 	}
 
-	id, err := uuid.NewRandom()
+	h, err := host.GetDefaultHost()
 	if err != nil {
 		return nil, err
-	}
-	h := host.Host{
-		Id:       id,
-		RegionID: region.DefaultregionID,
-		Port:     22,
 	}
 	tokens, err := shlex.Split(command)
 	if err != nil {
@@ -174,5 +168,5 @@ func commandToHost(command string, db *sql.DB) (*host.Host, error) {
 
 	h.Name = h.Address
 
-	return &h, nil
+	return h, nil
 }

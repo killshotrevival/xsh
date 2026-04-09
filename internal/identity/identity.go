@@ -14,6 +14,8 @@ import (
 )
 
 var (
+	DefaultIdentityID = uuid.MustParse("be350830-609d-46a0-854c-4ba11e700056")
+
 	insertIdentityStmt = "INSERT INTO IDENTITIES (ID, NAME, PATH) VALUES (?, ?, ?)"
 	updateIdentityStmt = "UPDATE IDENTITIES SET NAME = ?, PATH = ? WHERE ID = ?"
 

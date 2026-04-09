@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"xsh/internal/identity"
+	"xsh/internal/region"
 
 	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
@@ -45,6 +47,22 @@ type Host struct {
 	Region       string        `json:"region_name"`
 	Jumphost     string        `json:"jumphost_name"`
 	IdentityFile string        `json:"identitiy_file_name"`
+}
+
+func GetDefaultHost() (*Host, error) {
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Host{
+		Id:         id,
+		Port:       22,
+		User:       "root",
+		RegionID:   region.DefaultregionID,
+		IdentityID: identity.DefaultIdentityID,
+	}, nil
+
 }
 
 func NewHost(name, address, user string, port int, regionID, identityID uuid.UUID, jumphostID uuid.NullUUID) (*Host, error) {
