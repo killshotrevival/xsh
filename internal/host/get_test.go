@@ -40,14 +40,12 @@ func TestPrintHost(t *testing.T) {
 	defer dbConnection.Close()
 
 	path := utils.GetXSHTempDir(t)
-
 	defer utils.RemoveTempDir(path, t)
 
 	outputPath := filepath.Join(path, "test-host.json")
 
-	if err := Print(dbConnection, "*", "json", outputPath); err != nil {
-		t.Fatalf("error occurred while trying to print the hosts: %v", err)
-	}
+	err := Print(dbConnection, "*", "json", outputPath)
+	assert.Nil(t, err)
 
 	testData := []map[string]json.RawMessage{}
 

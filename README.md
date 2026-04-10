@@ -148,6 +148,17 @@ xsh delete
 
 ![Interactive delete GIF](./assets/interactive-delete.gif)
 
+### Custom Command Templates 🛠️
+Extend XSH beyond SSH to support **any remote connection tool**. Create custom templates for Azure CLI, kubectl, AWS SSM, or any CLI tool with connection capabilities.
+
+```bash
+# Examples of what's possible:
+az ssh vm -n ${address} ${extra_flags}
+kubectl exec -it ${address} ${extra_flags} -- /bin/bash
+```
+
+Learn how to transform XSH into a universal remote connection manager: **[Custom Command Templates](Command%20Template.md)**
+
 ### For More Details
 Please follow [this](./docs/xsh.md) for more information
 

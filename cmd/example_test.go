@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 	"xsh/internal/host"
 	"xsh/internal/utils"
@@ -17,7 +18,7 @@ func TestGenerateExampleFromComments(t *testing.T) {
 
 	output := filepath.Join(path, "example.json")
 
-	if err := generateExampleFromComments(host.Host{}, []string{"id", "region_name", "jumphost_name", "identitiy_file_name", "tags"}, output); err != nil {
+	if err := generateExampleFromComments(reflect.TypeFor[host.Host](), []string{"id", "region_name", "jumphost_name", "identitiy_file_name", "tags"}, output); err != nil {
 		t.Fatalf("error occurred while creating example docs for host: %v", err)
 	}
 

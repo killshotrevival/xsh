@@ -7,6 +7,7 @@ import (
 	"xsh/internal/host"
 	"xsh/internal/identity"
 	"xsh/internal/region"
+	"xsh/internal/tool"
 
 	"github.com/spf13/cobra"
 )
@@ -67,6 +68,20 @@ Arguments:
 	`,
 	RunE: func(_ *cobra.Command, _ []string) error {
 		return genericGetData(getIdentifier, outputFormat, identity.Print)
+	},
+}
+
+var getToolCmd = &cobra.Command{
+	Use:     "tool",
+	Aliases: []string{"t"},
+	Short:   "Get tools from the database.",
+	Long: `Retrieve tools from the database based on specified criteria.
+	
+Arguments:
+  identifier: Any identifier for the resource selection. Please use * for selecting all
+	`,
+	RunE: func(_ *cobra.Command, _ []string) error {
+		return genericGetData(getIdentifier, outputFormat, tool.Print)
 	},
 }
 

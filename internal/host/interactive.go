@@ -7,6 +7,7 @@ import (
 	"xsh/internal/identity"
 	"xsh/internal/region"
 	"xsh/internal/theme"
+	"xsh/internal/tool"
 
 	"charm.land/huh/v2"
 	"github.com/google/uuid"
@@ -129,6 +130,7 @@ func createHost(db *sql.DB, host *Host) error {
 		regionIDString   string
 		identityIDString string
 		jumphostIDString string
+		toolIDString     string
 		isUpdate         bool
 	)
 
@@ -150,6 +152,45 @@ func createHost(db *sql.DB, host *Host) error {
 	}
 
 	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				Title("Tool").
+				Description("Please select tool for connecting with host").
+				OptionsFunc(func() []huh.Option[string] {
+
+					tools, err := tool.GetTools(db)
+					if err != nil {
+						return []huh.Option[string]{
+							huh.NewOption(
+								fmt.Sprintf("error occurred while fetchinig tools: %v", err), "-1",
+							),
+						}
+					}
+
+					if len(*tools) == 0 {
+						return []huh.Option[string]{
+							huh.NewOption("no host present to select", "0"),
+						}
+					}
+
+					opts := []huh.Option[string]{}
+
+					for _, t := range *tools {
+						opt := huh.NewOption(fmt.Sprintf("%s (%s)", t.Name, t.ConnectionString), t.ID.String())
+						if t.ID == tool.SSHToolID {
+							opt = opt.Selected(true)
+						}
+						opts = append(opts, opt)
+					}
+					return opts
+
+				}, nil).Value(&toolIDString).Validate(func(s string) error {
+				if s == "-1" {
+					return fmt.Errorf("please exit and retry")
+				}
+				return nil
+			}),
+		),
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Host Name").
@@ -174,7 +215,10 @@ func createHost(db *sql.DB, host *Host) error {
 			huh.NewInput().
 				Title("Host Port").
 				Description("Please enter the port on which host accepts the connection").
-				Value(&portString).Placeholder(portString),
+				Value(&portString).Placeholder(portString).Validate(func(s string) error {
+				_, err := strconv.Atoi(s)
+				return err
+			}),
 
 			huh.NewInput().
 				Title("Remote User").
@@ -182,8 +226,8 @@ func createHost(db *sql.DB, host *Host) error {
 				Value(&host.User).Placeholder(host.User),
 
 			huh.NewInput().
-				Title("SSH Flags").
-				Description("Extra SSH flags, that you would like to use for this host").
+				Title("Extra Flags").
+				Description("Extra flags, that you would like to use for this host").
 				Value(&host.ExtraFlags).Validate(validateExtraFlags),
 		),
 
@@ -232,7 +276,7 @@ func createHost(db *sql.DB, host *Host) error {
 		huh.NewGroup(
 			huh.NewSelect[string]().
 				Title("Identity File").
-				Description("Please select the ssh identitity file to use for creating the connection with host").
+				Description("Please select the identitity file to use for creating the connection with host").
 				OptionsFunc(func() []huh.Option[string] {
 					ids, err := identity.GetIdentity(db)
 					if err != nil {
@@ -252,7 +296,6 @@ func createHost(db *sql.DB, host *Host) error {
 					}
 
 					var opts []huh.Option[string]
-
 					for _, id := range *ids {
 						opt := huh.NewOption(
 							fmt.Sprintf("%s (%s)", id.Name, id.Path), id.Id.String(),
@@ -325,8 +368,9 @@ func createHost(db *sql.DB, host *Host) error {
 		return err
 	}
 
-	host.RegionID, _ = uuid.Parse(regionIDString)
-	host.IdentityID, _ = uuid.Parse(identityIDString)
+	host.RegionID = uuid.MustParse(regionIDString)
+	host.IdentityID = uuid.MustParse(identityIDString)
+	host.ToolID = uuid.MustParse(toolIDString)
 
 	if jumphostIDString != "0" {
 		host.JumphostID.UUID = uuid.MustParse(jumphostIDString)
@@ -339,4 +383,42 @@ func createHost(db *sql.DB, host *Host) error {
 	}
 
 	return host.Store(db)
+}
+
+// Add a new tool entry interactively
+func InteractiveToolPut(db *sql.DB) error {
+	var (
+		t   tool.Tool
+		err error
+	)
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Tool Name").
+				Description("Please enter remote connection tool name").
+				Value(&t.Name).
+				Validate(func(s string) error {
+					t, _ := tool.GetToolByName(db, s)
+					if t != nil {
+						return fmt.Errorf("tool already present with given name")
+					}
+					return err
+				}),
+
+			huh.NewInput().
+				Title("Connection Template").
+				Description("Please enter connection string template").Value(&t.ConnectionString).Validate(ValidateConnectionString),
+		),
+	)
+
+	if err := form.Run(); err != nil {
+		return err
+	}
+
+	t.ID, err = uuid.NewRandom()
+	if err != nil {
+		return err
+	}
+
+	return t.Store(db)
 }

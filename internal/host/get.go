@@ -9,6 +9,7 @@ import (
 	"strings"
 	"xsh/internal/table"
 	"xsh/internal/tag"
+	"xsh/internal/tool"
 
 	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
@@ -73,6 +74,7 @@ func getHost(db *sql.DB, queryString, identifier string) (*Host, error) {
 		&host.RegionID,
 		&host.IdentityID,
 		&host.JumphostID,
+		&host.ToolID,
 		&host.ExtraFlags,
 	); err != nil {
 		if err == sql.ErrNoRows {
@@ -130,6 +132,8 @@ func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 	data := [][]string{}
 	printHost := []Host{}
 
+	tempHost := []Host{}
+
 	for _, placeholder := range []string{getHostWithNameStmt, getHostWithAddressStmt, getHostWithUserStmt} {
 		if identifier == "*" {
 			log.Debug("[host] listing all hosts from the database")
@@ -153,6 +157,7 @@ func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 				&host.Port,
 				&host.User,
 				&host.JumphostID,
+				&host.ToolID,
 				&host.ExtraFlags,
 				&host.RegionID,
 				&host.IdentityID,
@@ -163,31 +168,42 @@ func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 				continue
 			}
 
-			if !slices.Contains(idsAdded, host.Id) {
-				// TODO: Freezed until further development
-				// host.Tags, err = tag.GetTagsByDataTypeID(db, host.Id)
-				// if err != nil {
-				// 	host.Tags = []string{"error occurred while fetching"}
-				// }
-				idsAdded = append(idsAdded, host.Id)
-				host.getJumphost(db)
+			tempHost = append(tempHost, host)
 
-				printHost = append(printHost, host)
-				data = append(data, []string{
-					host.Name,
-					fmt.Sprintf("%s:%d", host.Address, host.Port),
-					host.Jumphost,
-					host.User,
-					host.Region,
-					host.IdentityFile,
-					host.ExtraFlags,
-					// tag.ToString(host.Tags),
-				})
-
-			}
 		}
 		if identifier == "*" {
 			break
+		}
+	}
+
+	for _, host := range tempHost {
+		if !slices.Contains(idsAdded, host.Id) {
+			// TODO: Freezed until further development
+			// host.Tags, err = tag.GetTagsByDataTypeID(db, host.Id)
+			// if err != nil {
+			// 	host.Tags = []string{"error occurred while fetching"}
+			// }
+			idsAdded = append(idsAdded, host.Id)
+			host.getJumphost(db)
+			t, err := tool.GetToolByID(db, host.ToolID)
+			if err != nil {
+				log.Debugf("error occurred while fetching tool with ID: %v", err)
+				return err
+			}
+
+			printHost = append(printHost, host)
+			data = append(data, []string{
+				host.Name,
+				t.Name,
+				fmt.Sprintf("%s:%d", host.Address, host.Port),
+				host.Jumphost,
+				host.User,
+				host.Region,
+				host.IdentityFile,
+				host.ExtraFlags,
+				// tag.ToString(host.Tags),
+			})
+
 		}
 	}
 
@@ -195,7 +211,7 @@ func Print(db *sql.DB, identifier, outputFormat, outputFile string) error {
 	case "table":
 		log.Debug("[host] rendering host data as table")
 		t := table.NewTable(
-			[]string{"NAME", "ADDRESS", "JUMPHOST", "USER", "REGION", "IDENTITY FILE", "EXTRA FLAGS"}, // "TAGS"
+			[]string{"NAME", "TOOL", "ADDRESS", "JUMPHOST", "USER", "REGION", "IDENTITY FILE", "EXTRA FLAGS"}, // "TAGS"
 
 			data,
 		)

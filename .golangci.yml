@@ -3,6 +3,7 @@ linters:
   default: none
   enable:
     - errcheck
+    - forbidigo
     - goconst
     - gocritic
     - gocyclo

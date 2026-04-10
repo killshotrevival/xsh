@@ -65,6 +65,7 @@ cat <<EOF > host.json
   "user": "test",
   "region_id": "$REGION_ID",
   "identity_id": "$IDENTITY_ID",
+  "tool_id": "0a398c97-4525-4416-903d-3662b8de8850",
   "jumphost_id": null
 }
 EOF
@@ -86,6 +87,7 @@ cat <<EOF > host.json
   "user": "test",
   "region_id": "$REGION_ID",
   "identity_id": "$IDENTITY_ID",
+  "tool_id": "0a398c97-4525-4416-903d-3662b8de8850",
   "jumphost_id": "$JUMPHOST_ID"
 }]
 EOF
@@ -96,3 +98,5 @@ $XSH_BINARY put host -f host.json
 CONNECT_COMMAND=$($XSH_BINARY connect example-test-2 -p)
 echo "New normal host created successfully with connect command"
 
+
+# TODO: Add integration test for tool other than ssh
