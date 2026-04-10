@@ -9,7 +9,6 @@ import (
 
 func TestGet(t *testing.T) {
 	dbConnection := db.GetTestDB(t)
-
 	defer dbConnection.Close()
 
 	err := PutTool(dbConnection, "Testing", "testing")

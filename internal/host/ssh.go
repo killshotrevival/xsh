@@ -6,14 +6,19 @@ import (
 	"xsh/internal/identity"
 )
 
-func buildSSHConnectionString(cHost *Host, dbConnection *sql.DB) (string, error) {
+func buildSSHConnectionString(dbConnection *sql.DB, cHost *Host, verbose bool) (string, error) {
 	var (
 		cjumpHost                   *Host
 		cIdentity, cJumhostIdentity *identity.Identity
 		identityString              string
 		jumpHostString              string
+		verboseString               string
 		err                         error
 	)
+
+	if verbose {
+		verboseString = "-v"
+	}
 
 	// Adding identity string to ssh connection only if the identity id attached is different then default identity
 	if cHost.IdentityID != identity.DefaultIdentityID {
@@ -53,10 +58,11 @@ func buildSSHConnectionString(cHost *Host, dbConnection *sql.DB) (string, error)
 
 	}
 
-	connectionString := fmt.Sprintf("ssh -p %d %s %s %s@%s",
+	connectionString := fmt.Sprintf("ssh -p %d %s %s %s %s@%s",
 		cHost.Port,
 		identityString,
 		jumpHostString,
+		verboseString,
 		cHost.User,
 		cHost.Address,
 	)

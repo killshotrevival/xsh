@@ -8,6 +8,7 @@ import (
 	"xsh/internal/host"
 	"xsh/internal/identity"
 	"xsh/internal/region"
+	"xsh/internal/tool"
 
 	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
@@ -19,6 +20,7 @@ var resourceDeleteMapping = map[string]func(*sql.DB, string) error{
 	"host":     host.Delete,
 	"region":   region.Delete,
 	"identity": identity.Delete,
+	"tool":     tool.Delete,
 }
 
 var deleteCmd = &cobra.Command{

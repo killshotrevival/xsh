@@ -226,8 +226,8 @@ func createHost(db *sql.DB, host *Host) error {
 				Value(&host.User).Placeholder(host.User),
 
 			huh.NewInput().
-				Title("SSH Flags").
-				Description("Extra SSH flags, that you would like to use for this host").
+				Title("Extra Flags").
+				Description("Extra flags, that you would like to use for this host").
 				Value(&host.ExtraFlags).Validate(validateExtraFlags),
 		),
 
@@ -276,7 +276,7 @@ func createHost(db *sql.DB, host *Host) error {
 		huh.NewGroup(
 			huh.NewSelect[string]().
 				Title("Identity File").
-				Description("Please select the ssh identitity file to use for creating the connection with host").
+				Description("Please select the identitity file to use for creating the connection with host").
 				OptionsFunc(func() []huh.Option[string] {
 					ids, err := identity.GetIdentity(db)
 					if err != nil {

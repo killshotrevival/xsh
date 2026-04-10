@@ -39,6 +39,7 @@ func importFromSourceFiles(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
+	defer dbConnection.Close()
 
 	for _, file := range sourceFiles {
 		path := filepath.Join(homeDir, file)

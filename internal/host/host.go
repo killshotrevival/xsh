@@ -3,9 +3,9 @@ package host
 import (
 	"database/sql"
 	"fmt"
-	"reflect"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"xsh/internal/identity"
 	"xsh/internal/region"
@@ -54,34 +54,72 @@ type Host struct {
 	IdentityFile string        `json:"identitiy_file_name"`
 }
 
-// Function is used for validating if the template connection string contains all the valid variables or not.
-func ValidateConnectionString(connectionString string) error {
-	val := reflect.TypeFor[Host]()
+func (h *Host) GetValue(db *sql.DB, field string) (string, error) {
+	switch field {
+	case "address":
+		return h.Address, nil
+	case "port":
+		return strconv.Itoa(h.Port), nil
+	case "user":
+		return h.User, nil
+	case "extra_flags":
+		return h.ExtraFlags, nil
+	case "identitiy_file_path":
+		id, err := identity.GetIdentityByID(db, h.IdentityID)
+		if err != nil {
+			return "", fmt.Errorf("error occurred while fetching identity path: %v", err)
+		}
+		return id.Path, nil
+	default:
+		return "", fmt.Errorf("%s is not a valid place holder found in the template", field)
 
-	validKeys := []string{}
-
-	for field := range val.Fields() {
-		jsonKey := strings.Split(field.Tag.Get("json"), ",")[0]
-		validKeys = append(validKeys, jsonKey)
 	}
+}
+
+// Template will have variables in the format of
+// ${variable name here}, this function will extract all such variables from the string
+// and returns them in a list
+func extractVariablesFromTemplate(template string) []string {
+	variables := []string{}
 
 	re := regexp.MustCompile(`\$\{([^}]+)\}`)
 	// FindAllStringSubmatch returns a slice of slices:
 	// matches[n][0] is the full string (e.g., "${port}")
 	// matches[n][1] is the first capturing group (e.g., "port")
-	matches := re.FindAllStringSubmatch(connectionString, -1)
+	matches := re.FindAllStringSubmatch(template, -1)
 
 	for _, match := range matches {
 		if len(match) > 1 {
-			if !slices.Contains(validKeys, match[1]) {
-				return fmt.Errorf("%s is not a valid place holder", match[1])
+			if !slices.Contains(variables, match[1]) {
+				variables = append(variables, match[1])
 			}
+		}
+	}
+
+	return variables
+}
+
+// Function is used for validating if the template connection string contains all the valid variables or not.
+func ValidateConnectionString(connectionTemplate string) error {
+	validKeys := []string{
+		"address",
+		"port",
+		"user",
+		"extra_flags",
+		"identitiy_file_path",
+	}
+	variables := extractVariablesFromTemplate(connectionTemplate)
+
+	for _, variable := range variables {
+		if !slices.Contains(validKeys, variable) {
+			return fmt.Errorf("%s is not a valid place holder found in the template", variable)
 		}
 	}
 
 	return nil
 }
 
+// Create a host with default values filled up
 func GetDefaultHost() (*Host, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {
@@ -99,6 +137,7 @@ func GetDefaultHost() (*Host, error) {
 
 }
 
+// Create a new host with the provided values
 func NewHost(name, address, user string, port int, regionID, identityID uuid.UUID, jumphostID uuid.NullUUID) (*Host, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {

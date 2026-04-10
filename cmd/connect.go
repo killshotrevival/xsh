@@ -23,7 +23,7 @@ var connectCmd = &cobra.Command{
 	Use:   "connect [host name]",
 	Short: "Connect SSH.",
 	Long:  "Create an SSH connection with the specified server.",
-	Args:  cobra.MaximumNArgs(2),
+	Args:  cobra.MaximumNArgs(1),
 	RunE:  sshConnect,
 }
 
@@ -67,6 +67,7 @@ func sshConnect(_ *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	defer dbConnection.Close()
 
 	if len(args) > 0 {
 		h = args[0]
@@ -77,7 +78,7 @@ func sshConnect(_ *cobra.Command, args []string) error {
 		}
 	}
 
-	connectionString, err := host.BuildConnectionString(h, dbConnection)
+	connectionString, err := host.BuildConnectionString(dbConnection, h, verboseConnection)
 	if err != nil {
 		return err
 	}
@@ -86,9 +87,10 @@ func sshConnect(_ *cobra.Command, args []string) error {
 		connectionString += " -v"
 	}
 
-	if len(args) == 2 {
-		connectionString += " " + args[1]
-	}
+	// TODO: Adding support for command execution
+	// if len(args) == 2 {
+	// 	connectionString += " " + args[1]
+	// }
 	if printConnectionString {
 		log.Infof("[connect] Connecting to host with: %s", connectionString)
 		return nil

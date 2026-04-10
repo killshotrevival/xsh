@@ -12,7 +12,12 @@ var (
 	getToolsStmt      = "SELECT ID, NAME, CONNECTION_STRING FROM TOOLS"
 	getToolByIDStmt   = "SELECT ID, NAME, CONNECTION_STRING FROM tools WHERE ID = ?"
 	getToolByNameStmt = "SELECT ID, NAME, CONNECTION_STRING FROM tools WHERE NAME = ?"
-	insertToolStmt    = "INSERT INTO TOOLS (ID, NAME, CONNECTION_STRING) VALUES (?, ?, ?)"
+
+	deleteToolStmt = "DELETE FROM TOOLS WHERE ID = ?"
+
+	insertToolStmt = "INSERT INTO TOOLS (ID, NAME, CONNECTION_STRING) VALUES (?, ?, ?)"
+
+	getHostIDByToolStmt = "SELECT ID FROM HOSTS WHERE TOOL_ID = ?"
 )
 
 type Tool struct {

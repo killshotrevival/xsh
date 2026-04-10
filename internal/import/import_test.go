@@ -20,6 +20,7 @@ func MockIdentityData() *identity.Identity {
 
 func TestCommandToHost(t *testing.T) {
 	dbConnection := db.GetTestDB(t)
+	defer dbConnection.Close()
 
 	id := MockIdentityData()
 
@@ -39,6 +40,7 @@ func TestCommandToHost(t *testing.T) {
 
 func TestCommandToHostWithProxyCommand(t *testing.T) {
 	dbConnection := db.GetTestDB(t)
+	defer dbConnection.Close()
 
 	id := MockIdentityData()
 
@@ -70,6 +72,7 @@ func TestCommandToHostWithProxyCommand(t *testing.T) {
 
 func TestCommandToHostWithAlias(t *testing.T) {
 	dbConnection := db.GetTestDB(t)
+	defer dbConnection.Close()
 
 	id := MockIdentityData()
 
