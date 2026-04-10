@@ -50,7 +50,7 @@ unit-test:
 	@echo "Running Unit tests"
 	go test ./... -run=.
 
-verify: unit-test lint 
+verify: lint tests  
 	@echo "Code verification passed"
 
 gendocs:
@@ -67,5 +67,8 @@ integration-test: $(os_build)
 	@echo "CLI created successfully, starting integration test"
 	bash test/integration.sh $(PWD)/bin/xsh-$(os_suffix) $(PWD)/test/test
 	@echo "Integration test passed" 
+
+tests: unit-test integration-test
+
 
 	

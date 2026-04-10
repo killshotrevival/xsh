@@ -217,13 +217,14 @@ func updateSchemaVersion(db *sql.DB, version int) error {
 
 func applyMigrations(db *sql.DB, fileNames []string, backup bool) error {
 	if backup {
-		log.Debug("creating a backup file before applying migrations")
+		log.Debug("[database] creating a backup file before applying migrations")
 		if err := createBackup(); err != nil {
 			log.Warnf("error occurred while creating a backup file for the database")
 			return err
 		}
 	}
 	for _, file := range fileNames {
+		log.Debugf("[database] applying Migrations from %s file", file)
 		content, err := migrationFiles.ReadFile("migrations/" + file)
 		if err != nil {
 			log.Debugf("[database] failed to read migration file %q: %v", file, err)
@@ -266,7 +267,7 @@ func InitDB() error {
 		}
 
 		if version > latestVersion {
-			log.Debugf("Updating latest version to: %d", version)
+			log.Debugf("[database] Updating latest version to: %d", version)
 			latestVersion = version
 		}
 	}

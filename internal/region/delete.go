@@ -23,7 +23,6 @@ func checkHost(db *sql.DB, regionID string) error {
 func Delete(db *sql.DB, identifier string) error {
 	var id uuid.UUID
 	if err := db.QueryRow(getRegionIDByNameStmt, identifier).Scan(&id); err != nil {
-		fmt.Println("hererasdasdasdasde")
 		if err == sql.ErrNoRows {
 			return fmt.Errorf("no region found with given name")
 		}
@@ -35,7 +34,6 @@ func Delete(db *sql.DB, identifier string) error {
 	}
 
 	if _, err := db.Exec(deleteRegionStmt, id); err != nil {
-		fmt.Println("herere")
 		return err
 	}
 

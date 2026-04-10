@@ -3,13 +3,10 @@ package cmd
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 	"os/exec"
-	"strconv"
 	"xsh/internal/db"
 	"xsh/internal/host"
-	"xsh/internal/identity"
 	"xsh/internal/theme"
 
 	"charm.land/huh/v2"
@@ -63,7 +60,7 @@ func interactiveHostSelect(dbConnection *sql.DB) (string, error) {
 }
 
 func sshConnect(_ *cobra.Command, args []string) error {
-	var host string
+	var h string
 	var err error
 
 	dbConnection, err := db.GetDB()
@@ -72,32 +69,32 @@ func sshConnect(_ *cobra.Command, args []string) error {
 	}
 
 	if len(args) > 0 {
-		host = args[0]
+		h = args[0]
 	} else {
-		host, err = interactiveHostSelect(dbConnection)
+		h, err = interactiveHostSelect(dbConnection)
 		if err != nil {
 			return err
 		}
 	}
 
-	sshString, err := buildConnectionString(host, dbConnection)
+	connectionString, err := host.BuildConnectionString(h, dbConnection)
 	if err != nil {
 		return err
 	}
 
 	if verboseConnection {
-		sshString = append(sshString, "-v")
+		connectionString += " -v"
 	}
 
 	if len(args) == 2 {
-		sshString = append(sshString, args[1])
+		connectionString += " " + args[1]
 	}
-
 	if printConnectionString {
-		log.Infof("[connect] Connecting to host with: ssh %s", sshString)
+		log.Infof("[connect] Connecting to host with: %s", connectionString)
 		return nil
 	}
-	command := exec.Command("ssh", sshString...)
+
+	command := exec.Command("bash", "-c", connectionString)
 
 	// Attach terminal directly
 	command.Stdin = os.Stdin
@@ -113,70 +110,4 @@ func sshConnect(_ *cobra.Command, args []string) error {
 	}
 	log.Debug("[connect] SSH session completed successfully")
 	return nil
-}
-
-func buildConnectionString(identifier string, dbConnection *sql.DB) ([]string, error) {
-	var (
-		cHost, cjumpHost            *host.Host
-		cIdentity, cJumhostIdentity *identity.Identity
-	)
-
-	connectionList := []string{}
-
-	cHost, err := host.GetHostByName(dbConnection, identifier)
-	if err != nil {
-		return nil, err
-	}
-
-	// Adding identity string to ssh connection only if the identity id attached is different then default identity
-	if cHost.IdentityID != identity.DefaultIdentityID {
-		cIdentity, err = identity.GetIdentityByID(dbConnection, cHost.IdentityID)
-		if err != nil {
-			return nil, err
-		}
-
-		connectionList = append(connectionList, "-i", cIdentity.Path)
-	}
-
-	// Adding port to connection list
-	connectionList = append(connectionList, "-p", strconv.Itoa(cHost.Port))
-
-	if cHost.JumphostID.Valid {
-		cjumpHost, err = host.GetHostByID(dbConnection, cHost.JumphostID.UUID.String())
-		if err != nil {
-			return nil, err
-		}
-
-		proxyCommand := fmt.Sprintf("ssh -W %s:%d %s@%s -p %d",
-			cHost.Address,
-			cHost.Port,
-
-			cjumpHost.User,
-			cjumpHost.Address,
-			cjumpHost.Port,
-		)
-
-		if cjumpHost.IdentityID != identity.DefaultIdentityID {
-			cJumhostIdentity, err = identity.GetIdentityByID(dbConnection, cjumpHost.IdentityID)
-			if err != nil {
-				return nil, err
-			}
-			proxyCommand = fmt.Sprintf("ssh -i %s -W %s:%d %s@%s -p %d",
-				cJumhostIdentity.Path,
-
-				cHost.Address,
-				cHost.Port,
-
-				cjumpHost.User,
-				cjumpHost.Address,
-				cjumpHost.Port,
-			)
-		}
-
-		connectionList = append(connectionList, "-o", "ProxyCommand="+proxyCommand)
-	}
-
-	connectionList = append(connectionList, fmt.Sprintf("%s@%s", cHost.User, cHost.Address))
-
-	return connectionList, nil
 }

@@ -63,7 +63,7 @@ var putIdentityCmd = &cobra.Command{
 	Example: "xsh put identity [name] [path to private key file]",
 }
 
-var puRegionCmd = &cobra.Command{
+var putRegionCmd = &cobra.Command{
 	Use:     "region",
 	Aliases: []string{"r"},
 	Short:   "Store host regions in database",
@@ -78,6 +78,23 @@ var puRegionCmd = &cobra.Command{
 
 		name := args[0]
 		return region.PutRegion(dbConnection, name)
+	},
+	Example: "xsh region [name]",
+}
+
+var putToolCmd = &cobra.Command{
+	Use:     "tool",
+	Aliases: []string{"t"},
+	Short:   "Store connection tool in database",
+	Long:    "Store connection tools in database which will be used for connecting with the host",
+	RunE: func(_ *cobra.Command, _ []string) error {
+		dbConnection, err := db.GetDB()
+		if err != nil {
+			return fmt.Errorf("error connecting to database: %w", err)
+		}
+		defer dbConnection.Close()
+
+		return host.InteractiveToolPut(dbConnection)
 	},
 	Example: "xsh region [name]",
 }

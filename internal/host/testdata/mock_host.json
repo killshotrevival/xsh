@@ -7,6 +7,7 @@
         "name": "jumphost-1",
         "port": 22,
         "region_id": "dbd31312-f575-4d2f-803d-57b506b14d0c",
+        "tool_id": "0a398c97-4525-4416-903d-3662b8de8850",
         "user": "ptyagi",
         "extra_flags": "-4"
     },
@@ -17,6 +18,7 @@
         "name": "test-host",
         "port": 22,
         "region_id": "dbd31312-f575-4d2f-803d-57b506b14d0c",
+        "tool_id": "0a398c97-4525-4416-903d-3662b8de8850",
         "user": "ptyagi"
     },
     {
@@ -26,6 +28,7 @@
         "name": "test-host-1",
         "port": 22,
         "region_id": "dbd31312-f575-4d2f-803d-57b506b14d0c",
+        "tool_id": "0a398c97-4525-4416-903d-3662b8de8850",
         "user": "ptyagi"
     }
 ]

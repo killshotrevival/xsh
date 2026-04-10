@@ -72,12 +72,12 @@ func init() {
 	importCmd.PersistentFlags().BoolVarP(&printSourceFiles, "print", "p", false, "Print all the predefined files, XSH will be reading and importing from")
 
 	// Put Command
-	putCmd.AddCommand(putHostCmd, puRegionCmd, putIdentityCmd)
+	putCmd.AddCommand(putHostCmd, putRegionCmd, putIdentityCmd, putToolCmd)
 	putHostCmd.PersistentFlags().BoolVarP(&interactivePut, "interactive", "i", true, "Insert host in interactive mode")
 	putHostCmd.PersistentFlags().StringVarP(&putFile, "file", "f", putFileExample, "Path of the host file")
 
 	// Get Command
-	getCmd.AddCommand(getHostCmd, getRegionCmd, getIdentityCmd)
+	getCmd.AddCommand(getHostCmd, getRegionCmd, getIdentityCmd, getToolCmd)
 	getCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "table", "Format of the output")
 	getCmd.PersistentFlags().StringVarP(&getIdentifier, "identifier", "i", "*", "Identifier for filtering the data")
 	getCmd.PersistentFlags().StringVarP(&getOutputFile, "output-file", "f", "resource.json", "Output file name, only used when output format is `json`")

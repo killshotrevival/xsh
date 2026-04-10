@@ -3,9 +3,13 @@ package host
 import (
 	"database/sql"
 	"fmt"
+	"reflect"
+	"regexp"
+	"slices"
 	"strings"
 	"xsh/internal/identity"
 	"xsh/internal/region"
+	"xsh/internal/tool"
 
 	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
@@ -14,19 +18,19 @@ import (
 var (
 	getHostIDByNameStmt     = "SELECT ID FROM HOSTS WHERE NAME = ?"
 	getHostIDByAddressStmt  = "SELECT ID FROM HOSTS WHERE ADDRESS = ?"
-	getHostByNameStmt       = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID, EXTRA_FLAGS FROM HOSTS WHERE NAME = ?"
-	getHostByIDStmt         = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID, EXTRA_FLAGS FROM HOSTS WHERE ID = ?"
+	getHostByNameStmt       = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID, TOOL_ID, EXTRA_FLAGS FROM HOSTS WHERE NAME = ?"
+	getHostByIDStmt         = "SELECT ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID, TOOL_ID, EXTRA_FLAGS FROM HOSTS WHERE ID = ?"
 	getHostByJumphostIDStmt = "SELECT ID FROM HOSTS WHERE JUMPHOST_ID = ?"
 	getJumphostName         = "SELECT NAME FROM HOSTS WHERE ID = ?"
 	getShortHostStmt        = "SELECT ID, NAME FROM HOSTS"
-	getHostStmt             = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.EXTRA_FLAGS, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID"
-	getHostWithNameStmt     = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.EXTRA_FLAGS, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID WHERE h.NAME LIKE ?;"
-	getHostWithAddressStmt  = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.EXTRA_FLAGS, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID WHERE h.ADDRESS LIKE ?;"
-	getHostWithUserStmt     = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.EXTRA_FLAGS, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID WHERE h.User LIKE ?;"
+	getHostStmt             = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.TOOL_ID, H.EXTRA_FLAGS, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID"
+	getHostWithNameStmt     = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.TOOL_ID, H.EXTRA_FLAGS, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID WHERE h.NAME LIKE ?;"
+	getHostWithAddressStmt  = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.TOOL_ID, H.EXTRA_FLAGS, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID WHERE h.ADDRESS LIKE ?;"
+	getHostWithUserStmt     = "SELECT H.ID, H.NAME, H.ADDRESS, H.PORT, H.USER, H.JUMPHOST_ID, H.TOOL_ID, H.EXTRA_FLAGS, H.REGION_ID, H.IDENTITY_ID, R.NAME AS REGION, I.PATH AS IDENTITYFILE FROM HOSTS AS H JOIN REGIONS AS R ON R.ID = H.REGION_ID JOIN IDENTITIES AS I ON I.ID = H.IDENTITY_ID WHERE h.User LIKE ?;"
 	deleteHostStmt          = "DELETE FROM HOSTS where ID = ?"
 
-	updateHostStmt = "UPDATE HOSTS SET NAME = ?, ADDRESS = ?, PORT = ?, USER = ?, REGION_ID = ?, IDENTITY_ID = ?, JUMPHOST_ID = ?, EXTRA_FLAGS = ? WHERE ID = ?"
-	insertHostStmt = "INSERT INTO HOSTS (ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID, EXTRA_FLAGS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	updateHostStmt = "UPDATE HOSTS SET NAME = ?, ADDRESS = ?, PORT = ?, USER = ?, REGION_ID = ?, IDENTITY_ID = ?, JUMPHOST_ID = ?, TOOL_ID = ?, EXTRA_FLAGS = ? WHERE ID = ?"
+	insertHostStmt = "INSERT INTO HOSTS (ID, NAME, ADDRESS, PORT, USER, REGION_ID, IDENTITY_ID, JUMPHOST_ID, TOOL_ID, EXTRA_FLAGS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 )
 
 type ShortHost struct {
@@ -43,10 +47,39 @@ type Host struct {
 	RegionID     uuid.UUID     `json:"region_id" comment:"UUID of the region you want to connect this host to. You can find the id by printing the region table (xsg get 'r' '*')"`
 	IdentityID   uuid.UUID     `json:"identity_id" comment:"UUID of the Identity key you want to use for connecting with the host. You can find the id by printing the identity table (xsg get 'i' '*')"`
 	JumphostID   uuid.NullUUID `json:"jumphost_id" comment:"UUID of the host you want to use as jumphost. You can get the id by printing the host table (xsh get 'h' '*')"`
+	ToolID       uuid.UUID     `json:"tool_id" comment:"UUID of the tool you want to use for making connection."`
 	ExtraFlags   string        `json:"extra_flags" comment:"Extra ssh flgs, except XSH internal ones"`
 	Region       string        `json:"region_name"`
 	Jumphost     string        `json:"jumphost_name"`
 	IdentityFile string        `json:"identitiy_file_name"`
+}
+
+// Function is used for validating if the template connection string contains all the valid variables or not.
+func ValidateConnectionString(connectionString string) error {
+	val := reflect.TypeFor[Host]()
+
+	validKeys := []string{}
+
+	for field := range val.Fields() {
+		jsonKey := strings.Split(field.Tag.Get("json"), ",")[0]
+		validKeys = append(validKeys, jsonKey)
+	}
+
+	re := regexp.MustCompile(`\$\{([^}]+)\}`)
+	// FindAllStringSubmatch returns a slice of slices:
+	// matches[n][0] is the full string (e.g., "${port}")
+	// matches[n][1] is the first capturing group (e.g., "port")
+	matches := re.FindAllStringSubmatch(connectionString, -1)
+
+	for _, match := range matches {
+		if len(match) > 1 {
+			if !slices.Contains(validKeys, match[1]) {
+				return fmt.Errorf("%s is not a valid place holder", match[1])
+			}
+		}
+	}
+
+	return nil
 }
 
 func GetDefaultHost() (*Host, error) {
@@ -61,6 +94,7 @@ func GetDefaultHost() (*Host, error) {
 		User:       "root",
 		RegionID:   region.DefaultregionID,
 		IdentityID: identity.DefaultIdentityID,
+		ToolID:     tool.SSHToolID,
 	}, nil
 
 }
@@ -87,7 +121,7 @@ func NewHost(name, address, user string, port int, regionID, identityID uuid.UUI
 }
 
 func (h *Host) Update(db *sql.DB) error {
-	_, err := db.Exec(updateHostStmt, h.Name, h.Address, h.Port, h.User, h.RegionID, h.IdentityID, h.JumphostID, h.ExtraFlags, h.Id)
+	_, err := db.Exec(updateHostStmt, h.Name, h.Address, h.Port, h.User, h.RegionID, h.IdentityID, h.JumphostID, h.ToolID, h.ExtraFlags, h.Id)
 	return err
 }
 
@@ -112,7 +146,7 @@ func (h *Host) Store(db *sql.DB) error {
 		return nil
 	}
 
-	_, err := db.Exec(insertHostStmt, h.Id, h.Name, h.Address, h.Port, h.User, h.RegionID, h.IdentityID, h.JumphostID, h.ExtraFlags)
+	_, err := db.Exec(insertHostStmt, h.Id, h.Name, h.Address, h.Port, h.User, h.RegionID, h.IdentityID, h.JumphostID, h.ToolID, h.ExtraFlags)
 	return err
 }
 

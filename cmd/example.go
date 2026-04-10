@@ -26,7 +26,7 @@ var exampleHostCmd = &cobra.Command{
 	Short:   "Generate example format for host",
 	Long:    `Get JSON example of the datatype under a file. Can be used for JSON inserting data`,
 	RunE: func(_ *cobra.Command, _ []string) error {
-		return generateExampleFromComments(host.Host{}, []string{"id", "region_name", "jumphost_name", "identitiy_file_name", "tags"}, outputFile)
+		return generateExampleFromComments(reflect.TypeFor[host.Host](), []string{"id", "region_name", "jumphost_name", "identitiy_file_name", "tags"}, outputFile)
 	},
 }
 
@@ -36,12 +36,11 @@ var exampleIdentityCmd = &cobra.Command{
 	Short:   "Generate example format for identity",
 	Long:    `Get JSON example of the datatype under a file. Can be used for JSON inserting data`,
 	RunE: func(_ *cobra.Command, _ []string) error {
-		return generateExampleFromComments(identity.Identity{}, []string{"id", "tags"}, outputFile)
+		return generateExampleFromComments(reflect.TypeFor[identity.Identity](), []string{"id", "tags"}, outputFile)
 	},
 }
 
-func generateExampleFromComments(v any, ignoreKeys []string, output string) error {
-	val := reflect.TypeOf(v)
+func generateExampleFromComments(val reflect.Type, ignoreKeys []string, output string) error {
 
 	result := "{\n"
 	for i := 0; i < val.NumField(); i++ {

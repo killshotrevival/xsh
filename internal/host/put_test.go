@@ -6,8 +6,10 @@ import (
 	"xsh/internal/db"
 	"xsh/internal/identity"
 	"xsh/internal/region"
+	"xsh/internal/tool"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -53,5 +55,13 @@ func MockHostResources(t *testing.T) *sql.DB {
 func TestPutHost(t *testing.T) {
 	db := MockHostResources(t)
 	defer db.Close()
+
+	h, err := GetHostByName(db, "jumphost-1")
+	assert.Nil(t, err)
+
+	to, err := tool.GetToolByID(db, h.ToolID)
+	assert.Nil(t, err)
+
+	assert.Equal(t, "SSH", to.Name)
 
 }
